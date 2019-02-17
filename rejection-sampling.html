@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="8 Rejection Sampling | Probability and Statistics" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+<meta name="author" content="Bob Carpenter" />
+
+<meta name="date" content="2018-01-01" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS_CHTML-full" type="text/javascript"></script>
+
+<meta name="description" content="8 Rejection Sampling | Probability and Statistics">
+
+<title>8 Rejection Sampling | Probability and Statistics</title>
+
+<link href="libs/tufte-css/tufte-fonts.css" rel="stylesheet" />
+<link href="libs/tufte-css/tufte-background.css" rel="stylesheet" />
+<link href="libs/tufte-css/tufte-italics.css" rel="stylesheet" />
+<link href="libs/tufte-css/tufte.css" rel="stylesheet" />
+
+
+
+
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li><a href="index.html#preface">Preface</a></li>
+<li><a href="what-is-probability.html#what-is-probability">What is Probability?</a></li>
+<li><a href="random-variables-and-event-probabilities.html#random-variables-and-event-probabilities"><span class="toc-section-number">1</span> Random Variables and Event Probabilities</a></li>
+<li><a href="multiple-random-variables-and-probability-functions.html#multiple-random-variables-and-probability-functions"><span class="toc-section-number">2</span> Multiple Random Variables and Probability Functions</a></li>
+<li><a href="expectations-and-variance.html#expectations-and-variance"><span class="toc-section-number">3</span> Expectations and Variance</a></li>
+<li><a href="joint-marginal-and-conditional-probabilities.html#joint-marginal-and-conditional-probabilities"><span class="toc-section-number">4</span> Joint, Marginal, and Conditional Probabilities</a></li>
+<li><a href="continuous-random-variables.html#continuous-random-variables"><span class="toc-section-number">5</span> Continuous Random Variables</a></li>
+<li><a href="continuous-distributions-and-densities.html#continuous-distributions-and-densities"><span class="toc-section-number">6</span> Continuous Distributions and Densities</a></li>
+<li><a href="statistical-inference-and-inverse-problems.html#statistical-inference-and-inverse-problems"><span class="toc-section-number">7</span> Statistical Inference and Inverse Problems</a></li>
+<li><a href="rejection-sampling.html#rejection-sampling"><span class="toc-section-number">8</span> Rejection Sampling</a></li>
+<li><a href="posterior-predictive-inference.html#posterior-predictive-inference"><span class="toc-section-number">9</span> Posterior Predictive Inference</a></li>
+<li><a href="pseudorandom-number-generators.html#pseudorandom-number-generators"><span class="toc-section-number">10</span> Pseudorandom Number Generators</a></li>
+<li><a href="floating-point-arithmetic.html#floating-point-arithmetic"><span class="toc-section-number">11</span> Floating Point Arithmetic</a></li>
+<li><a href="normal-distribution.html#normal-distribution"><span class="toc-section-number">12</span> Normal Distribution</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="rejection-sampling" class="section level1">
+<h1><span class="header-section-number">8</span> Rejection Sampling</h1>
+<div id="inverse-cumulative-distribution-generation" class="section level2">
+<h2><span class="header-section-number">8.1</span> Inverse cumulative distribution generation</h2>
+<p>We have so far assumed we have a uniform random number generator that
+can sample from a <span class="math inline">\(\mbox{uniform}(0, 1)\)</span> distribution. That
+immediately lets us simulate from a <span class="math inline">\(\mbox{uniform}(a, b).\)</span><label for="tufte-sn-133" class="margin-toggle sidenote-number">133</label><input type="checkbox" id="tufte-sn-133" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">133</span> If <span class="math display">\[ U
+\sim \mbox{uniform}(0, 1) \]</span> then <span class="math display">\[a + U \times (b - a) \sim
+\mbox{uniform}(a, b).\]</span></span> But what if we want to simulate realizations
+of a random variable <span class="math inline">\(Y\)</span> whose density <span class="math inline">\(p_Y\)</span> is not uniform?</p>
+<p>If we happen to have a random variable <span class="math inline">\(Y\)</span> for which we can compute
+the inverse <span class="math inline">\(F^{-1}_Y(p)\)</span> of the cumulative distribution function for
+<span class="math inline">\(p \in (0, 1),\)</span><label for="tufte-sn-134" class="margin-toggle sidenote-number">134</label><input type="checkbox" id="tufte-sn-134" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">134</span> If <span class="math inline">\(F^{-1}_Y(p) = y\)</span> then <span class="math inline">\(F^{-1}(y) = \mbox{Pr}[Y \leq y] = p.\)</span></span> then we can simulate random realizations of
+<span class="math inline">\(Y\)</span> as follows. First, simulate a uniform draw <span class="math inline">\(U\)</span>,</p>
+<p><span class="math display">\[
+u^{(m)} \sim \mbox{uniform}(0, 1),
+\]</span></p>
+<p>then apply the inverse cumulative distribution function to turn it
+into a simulation of <span class="math inline">\(Y\)</span>,</p>
+<p><span class="math display">\[
+y^{(m)} = F^{-1}(u^{(m)}).
+\]</span></p>
+<p>It turns out we’ve already seen an example of this strategy—it is
+how we we simulated from a logistic distribution right off the bat.
+The log odds transform is the inverse cumulative distribution function
+for the logistic distribution. That is, if</p>
+<p><span class="math display">\[
+Y \sim \mbox{logistic}(0, 1),
+\]</span></p>
+<p>then</p>
+<p><span class="math display">\[
+F_Y(y) = \mbox{logit}^{-1}(y) = p
+\]</span></p>
+<p>and hence</p>
+<p><span class="math display">\[
+F^{-1}_Y(p) = \mbox{logit}(p) = y.
+\]</span></p>
+<p>This lets us simulate <span class="math inline">\(Y\)</span> by first simulating <span class="math inline">\(U \sim \mbox{uniform}(0, 1)\)</span>, then setting <span class="math inline">\(Y = \mbox{logit}(U)\)</span>. Both the
+log odds function and its inverse are easy to compute. Often, the
+inverse cumulative distribution function is an expensive
+computation.<label for="tufte-sn-135" class="margin-toggle sidenote-number">135</label><input type="checkbox" id="tufte-sn-135" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">135</span> In general, the inverse cumulative distribution function
+<span class="math inline">\(F^{-1}_Y(p)\)</span> can be computed by solving <span class="math display">\[F_Y(u) = \int_{\infty}^u
+p_Y(y) \, \mathrm{d} y = p\]</span> for <span class="math inline">\(u\)</span>, which can typically be
+accomplished numerically if not analytically.</span></p>
+</div>
+<div id="beta-distribution" class="section level2">
+<h2><span class="header-section-number">8.2</span> Beta distribution</h2>
+<p>As a first non-trivial example, let’s consider the beta distribution,
+which arises naturally as a posterior in binary models. Recall that
+when we have a binomial likelihood <span class="math inline">\(\mbox{binomial}(y \mid N, \theta)\)</span>
+and a uniform prior <span class="math inline">\(\theta \sim \mbox{uniform}(0, 1)\)</span>, then the
+posterior density is</p>
+<p><span class="math display">\[
+p(\theta \mid y)
+\ \propto \
+\theta^y \times (1 - \theta)^{N - y}.
+\]</span></p>
+<p>This turns out to be a beta distribution with parameters <span class="math inline">\(\alpha = y + 1\)</span> and <span class="math inline">\(\beta = N - y + 1\)</span>. If a random variable <span class="math inline">\(\Theta \in (0, 1)\)</span> has a <em>beta distribution</em>, then its density <span class="math inline">\(p_{\Theta}\)</span> is</p>
+<p><span class="math display">\[
+\mbox{beta}(\theta \mid \alpha, \beta)
+\ \propto \
+\theta^{\alpha - 1} \times (1 - \theta)^{\beta - 1}
+\]</span></p>
+<p>for some <span class="math inline">\(\alpha, \beta &gt; 0\)</span>.<label for="tufte-sn-136" class="margin-toggle sidenote-number">136</label><input type="checkbox" id="tufte-sn-136" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">136</span> We prefer to present densities up to
+normalizing constants, because the normalizing constants are
+distracting—what matters is how the density changes with the
+variate. Here, the fully normalized distribution is
+<span class="math display">\[\mbox{beta}(\theta \mid \alpha, \beta) \ = \
+\frac{1}{\mbox{B}(\alpha, \beta)} \, \theta^{\alpha - 1} \times (1 -
+\theta)^{\beta - 1},\]</span> where Euler’s beta function, which gives its
+namesake distribution its name, is defined as the integral of the
+unnormalized beta density <span class="math display">\[ \mathrm{B}(\alpha,
+\beta) \ = \ \displaystyle \int_0^1 \theta^{\alpha - 1} (1 -
+\theta)^{\beta - 1} \, \mbox{d} \theta.\]</span> Hence, it’s clear the
+beta density integrates to 1 for any <span class="math inline">\(\alpha, \beta\)</span>.</span></p>
+<p>If <span class="math inline">\(Y \sim \mbox{beta}(\alpha, \beta)\)</span>, then its expected value is</p>
+<p><span class="math display">\[
+\mathbb{E}[Y] = \frac{\alpha}{\alpha + \beta}.
+\]</span></p>
+<p>It is convenient to work with the beta distribution parameters in
+terms of the mean <span class="math inline">\(\alpha / (\alpha + \beta)\)</span> and the total count
+<span class="math inline">\(\alpha + \beta\)</span>.<label for="tufte-sn-137" class="margin-toggle sidenote-number">137</label><input type="checkbox" id="tufte-sn-137" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">137</span> Distributions have means, random variables have
+expectations. The mean of a distribution is the expectation of a
+random variable with that distribution, so the terms are often
+conflated.</span> The higher the total count, lower the variance. For
+example, here is a plot of a few beta distributions organized by total
+count and mean.</p>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-84"></span>
+<p class="caption marginnote shownote">
+Figure 8.1: Plots of the densities <span class="math inline">\(\mbox{beta}(\theta \mid \alpha, \beta)\)</span> for different total counts <span class="math inline">\(\alpha + \beta\)</span> and different means <span class="math inline">\(\alpha / (\alpha + \beta).\)</span> The vertical dotted lines are drawn at the mean. Only the distribution with 0.5 mean has a symmetric density; the other densities are skewed toward the right and thus have means to the left of their modes (maxima), where the modes exist.
+</p>
+<img src="_main_files/figure-html/unnamed-chunk-84-1.png" alt="Plots of the densities $\mbox{beta}(\theta \mid \alpha, \beta)$ for different total counts $\alpha + \beta$ and different means $\alpha / (\alpha + \beta).$ The vertical dotted lines are drawn at the mean. Only the distribution with 0.5 mean has a symmetric density; the other densities are skewed toward the right and thus have means to the left of their modes (maxima), where the modes exist." width="100%"  />
+</div>
+<p>For example, a total count of <span class="math inline">\(\alpha + \beta = 8\)</span> and mean of <span class="math inline">\(\alpha / (\alpha + \beta) = 0.85\)</span> corresponds to beta distribution parameters
+<span class="math inline">\(\alpha = 8 \times 0.85 = 6.8\)</span> and <span class="math inline">\(\beta = 8 \times (1 - 0.85) = 1.2.\)</span></p>
+<p>The plot shows that when the mean is 0.5 and the count is 2 (i.e.,
+<span class="math inline">\(\alpha = \beta = 1\)</span>), the result is a uniform distribution. The
+algebra agrees,</p>
+<p><span class="math display">\[
+\begin{array}{rcl}
+\mbox{beta}(\theta \mid 1, 1)
+&amp; \propto &amp; \theta^{1 - 1} \times (1 - \theta)^{1 - 1}
+\\[4pt]
+&amp; = &amp; 1
+\\[4pt]
+&amp; = &amp; \mbox{uniform}(\theta \mid 0, 1).
+\end{array}
+\]</span></p>
+<p>The area under each of these curves, as drawn, is exactly one. The
+beta distributions with small total count (<span class="math inline">\(\alpha + \beta\)</span>)
+concentrate most of their probability mass near the boundaries. As the
+count grows, the probability mass concentrates away from the
+boundaries and around the mean.<label for="tufte-sn-138" class="margin-toggle sidenote-number">138</label><input type="checkbox" id="tufte-sn-138" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">138</span> Nevertheless, in higher dimensions,
+the curse of dimensionality rears its ugly head, and concentrates the
+total mass in the corners, even if each dimension is independently
+distributed and drawn from a distribution concentrated away from the
+edges in one dimension. The reason is the same—each dimension’s
+value squared just pulls the expected distance of a draw further from
+the multidimensional mean.</span></p>
+<p>Each of these distributions has a well-defined mean, as shown in row
+labels in the plot. But they do not all have well defined modes
+(maxima). For example, consider the beta distribution whose density is
+shown in the upper left example in the plot. It shows a U-shaped
+density for a <span class="math inline">\(\mbox{beta}(0.25, 0.25)\)</span> distribution, which
+corresponds to mean <span class="math inline">\(0.5 = 0.25 / (0.25 + 0.25)\)</span> and total count <span class="math inline">\(0.5 = 0.25 + 0.25\)</span>. As <span class="math inline">\(\theta\)</span> approaches either boundary, 0 or 1, the
+density grows without bound. There is simply no maximum value for the
+density.<label for="tufte-sn-139" class="margin-toggle sidenote-number">139</label><input type="checkbox" id="tufte-sn-139" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">139</span> Despite the lack of a maximum, the area under the density is
+one. The region of very high density near the boundary becomes
+vanishingly narrow in order to keep the total area at one.</span></p>
+</div>
+<div id="uniform-bounded-rejection-sampling" class="section level2">
+<h2><span class="header-section-number">8.3</span> Uniform, bounded rejection sampling</h2>
+<p>How do we sample from a beta distribution? Rejection sampling is
+very simple algorithm to sample from general distributions for which
+we know how to compute the density. It is a good starter algorithm
+because it is easy to understand, but points the way toward more
+complex sampling algorithms we will consider later.</p>
+<p>Let’s start with the simplest possible kind of rejection sampling
+where we have a bounded distribution like a beta distribution. The
+values drawn from a beta distribution are bounded between 0 and 1 by
+construction. Furthermore, if <span class="math inline">\(\alpha, \beta &gt; 1\)</span>, as we will assume
+for the time being, then there is a maximum value for
+<span class="math inline">\(\mbox{beta}(\theta \mid \alpha, \beta)\)</span>.<label for="tufte-sn-140" class="margin-toggle sidenote-number">140</label><input type="checkbox" id="tufte-sn-140" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">140</span> The maximum density occurs
+at the <em>mode</em> of the distribution, which for
+<span class="math inline">\(\\mbox{beta}(\\theta \\mid \\alpha, \\beta)\)</span> is given by
+<span class="math display">\[\\theta^* = \\frac{\\alpha - 1}{\\alpha + \\beta - 2}.\]</span></span></p>
+<p>For concreteness, let’s start specifically with a <span class="math inline">\(\mbox{beta}(6.8, 1.2)\)</span> distribution, corresponding to the mean 0.85 and count of 8 case
+from the previous section. We observe that all values fall below 5, so
+we will create a box with height 5 and width of 1.<label for="tufte-sn-141" class="margin-toggle sidenote-number">141</label><input type="checkbox" id="tufte-sn-141" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">141</span> For an unknown
+distribution, we could use an optimization algorithm to find the
+largest value.</span> Next, we draw uniformly from the box, drawing a
+horizontal position <span class="math inline">\(\theta^{(m)} \sim \mbox{uniform}(0, 1)\)</span> and
+vertical position <span class="math inline">\(u^{(m)} \sim \mbox{uniform}(0, 5)\)</span>. The points
+whose value for <span class="math inline">\(u\)</span> falls below the density at the value for <span class="math inline">\(\theta\)</span>
+are retained.</p>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-85"></span>
+<p class="caption marginnote shownote">
+Figure 8.2: A simple instance of rejection sampling from a bounded <span class="math inline">\(\mbox{beta}(6.8, 1.2)\)</span> distribution, whose density is shown as a solid line. Points <span class="math inline">\((\theta, u)\)</span> are drawn uniformly from the rectangle, then accepted as a draw of <span class="math inline">\(\theta\)</span> if <span class="math inline">\(u\)</span> falls below the density at <span class="math inline">\(\theta\)</span>. The accepted draws are rendered as plus signs and the rejected ones as circles. The acceptance rate here is roughly 20%.
+</p>
+<img src="_main_files/figure-html/unnamed-chunk-85-1.png" alt="A simple instance of rejection sampling from a bounded $\mbox{beta}(6.8, 1.2)$ distribution, whose density is shown as a solid line.  Points $(\theta, u)$ are drawn uniformly from the rectangle, then accepted as a draw of $\theta$ if $u$ falls below the density at $\theta$.  The accepted draws are rendered as plus signs and the rejected ones as circles.  The acceptance rate here is roughly 20%." width="70%"  />
+</div>
+<p>More specifically, we keep the values <span class="math inline">\(\theta^{(m)}\)</span> where</p>
+<p><span class="math display">\[
+u^{(m)} &lt; \mbox{beta}(\theta^{(m)} \mid 6.8, 1.2).
+\]</span></p>
+<p>The set of accepted draws that are retained are distributed uniformly
+in the area under the density plot. The probability of a draw from rejection
+sampling for variable <span class="math inline">\(U\)</span> falling between points <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> is
+proportional to the area under the density curve between <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span>,
+which is the correct probability by the definition of the probability
+density function <span class="math inline">\(p_U\)</span>, which ensures</p>
+<p><span class="math display">\[
+\mbox{Pr}[a \leq U \leq b] = \int_a^b p_U(u) \, \mathrm{d}u.
+\]</span></p>
+<p>If the intervals are right, the density is right.</p>
+</div>
+<div id="rejection-sampling-algorithm" class="section level2">
+<h2><span class="header-section-number">8.4</span> Rejection sampling algorithm</h2>
+<p>To generate a single draw from <span class="math inline">\(\mbox{beta}(6.8, 1.2)\)</span>, we continually
+sample points <span class="math inline">\((u, \theta)\)</span> uniformly until we find one where <span class="math inline">\(u\)</span>
+falls below the density value for <span class="math inline">\(\theta\)</span>, then return the <span class="math inline">\(\theta\)</span>
+value. Because the variable <span class="math inline">\(u\)</span> is only of use for sampling, it is
+called an <em>auxiliary variable</em>. Many sampling methods use auxiliary
+variables. The rejection sampling algorithm written out for our
+particular case is as follows.</p>
+<pre><code>while (true)
+  u = uniform_rng(0, 5)
+  theta = uniform_rng(0, 1)
+  if (u &lt; beta(theta | 6.8, 1.2))
+    return theta</code></pre>
+<p>Let’s run this algorithm for <span class="math inline">\(M = 100\,000\)</span> iterations and see what the
+histogram looks like.</p>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-86"></span>
+<p class="caption marginnote shownote">
+Figure 8.3: Histogram of <span class="math inline">\(M = 100\,000\)</span> Draws from <span class="math inline">\(\mbox{beta}(6.8, 1.2)\)</span> made via rejection sampling. The true density is plotted over the histogram as a line. The acceptance rate for draws was roughly 20%.
+</p>
+<img src="_main_files/figure-html/unnamed-chunk-86-1.png" alt="Histogram of $M = 100\,000$ Draws from $\mbox{beta}(6.8, 1.2)$ made via rejection sampling.  The true density is plotted over the histogram as a line.  The acceptance rate for draws was roughly 20%." width="70%"  />
+</div>
+<p>This looks like it’s making the appropriately distributed draws from
+the beta distribution.<label for="tufte-sn-142" class="margin-toggle sidenote-number">142</label><input type="checkbox" id="tufte-sn-142" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">142</span> After we introduce the normal distribution, we
+will develop a <span class="math inline">\(\chi^2\)</span> test statistic for whether a given set of
+draws come from a specified distribution. For now, we perform the
+inaccurate test known informally as “<span class="math inline">\(\chi\)</span> by eye.”</span></p>
+</div>
+<div id="acceptance-concentration-and-the-curse-of-dimensionality" class="section level2">
+<h2><span class="header-section-number">8.5</span> Acceptance, concentration, and the curse of dimensionality</h2>
+<p>As noted in the caption of the plot, the acceptance rate is only 20%
+for the uniform proposals. This acceptance rate can become arbitrarily
+bad with uniform proposals as the true distribution from which we want
+to sample concentrates around a single value. As such, rejection
+sampling’s value is as a pedagogical example for introducing generic
+sampling and also as a component in more robust sampling algorithms.</p>
+<p>The algorithm could also be extended to higher dimensions, but the
+problem of rejection becomes worse and worse due to the curse of
+dimensionality. If the posterior is concentrated into a reasonably
+small area (even as mildly in our <span class="math inline">\(\mbox{beta}(6.8, 1.2)\)</span> example) in
+each dimension, the chance of a random multidimensional sample being
+accepted in every dimension is only <span class="math inline">\(0.2^N\)</span>, which becomes vanishingly
+small for practical purposes even in 10 dimensions.<label for="tufte-sn-143" class="margin-toggle sidenote-number">143</label><input type="checkbox" id="tufte-sn-143" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">143</span> In ten
+dimensions, overall acceptance of a uniform draw would be <span class="math inline">\(0.2^{10}\)</span>, or
+a little less than one in ten million. While this may be possible
+with patience, another ten dimensions becomes completely unworkable,
+even with massive parallelism.</span></p>
+</div>
+<div id="general-rejection-sampling" class="section level2">
+<h2><span class="header-section-number">8.6</span> General rejection sampling</h2>
+<p>The more general form of rejection sampling takes a proposal from an
+arbitrary scaled density. In the example of the previous section, we
+used a <span class="math inline">\(\mbox{uniform}(0, 1)\)</span> distribution scaled by a factor of five.
+The acceptance procedure in the general case remains exactly the same.</p>
+<p>In the general case, suppose we want to draw from a density <span class="math inline">\(p(y)\)</span>.
+We’ll need a density <span class="math inline">\(q(y)\)</span> from which we know how to simulate draws,
+and we’ll need a constant <span class="math inline">\(c\)</span> such that</p>
+<p><span class="math display">\[
+c \times q(y) &gt; p(y)
+\]</span></p>
+<p>for all <span class="math inline">\(y\)</span>.<label for="tufte-sn-144" class="margin-toggle sidenote-number">144</label><input type="checkbox" id="tufte-sn-144" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">144</span> This means the support of the proposal distribution must
+be at least as large as that of the target distribution.</span></p>
+<p>The general rejection sampling algorithm for target density <span class="math inline">\(p(y)\)</span>,
+proposal density <span class="math inline">\(q(y)\)</span> with constant <span class="math inline">\(c\)</span> such that <span class="math inline">\(c \times q(y) &gt; p(y)\)</span> for all <span class="math inline">\(y\)</span>, is as follows:</p>
+<pre><code>while (true)
+  y = q_rng(y)
+  u = uniform(0, c * q(y))
+  if (u &lt; p(y)) return y</code></pre>
+<p>Our simplified algorithm in the previous section was just a special
+case where <span class="math inline">\(q(y)\)</span> is uniform over a bounded interval. The argument for
+correctness in the more general case is identical—draws are made
+proportional to the area under the density, which provides the correct
+distribution.</p>
+
+</div>
+</div>
+<p style="text-align: center;">
+<a href="statistical-inference-and-inverse-problems.html"><button class="btn btn-default">Previous</button></a>
+<a href="posterior-predictive-inference.html"><button class="btn btn-default">Next</button></a>
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>

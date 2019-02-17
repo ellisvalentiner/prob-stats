@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="9 Posterior Predictive Inference | Probability and Statistics" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+<meta name="author" content="Bob Carpenter" />
+
+<meta name="date" content="2018-01-01" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS_CHTML-full" type="text/javascript"></script>
+
+<meta name="description" content="9 Posterior Predictive Inference | Probability and Statistics">
+
+<title>9 Posterior Predictive Inference | Probability and Statistics</title>
+
+<link href="libs/tufte-css/tufte-fonts.css" rel="stylesheet" />
+<link href="libs/tufte-css/tufte-background.css" rel="stylesheet" />
+<link href="libs/tufte-css/tufte-italics.css" rel="stylesheet" />
+<link href="libs/tufte-css/tufte.css" rel="stylesheet" />
+
+
+
+
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li><a href="index.html#preface">Preface</a></li>
+<li><a href="what-is-probability.html#what-is-probability">What is Probability?</a></li>
+<li><a href="random-variables-and-event-probabilities.html#random-variables-and-event-probabilities"><span class="toc-section-number">1</span> Random Variables and Event Probabilities</a></li>
+<li><a href="multiple-random-variables-and-probability-functions.html#multiple-random-variables-and-probability-functions"><span class="toc-section-number">2</span> Multiple Random Variables and Probability Functions</a></li>
+<li><a href="expectations-and-variance.html#expectations-and-variance"><span class="toc-section-number">3</span> Expectations and Variance</a></li>
+<li><a href="joint-marginal-and-conditional-probabilities.html#joint-marginal-and-conditional-probabilities"><span class="toc-section-number">4</span> Joint, Marginal, and Conditional Probabilities</a></li>
+<li><a href="continuous-random-variables.html#continuous-random-variables"><span class="toc-section-number">5</span> Continuous Random Variables</a></li>
+<li><a href="continuous-distributions-and-densities.html#continuous-distributions-and-densities"><span class="toc-section-number">6</span> Continuous Distributions and Densities</a></li>
+<li><a href="statistical-inference-and-inverse-problems.html#statistical-inference-and-inverse-problems"><span class="toc-section-number">7</span> Statistical Inference and Inverse Problems</a></li>
+<li><a href="rejection-sampling.html#rejection-sampling"><span class="toc-section-number">8</span> Rejection Sampling</a></li>
+<li><a href="posterior-predictive-inference.html#posterior-predictive-inference"><span class="toc-section-number">9</span> Posterior Predictive Inference</a></li>
+<li><a href="pseudorandom-number-generators.html#pseudorandom-number-generators"><span class="toc-section-number">10</span> Pseudorandom Number Generators</a></li>
+<li><a href="floating-point-arithmetic.html#floating-point-arithmetic"><span class="toc-section-number">11</span> Floating Point Arithmetic</a></li>
+<li><a href="normal-distribution.html#normal-distribution"><span class="toc-section-number">12</span> Normal Distribution</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="posterior-predictive-inference" class="section level1">
+<h1><span class="header-section-number">9</span> Posterior Predictive Inference</h1>
+<p>One of the primary reasons we fit models is to make predictions about
+the future. More specifically, we want to observe some data <span class="math inline">\(y\)</span> and
+use it to predict future data <span class="math inline">\(\tilde{y}\)</span>. Even more specifically,
+we’d like to understand the probability distribution of the future
+data <span class="math inline">\(\tilde{y}\)</span> given the observed data <span class="math inline">\(y\)</span>.</p>
+<p>We are going to assume that we are still working relative to a model
+whose sampling distribution has a density <span class="math inline">\(p(y \mid \theta)\)</span>.<label for="tufte-sn-145" class="margin-toggle sidenote-number">145</label><input type="checkbox" id="tufte-sn-145" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">145</span> From
+now on, we’ll be dropping random variable subscripts on probabilty
+functions. The convention in applied statistics is to choose names
+for bound variables that allow the random variables to be determined
+by context. For example, we will write <span class="math inline">\(p(\theta \mid y)\)</span> for a
+posterior, taking it to mean <span class="math inline">\(p_{\Theta \mid Y}(\theta \mid y)\)</span>.</span>
+Thus if we knew the value of <span class="math inline">\(\theta\)</span>,<label for="tufte-sn-146" class="margin-toggle sidenote-number">146</label><input type="checkbox" id="tufte-sn-146" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">146</span> We are also overloading
+lowercase variables like <span class="math inline">\(\theta\)</span> to mean their random variable
+counterpart <span class="math inline">\(\Theta\)</span> when necessary, as it is here, where we should
+properly be saying that the random variable <span class="math inline">\(\Theta\)</span> takes on some
+known value <span class="math inline">\(\theta\)</span>.</span> the distribution of <span class="math inline">\(\tilde{y}\)</span> would be given
+by <span class="math inline">\(p(\tilde{y} \mid \theta)\)</span>. Here, we are assuming that the
+sampling distribution will be the same density for the original data
+<span class="math inline">\(p(y \mid \theta)\)</span> and the predictive data <span class="math inline">\(p(\tilde{y} \mid \theta)\)</span>.</p>
+<p>Unfortunately, we don’t know the true value of <span class="math inline">\(\theta\)</span>. All we have
+to go on are the inferences we can make about <span class="math inline">\(\theta\)</span> given our model
+and observed data <span class="math inline">\(y\)</span>. As we saw in the last chapter, this knowledge
+is encapsulated in a posterior distribution with density <span class="math inline">\(p(\theta \mid y)\)</span>. So rather than making predictions <span class="math inline">\(p(\tilde{y} \mid \theta)\)</span> based on a single estimated value of <span class="math inline">\(\theta\)</span>, we are going
+to create a weighted average of predictions for every possible
+<span class="math inline">\(\theta\)</span> with weights determined by the posterior <span class="math inline">\(p(\theta \mid y)\)</span>.
+Because <span class="math inline">\(\theta\)</span> is continuous, the averaging must proceed by
+integration. The result is the <em>posterior predictive distribution</em>,
+the density for which is defined by</p>
+<p><span class="math display">\[
+p(\tilde{y} \mid y)
+\ = \
+\displaystyle
+\int_{\Theta}
+p(\tilde{y} \mid \theta)
+\times
+p(\theta \mid y)
+\,
+\mathrm{d}\theta.
+\]</span></p>
+<p>The variable <span class="math inline">\(\Theta\)</span> is now doing extra duty as the set of possible
+values for <span class="math inline">\(\theta\)</span>, that is the range of variables over which
+<span class="math inline">\(\theta\)</span> is averaged.</p>
+<p>When estimating the probability of new data, there are two forms of
+uncertainty that need to be taken into account. The first is
+estimation uncertainty arising from not knowing the exact value of
+<span class="math inline">\(\theta\)</span>. This comes into play by averaging over the posterior
+<span class="math inline">\(p(\theta \mid y)\)</span>. The second form of uncertainty is introduced by
+the sampling distribution <span class="math inline">\(p(\tilde{y} \mid \theta)\)</span>. Even if we knew
+the precise value of <span class="math inline">\(\theta\)</span>, we would still not know the value of
+<span class="math inline">\(\tilde{y}\)</span> because it is not a deterministic function of <span class="math inline">\(\theta\)</span>.
+Let’s write our formula again highlighting the two sources of
+uncertainty.</p>
+<p><span class="math display">\[
+p(\tilde{y} \mid y)
+\ = \
+\int_{\Theta}
+\underbrace{p(\tilde{y} \mid \theta)}_{\mbox{sampling uncertainty}}
+\times
+\underbrace{p(\theta \mid y)}_{\mbox{estimation uncertainty}}
+\,
+\mathrm{d}\theta.
+\]</span></p>
+<div id="calculation-via-simulation" class="section level2">
+<h2><span class="header-section-number">9.1</span> Calculation via simulation</h2>
+<p>The probability mass function for the posterior predictive is defined
+by an integral that averages over the posterior, thus it can be
+estimated using simulations <span class="math inline">\(\theta^{(1)}, \theta^{(M)}\)</span> of the
+posterior <span class="math inline">\(p(\theta \mid y)\)</span> as</p>
+<p><span class="math display">\[
+p(\tilde{y} \mid y)
+\ \approx \
+\frac{1}{M} \sum_{m=1}^M p(\tilde{y} \mid \theta^{(m)}).
+\]</span></p>
+<p>That is, we just take the average prediction over our sample of
+simulations.</p>
+<p>Continuing our example from the previous chapter, we will put
+everything together and show how to compute posterior predictive
+densities. To review, we have <span class="math inline">\(y\)</span> boys born out of <span class="math inline">\(N\)</span> births, under
+the sampling distribution <span class="math inline">\(y \sim \mbox{binomial}(N, \theta)\)</span> and
+prior <span class="math inline">\(\theta \sim \mbox{uniform}(0, 1)\)</span>. We have shown in the
+previous chapter how to take simulated draws <span class="math inline">\(\theta^{(1)}, \ldots, \theta^{(M)}\)</span> from the posterior distribution with density <span class="math inline">\(p(\theta \mid y, N)\)</span>.</p>
+<p>Now suppose we have new data <span class="math inline">\(\tilde{y}\)</span> from a trial of size
+<span class="math inline">\(\tilde{N}\)</span>. We can estimate <span class="math inline">\(p(\tilde{y} \mid y, \tilde{N})\)</span> by
+instantiating the general formula above,</p>
+<p><span class="math display">\[
+p(\tilde{y} \mid y, \tilde{N})
+\ \approx \
+\frac{1}{M} \sum_{m = 1}^M
+\mbox{binomial}(\tilde{y} \mid \tilde{N}, \theta^{(m)}).
+\]</span></p>
+<p>If we treat <span class="math inline">\(\mbox{binomial}\)</span> as evaluating elementwise,<label for="tufte-sn-147" class="margin-toggle sidenote-number">147</label><input type="checkbox" id="tufte-sn-147" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">147</span> A function
+<span class="math inline">\(f : \mathbb{R} \rightarrow \mathbb{R}\)</span> can be extended <em>elementwise</em>
+to a function on sequences <span class="math inline">\(f : \mathbb{R}^N \rightarrow \mathbb{R}^N\)</span>
+by defining <span class="math display">\[f(x)[n] = f(x[n]).\]</span> For example, elementwise
+exponentiation satisfies <span class="math display">\[\exp((u, v, w)) = (\exp(a), \exp(v),
+\exp(w)).\]</span></span> so that a collection of <span class="math inline">\(\theta\)</span> as input produces a
+collection as output, then we can write this using the
+elementwise definition of the binomial and a function to calculation
+the mean of a collection as</p>
+<p><span class="math display">\[
+\begin{array}{rcl}
+p\!\left(\tilde{y} \mid y\right)
+&amp; \approx &amp;
+\mbox{mean}\!\left(\mbox{binomial}\!\left(\tilde{y} \mid \tilde{N}, \theta\right)\right).
+\\[6pt]
+&amp; \approx &amp;
+\mbox{mean}\!\left(\mbox{binomial}\!\left(\tilde{y} \mid \tilde{N},
+                   \left(\theta^{(1)}, \ldots \theta^{(M)}\right)\right)\right).
+\\[6pt]
+&amp; = &amp;
+\mbox{mean}\!\left(
+( \mbox{binomial}\!\left(\tilde{y} \mid \tilde{N}, \theta^{(1)}\right),
+  \ldots,
+  \mbox{binomial}\!\left(\tilde{y} \mid \tilde{N}, \theta^{(M)}\right)
+\right)
+\\[6pt]
+&amp; = &amp;
+\frac{1}{M} \sum_{m=1}^M
+\mbox{binomial}\!\left(\tilde{y} \mid \tilde{N}, \theta^{(m)}\right).
+\end{array}
+\]</span></p>
+<p>The second two lines illustrate how an elementwise definition is
+expanded, and the third shows how the compound function for the mean
+is applied.<label for="tufte-sn-148" class="margin-toggle sidenote-number">148</label><input type="checkbox" id="tufte-sn-148" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">148</span> The definition of the mean function is <span class="math display">\[\mbox{mean}\!\left( (u_1, \ldots, u_N)
+\right) \ = \ \frac{1}{N} \sum_{n=1}^N u_n.\]</span></span></p>
+<p>The pseudocode translates the mathematical definition directly.</p>
+<pre><code>for (m in 1:M)
+  draw theta(m) from posterior p(theta | y, N)
+  p[m] = binomial(y_pred | N_pred, theta(m))
+print &#39;esimated p(y_pred | y) = &#39; mean(p)</code></pre>
+<p>With an elementwise version of the binomial probability mass function,
+this simplifies to the following.<label for="tufte-sn-149" class="margin-toggle sidenote-number">149</label><input type="checkbox" id="tufte-sn-149" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">149</span> Simple can mean several
+things—we’re measuring code simplicity, not necessarily how simple
+it is to undersetand. Code simplicity involves several things, among
+them shallower nesting of statments and fewer indexed expressions, as
+in this example. As another example, the calculation of the mean could
+be done manually, but it is simpler to use a library function. Even if
+there’s no library function, it simplifies code to break complex
+operations down into well-named functions. Building up a personal
+library of such functions is the first step toward becoming a
+developer.</span></p>
+<pre><code>for (m in 1:M)
+  draw theta(m) from posterior p(theta | y, N)
+p = binomial(y_pred | N_pred, theta)
+print &#39;esimated p(y_pred | y) = &#39; mean(p)</code></pre>
+<p>Let’s continue with the small data example, where <span class="math inline">\(y = 3\)</span> and <span class="math inline">\(N = 10\)</span>. We’ll take <span class="math inline">\(\tilde{N} = 20\)</span> in order to make a prediction over
+the next twenty observations and calculate the probability for each
+possible <span class="math inline">\(\tilde{y} \in 0:\tilde{N}\)</span>. Then we’ll plot them in a bar
+chart to inspect the distribution.</p>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-88"></span>
+<p class="caption marginnote shownote">
+Figure 9.1: Probablity mass function for the posterior predictive distribution of the number of boys <span class="math inline">\(\tilde{y}\)</span> in a subsequent group of <span class="math inline">\(\tilde{N} = 20\)</span> births based on observing 3 boys in 10 births with no prior information. Although it is peaked near the 30% level observed in the data, it would not be that surprising to see more boys than girls in the next 20 births.
+</p>
+<img src="_main_files/figure-html/unnamed-chunk-88-1.png" alt="Probablity mass function for the posterior predictive distribution of the number of boys $\tilde{y}$ in a subsequent group of $\tilde{N} = 20$ births based on observing 3 boys in 10 births with no prior information.  Although it is peaked near the 30% level observed in the data, it would not be that surprising to see more boys than girls in the next 20 births." width="70%"  />
+</div>
+<p>Because we have only observed <span class="math inline">\(N\)</span> outcomes, the posterior is not very
+concentrated—it is consistent with a wide range of possible
+outcomes. Contrast this situation to using the binomial directly to do
+prediction by setting <span class="math inline">\(\theta = 0.3\)</span>, the observed proportion of
+boys.<label for="tufte-sn-150" class="margin-toggle sidenote-number">150</label><input type="checkbox" id="tufte-sn-150" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">150</span> Inference with a single point estimate of one or more
+parameters is common in live, real-time applications, where the cost
+of averaging over the posterior may be prohibitive.</span></p>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-89"></span>
+<p class="caption marginnote shownote">
+Figure 9.2: Probability mass function for predictions made by plugging the proportion of boy births observed in the data, <span class="math inline">\(\theta^* = \frac{y}{N} = 0.3\)</span>, into the sampling distribution, to yield <span class="math inline">\(\mbox{binomial}(\tilde{y} \mid \tilde{N}, \theta^*)\)</span>. Compared to the full posterior taking into account estimation uncertinaty in <span class="math inline">\(\theta\)</span>, this plug-in estimate makes it seem very unlikely there will be more boys than girls born in the next 20 births.
+</p>
+<img src="_main_files/figure-html/unnamed-chunk-89-1.png" alt="Probability mass function for predictions made by plugging the proportion of boy births observed in the data, $\theta^* = \frac{y}{N} = 0.3$, into the sampling distribution, to yield $\mbox{binomial}(\tilde{y} \mid \tilde{N}, \theta^*)$.  Compared to the full posterior taking into account estimation uncertinaty in $\theta$, this plug-in estimate makes it seem very unlikely there will be more boys than girls born in the next 20 births." width="70%"  />
+</div>
+<p>The probability mass in the predictions is much more concentrated
+around the observed proportion of boys. Ignoring the estimation
+uncertainty in <span class="math inline">\(\theta\)</span> captured by the full posterior leads to
+inferences that are overly concentrated compared to the full
+probabilistic conditioning on observed data. As we will see in
+subsequent chapters, such predictions are not well calibrated for
+future data assuming the model is correct—they place too much
+certainty in the observed proportion of boys in a small sample.</p>
+<p>The full posterior automatically adjusts for the size of the sample.
+Consider the following plot, in which the same proportion of boys is
+provided (30%), but the sample size continues to grow (quadrupling
+each time).</p>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-90"></span>
+<p class="caption marginnote shownote">
+Figure 9.3: Illustration of convergence of posterior to binomial prediction based on proportion of boys as number of observations <span class="math inline">\(y\)</span> and <span class="math inline">\(N\)</span> grows, with proportion <span class="math inline">\(\frac{y}{N}\)</span> fixed. The central limit theorem tells us that each quadrupling of the data cuts the uncertainty in parameter estimation in half until all that is left is the sampling uncertainty in the binomial, as represented in the final plot, where <span class="math inline">\(\theta = 0.3\)</span> is fixed.
+</p>
+<img src="_main_files/figure-html/unnamed-chunk-90-1.png" alt="Illustration of convergence of posterior to binomial prediction based on proportion of boys as number of observations $y$ and $N$ grows, with proportion $\frac{y}{N}$ fixed.  The central limit theorem tells us that each quadrupling of the data cuts the uncertainty in parameter estimation in half until all that is left is the sampling uncertainty in the binomial, as represented in the final plot, where $\theta = 0.3$ is fixed." width="100%"  />
+</div>
+<p>As the data size grows, the posterior predictive distribution
+approaches the predictions derived from just plugging the proportion
+of boys observed (30%) in the sampling distribution. After 160
+observations, the posterior predictive distribution is only a percent
+or two away from the predictions that do not take into account
+estimation uncertainty. Whether that matters or not will depend on the
+application.<label for="tufte-sn-151" class="margin-toggle sidenote-number">151</label><input type="checkbox" id="tufte-sn-151" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">151</span> If leveraged bets or lives are at stake, a 1%
+discrepancey in predictions can have enormous consequences.</span></p>
+</div>
+<div id="numerically-stable-expectations-on-the-log-scale" class="section level2">
+<h2><span class="header-section-number">9.2</span> Numerically stable expectations on the log scale</h2>
+<p>We often run into the problem of underflow when computing densities or
+probabilities.<label for="tufte-sn-152" class="margin-toggle sidenote-number">152</label><input type="checkbox" id="tufte-sn-152" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">152</span> Underflow is the result of operations which produce
+real numbers <span class="math inline">\(\epsilon\)</span> smaller than the smallest number that can
+be represented.</span> To get around that problem we compute on the log
+scale, using <span class="math inline">\(\log p(y \mid \theta)\)</span> rather than doing calculations on
+the original scale <span class="math inline">\(p(y \mid \theta)\)</span>.</p>
+<p>But we have to be careful with averaging non-linear operations. The
+averaging that we do with simulation-based estimates does not
+distribute. For most <span class="math inline">\(u\)</span> and <span class="math inline">\(v\)</span>,<label for="tufte-sn-153" class="margin-toggle sidenote-number">153</label><input type="checkbox" id="tufte-sn-153" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">153</span> An exception is <span class="math inline">\(u = v = 2.\)</span></span></p>
+<p><span class="math display">\[
+\log u + \log v \neq \log (u + v).
+\]</span></p>
+<p>As a result, the log of an average is not equal to the average of a
+log,</p>
+<p><span class="math display">\[
+\frac{1}{M} \sum_{m=1}^M \log u_m
+\neq
+\log \left( \frac{1}{M} \sum_{m = 1}^M u_m \right).
+\]</span></p>
+<p>All is not lost, however. We will rewrite our desired result as</p>
+<p><span class="math display">\[
+\begin{array}{rcl}
+\log \frac{1}{M} \sum_{m = 1}^M p(\tilde{y} \mid \theta^{(m)})
+&amp; = &amp;
+\log \frac{1}{M} + \log \sum_{m = 1}^M p(\tilde{y} \mid \theta^{(m)})
+\\[4pt]
+&amp; = &amp;
+- \log M
++ \log \sum_{m=1}^M \exp
+     \left( \log p(\tilde{y} \mid \theta^{(m)}) \right)
+\\[4pt]
+&amp; = &amp;
+\mbox{log_sum_exp}(\log p(\tilde{y} \mid \theta)) - \log M.
+\end{array}
+\]</span></p>
+<p>Extending our example, we can work on the log scale to stablize
+calculations with larger <span class="math inline">\(N\)</span> by calculating</p>
+<p><span class="math display">\[
+\begin{array}{rcl}
+\log p(\tilde{y} \mid y)
+&amp; \approx &amp;
+\log \sum_{m=1}^M
+\exp\left(
+\log \mbox{binomial}(\tilde{y} \mid \tilde{N}, \theta^{(m)})
+\right).
+\\[8pt]
+&amp; = &amp;
+\mbox{log_sum_exp}(\log \mbox{binomial}(\tilde{y} \mid \tilde{N}, \theta)).
+\end{array}
+\]</span></p>
+<p>As with the algorithm on the original scale, the pseudocode is
+straightforward given a means to draw <span class="math inline">\(\theta^{(m)}\)</span> from the
+posterior <span class="math inline">\(p(\theta \mid y, N)\)</span>.<label for="tufte-sn-154" class="margin-toggle sidenote-number">154</label><input type="checkbox" id="tufte-sn-154" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">154</span> Typically, software will have the
+binomial implemented on the log scale directly, so it won’t be
+necessary to take the log of the standard scale version.</span></p>
+<pre><code>for (m in 1:M)
+  draw theta(m) from posterior p(theta | y, N)
+  lp[m] = log(binomial(y_pred | N_pred, theta(m))
+print &#39;log p(y_pred | y) = &#39; log_sum_exp(lp)</code></pre>
+<p>Thus we can calculate posterior predictive densities on the log scale
+using log scale density calculations throughout to prevent overflow
+and underflow in intermediate calculations or in the final result.</p>
+</div>
+<div id="posterior-predictive-densities-as-expectations" class="section level2">
+<h2><span class="header-section-number">9.3</span> Posterior predictive densities as expectations</h2>
+<p>Working with expectations and conditional expectations is natural for
+posterior inference, but initially requires some mental gymnastics to
+interpret all the implicit bindings. Using expectation notation, the
+posterior predictive distribution can be defined as</p>
+<p><span class="math display">\[
+p(\tilde{y} \mid y)
+\ = \
+\displaystyle
+\mathbb{E}\!\left[ p(\tilde{y} \mid \theta) \mid y \right].
+\]</span></p>
+<p>We are now overloading lower case variables to do double duty as their
+upper-case counterparts. Rendered with full random variable
+indexing, the expectation and its definition are</p>
+<p><span class="math display">\[
+\begin{array}{rcl}
+p_{\tilde{Y} \mid Y}(\tilde{y} \mid y)
+&amp; = &amp;
+\displaystyle
+\mathbb{E}\!\left[
+p_{\tilde{Y}\mid\Theta}(\tilde{y} \mid \Theta) \mid Y = y
+\right]
+\\[8pt]
+&amp; = &amp;
+\displaystyle
+\int_T
+  p_{\tilde{Y}\mid\Theta}(\tilde{y} \mid \theta)
+  \times p_{\Theta \mid Y}(\theta \mid y)
+\, \mathrm{d} \theta,
+\end{array}
+\]</span></p>
+<p>where <span class="math inline">\(T\)</span> is domain of integration for <span class="math inline">\(\theta\)</span>, i.e., possible values
+for <span class="math inline">\(\Theta\)</span>. The twist is that the function whose expectation is
+being taken is now a density <span class="math inline">\(p(\tilde{y} \mid \theta)\)</span> in which
+<span class="math inline">\(\theta\)</span> shows up as a conditioning variable for the data <span class="math inline">\(\tilde{y}\)</span>
+being predicted.</p>
+<p>The trick to understanding expectations is in understanding which
+variables are bound—all other random variables are averaged out to
+define the expectation. The value of both the observed data <span class="math inline">\(y\)</span> and
+the data <span class="math inline">\(\tilde{y}\)</span> for which we are computing predictions are fixed
+by the function definition and are not free variables in the
+expectation. The random variable <span class="math inline">\(\theta\)</span> is not bound anywhere, and
+hence it is averaged in the calculation.</p>
+
+</div>
+</div>
+<p style="text-align: center;">
+<a href="rejection-sampling.html"><button class="btn btn-default">Previous</button></a>
+<a href="pseudorandom-number-generators.html"><button class="btn btn-default">Next</button></a>
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>

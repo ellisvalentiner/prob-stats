@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="1 Random Variables and Event Probabilities | Probability and Statistics" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+<meta name="author" content="Bob Carpenter" />
+
+<meta name="date" content="2018-01-01" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS_CHTML-full" type="text/javascript"></script>
+
+<meta name="description" content="1 Random Variables and Event Probabilities | Probability and Statistics">
+
+<title>1 Random Variables and Event Probabilities | Probability and Statistics</title>
+
+<link href="libs/tufte-css/tufte-fonts.css" rel="stylesheet" />
+<link href="libs/tufte-css/tufte-background.css" rel="stylesheet" />
+<link href="libs/tufte-css/tufte-italics.css" rel="stylesheet" />
+<link href="libs/tufte-css/tufte.css" rel="stylesheet" />
+
+
+
+
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li><a href="index.html#preface">Preface</a></li>
+<li><a href="what-is-probability.html#what-is-probability">What is Probability?</a></li>
+<li><a href="random-variables-and-event-probabilities.html#random-variables-and-event-probabilities"><span class="toc-section-number">1</span> Random Variables and Event Probabilities</a></li>
+<li><a href="multiple-random-variables-and-probability-functions.html#multiple-random-variables-and-probability-functions"><span class="toc-section-number">2</span> Multiple Random Variables and Probability Functions</a></li>
+<li><a href="expectations-and-variance.html#expectations-and-variance"><span class="toc-section-number">3</span> Expectations and Variance</a></li>
+<li><a href="joint-marginal-and-conditional-probabilities.html#joint-marginal-and-conditional-probabilities"><span class="toc-section-number">4</span> Joint, Marginal, and Conditional Probabilities</a></li>
+<li><a href="continuous-random-variables.html#continuous-random-variables"><span class="toc-section-number">5</span> Continuous Random Variables</a></li>
+<li><a href="continuous-distributions-and-densities.html#continuous-distributions-and-densities"><span class="toc-section-number">6</span> Continuous Distributions and Densities</a></li>
+<li><a href="statistical-inference-and-inverse-problems.html#statistical-inference-and-inverse-problems"><span class="toc-section-number">7</span> Statistical Inference and Inverse Problems</a></li>
+<li><a href="rejection-sampling.html#rejection-sampling"><span class="toc-section-number">8</span> Rejection Sampling</a></li>
+<li><a href="posterior-predictive-inference.html#posterior-predictive-inference"><span class="toc-section-number">9</span> Posterior Predictive Inference</a></li>
+<li><a href="pseudorandom-number-generators.html#pseudorandom-number-generators"><span class="toc-section-number">10</span> Pseudorandom Number Generators</a></li>
+<li><a href="floating-point-arithmetic.html#floating-point-arithmetic"><span class="toc-section-number">11</span> Floating Point Arithmetic</a></li>
+<li><a href="normal-distribution.html#normal-distribution"><span class="toc-section-number">12</span> Normal Distribution</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="random-variables-and-event-probabilities" class="section level1">
+<h1><span class="header-section-number">1</span> Random Variables and Event Probabilities</h1>
+<div id="random-variables" class="section level2">
+<h2><span class="header-section-number">1.1</span> Random variables</h2>
+<p>Let <span class="math inline">\(Y\)</span> be the result of a fair coin flip. Not a general coin flip,
+but a specific instance of flipping a specific coin at a specific
+time. Defined this way, <span class="math inline">\(Y\)</span> is what’s known as a <em>random variable</em>,
+meaning a variable that takes on different values with different
+probabilities.<label for="tufte-sn-9" class="margin-toggle sidenote-number">9</label><input type="checkbox" id="tufte-sn-9" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">9</span> Random variables are conventionally written using
+upper-case letters to distinguish them from ordinary mathematical
+variables which are bound to single values and conventionally written
+using lower-case letters.</span></p>
+<p>Probabilities are scaled between 0% and 100% as in natural language.
+If a coin flip is fair, there is a 50% chance the coin lands face up
+(“heads”) and a 50% chance it lands face down (“tails”). For
+concreteness and ease of analysis, random variables will be restricted
+to numerical values. For the specific coin flip in question, the
+random variable <span class="math inline">\(Y\)</span> will take on the value 1 if the coin lands heads
+and the value 0 if it lands tails.</p>
+</div>
+<div id="events-and-probability" class="section level2">
+<h2><span class="header-section-number">1.2</span> Events and probability</h2>
+<p>An outcome such as the coin landing heads is called an <em>event</em> in
+probability theory. For our purposes, events will be defined as
+conditions on random variables. For example, <span class="math inline">\(Y = 1\)</span> denotes the
+event in which our coin flip lands heads. The functional <span class="math inline">\(\mbox{Pr}[\, \cdot \,]\)</span> defines the probability of an event. For example, for our
+fair coin toss, the probability of the event of the coin landing heads
+is written as</p>
+<p><span class="math display">\[
+\mbox{Pr}[Y = 1] = 0.5.
+\]</span></p>
+<p>In order for the flip to be fair, we must have <span class="math inline">\(\mbox{Pr}[Y = 0] = 0.5\)</span>, too. The two events <span class="math inline">\(Y = 1\)</span> and <span class="math inline">\(Y = 0\)</span> are mutually exclusive
+in the sense that both of them cannot occur at the same time. In
+probabilistic notation,</p>
+<p><span class="math display">\[
+\mbox{Pr}[Y = 1 \ \mbox{and} \ Y = 0] = 0.
+\]</span></p>
+<p>The events <span class="math inline">\(Y = 1\)</span> and <span class="math inline">\(Y = 0\)</span> are also exhaustive, in the sense that
+at least one of them must occur. In probabilistic notation,</p>
+<p><span class="math display">\[
+\mbox{Pr}[Y = 1 \ \mbox{or} \ Y = 0] = 1.
+\]</span></p>
+<p>In these cases, events are conjoined (with “and”) and disjoined (with
+“or”). These operations apply in general to events, as does negation.
+As an example of negation,</p>
+<p><span class="math display">\[
+\mbox{Pr}[Y \neq 1] = 0.5.
+\]</span></p>
+</div>
+<div id="sample-spaces-and-possible-worlds" class="section level2">
+<h2><span class="header-section-number">1.3</span> Sample spaces and possible worlds</h2>
+<p>Even though the coin flip will have a specific outcome in the real
+world, we consider alternative ways the world could have been. Thus
+even if the coin lands heads <span class="math inline">\((Y = 1)\)</span>, we entertain the possibility
+that it could’ve landed tails <span class="math inline">\((Y = 0)\)</span>. Such counterfactual
+reasoning is the key to understanding probability theory and applied
+statistical inference.</p>
+<p>An alternative way the world could be, that is, a <em>possible world</em>,
+will determine the value of every random variable. The collection of
+all such possible worlds is called the <em>sample space</em>.<label for="tufte-sn-10" class="margin-toggle sidenote-number">10</label><input type="checkbox" id="tufte-sn-10" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">10</span> The sample
+space conventionally written as <span class="math inline">\(\Omega\)</span>, the capitalized form of the
+last letter in the Greek alphabet.</span> The sample space may be
+conceptualized as an urn containing a ball for each possible way the
+world can be. On each ball is written the value of every random
+variable.<label for="tufte-sn-11" class="margin-toggle sidenote-number">11</label><input type="checkbox" id="tufte-sn-11" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">11</span> Formally, a random variable <span class="math inline">\(X\)</span> can be represented as a
+function from the sample space to a real value, i.e., <span class="math inline">\(X:\Omega \rightarrow \mathbb{R}\)</span>. For each possible world <span class="math inline">\(\omega \in \Omega\)</span>,
+the variable <span class="math inline">\(X\)</span> takes on a specific value <span class="math inline">\(X(\omega) \in \mathbb{R}\)</span>.</span></p>
+<p>Now consider the event <span class="math inline">\(Y = 0\)</span>, in which our coin flip lands tails. In
+some worlds, the event occurs (i.e., <span class="math inline">\(0\)</span> is the value recorded for
+<span class="math inline">\(Y\)</span>) and in others it doesn’t. An event picks out the subset of
+worlds in which it occurs.<label for="tufte-sn-12" class="margin-toggle sidenote-number">12</label><input type="checkbox" id="tufte-sn-12" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">12</span> Formally, an event is defined by a subset
+of the sample space, <span class="math inline">\(E \subseteq \Omega\)</span>.</span></p>
+</div>
+<div id="simulating-random-variables" class="section level2">
+<h2><span class="header-section-number">1.4</span> Simulating random variables</h2>
+<p>We are now going to turn our attention to computation, and in
+particular, simulation, with which we will use to estimate event
+probabilities.</p>
+<p>The primitive unit of simulation is a function that acts like a random
+number generator. But we only have computers to work with and they
+are deterministic. At best, we can created so-called <em>pseudorandom
+number generators</em>. Pseudorandom number generators, if they are well
+coded, produce deterministic streams of output that appear to be
+random.<label for="tufte-sn-13" class="margin-toggle sidenote-number">13</label><input type="checkbox" id="tufte-sn-13" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">13</span> There is a large literature on pseudorandom number generators
+and tests for measurable differences from truly random streams.</span></p>
+<p>For the time being, we will assume we have a primitive pseudorandom
+number generator <code>uniform_01_rng()</code>, which behaves roughly like it has
+a 50% chance of returning 1 and a 50% chance of returning 0.<label for="tufte-sn-14" class="margin-toggle sidenote-number">14</label><input type="checkbox" id="tufte-sn-14" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">14</span> The name
+arises because random variables in which every possible outcome is
+equally likely are said to be <em>uniform</em>.</span></p>
+<p>Suppose we want to simulate our random variable <span class="math inline">\(Y\)</span>. We can do so by
+calling <code>uniform_01_rng</code> and noting the answer.</p>
+<p>A simple program to generate a realization of a random coin flip,
+assign it to an integer variable <code>y</code>, and print the result could be
+coded as follows.<label for="tufte-sn-15" class="margin-toggle sidenote-number">15</label><input type="checkbox" id="tufte-sn-15" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">15</span> Computer programs are presented using a consistent
+pseudocode, which provides a sketch of a program that should be
+precise enough to be coded in a concrete programming language. R
+implementations of the pseudocode generate the results and are
+available in the source code repository for this book.</span></p>
+<pre><code>int y = uniform_01_rng()
+print &#39;y = &#39; y</code></pre>
+<p>The variable <code>y</code> is declared to be an integer and assigned to the
+result of calling the <code>uniform_01_rng()</code> function.<label for="tufte-sn-16" class="margin-toggle sidenote-number">16</label><input type="checkbox" id="tufte-sn-16" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">16</span> The use of a
+lower-case <span class="math inline">\(y\)</span> was not accidental. The variable <span class="math inline">\(y\)</span> represents an
+integer, which is the type of a realization of a random <span class="math inline">\(Y\)</span>
+representing the outcome of a coin flip. In code, variables are
+written in typewriter font (e.g., <code>y</code>), whereas in text they are
+written in italics like other mathematical variables (e.g., <span class="math inline">\(y\)</span>).</span>
+The print statement outputs the quoted string <code>y =</code>   followed
+by the value of the variable <code>y</code>. Executing the program might produce
+the following output.</p>
+<pre><code>   y = 1</code></pre>
+<p>If we run it a nine more times, it might print</p>
+<pre><code>   y = 1
+   y = 1
+   y = 1
+   y = 1
+   y = 0
+   y = 0
+   y = 1
+   y = 1
+   y = 0</code></pre>
+<p>When we say it might print these things, we mean the results will
+depend on the state of the pseudorandom number generator.</p>
+</div>
+<div id="seeding-a-simulation" class="section level2">
+<h2><span class="header-section-number">1.5</span> Seeding a simulation</h2>
+<p>Simulations can be made exactly reproducible by setting what is known
+as the <em>seed</em> of a pseudorandom number generator. This seed
+establishes the deterministic sequence of results that the
+pseudorandom number generator produces. For instance, contrast the program</p>
+<pre><code>seed_rng(1234)
+for (n in 1:10) print uniform_01_rng()
+for (n in 1:10) print uniform_01_rng()</code></pre>
+<p>which produces the output</p>
+<pre><code>   0 1 1 1 1 1 0 0 1 1
+   1 1 0 1 0 1 0 0 0 0</code></pre>
+<p>with the program</p>
+<pre><code>seed_rng(1234)
+for (n in 1:10) print uniform_01_rng()
+seed_rng(1234)
+for (n in 1:10) print uniform_01_rng()</code></pre>
+<p>which produces</p>
+<pre><code>   0 1 1 1 1 1 0 0 1 1
+   0 1 1 1 1 1 0 0 1 1</code></pre>
+<p>Resetting the seed in the second case causes exactly the same ten
+pseudorandom numbers to be generated a second time. Every
+well-written pseudorandom number generator and piece of simulation
+code should allow the seed to be set manually to ensure reproducibility
+of results.<label for="tufte-sn-17" class="margin-toggle sidenote-number">17</label><input type="checkbox" id="tufte-sn-17" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">17</span> Replicability of results with different seeds is a
+desirable, but stricter condition.</span></p>
+</div>
+<div id="using-simulation-to-estimate-event-probabilities" class="section level2">
+<h2><span class="header-section-number">1.6</span> Using simulation to estimate event probabilities</h2>
+<p>We know that <span class="math inline">\(\mbox{Pr}[Y = 1]\)</span> is 0.5 because it represents the flip
+of a fair coin. Simulation based methods allow us to estimate event
+probabilities straightforwardly if we can generate random realizations
+of the random variables involved in the event definitions.</p>
+<p>For example, we know we can generate multiple simulations of flipping
+the same coin. That is, we’re not simulating the result of flipping
+the same coin ten different times, but simulating ten different
+realizations of exactly the same random variable, which represents a
+single coin flip.</p>
+<p>The fundamental method of computing event probabilities will not
+change as we move through this book. We simply simulate a sequence of
+values and return the proportion in which the event occurs as our
+estimate.</p>
+<p>For example, let’s simulate 10 values of <span class="math inline">\(Y\)</span> again and record the
+proportion of the simulated values that are 1. That is, we count the
+number of time the event occurs in that the simulated value <span class="math inline">\(y^{(m)}\)</span>
+is equal to 1.</p>
+<pre><code>occur = 0
+for (m in 1:M)
+  y[m] = uniform_01_rng()
+  occur = occur + (y[m] == 1)
+estimate = occur / M
+print `estimated Pr[Y = 1] = &#39; estimate</code></pre>
+<p>The equality operator is written as <code>==</code>, as in the condition <code>y[m] == 1</code> to distinguish it from the assignment statement <code>y[m] = 1</code>, which
+sets the value of <code>y[m]</code> to 1. The condition expression <code>y[m] == 1</code>
+evaluates to 1 if the condition is true and 0 otherwise.</p>
+<p>If we let <code>uniform_01_rng(M)</code> be the result of generating <code>M</code>
+pseudorandom coin flip results, the program can be shortened to</p>
+<pre><code>y &lt;- uniform_01_rng(M)
+occur = sum(y == 1)
+estimate = occur / M</code></pre>
+<p>A condition such as <code>y == 1</code> on a sequence returns a sequence of the
+same length with value 1 in positions where the condition is true. For
+instance, if</p>
+<pre><code>y = (2, 1, 4, 2, 2, 1)</code></pre>
+<p>then</p>
+<pre><code>y == 2</code></pre>
+<p>evaluates to</p>
+<pre><code>(1, 0, 0, 1, 1, 0).</code></pre>
+<p>Thus <code>sum(y == 1)</code> is the number of positions in the sequence <code>y</code>
+which have the value 1. Running the program provides the following
+estimate based on ten simulation draws.</p>
+<pre><code>   1 1 0 1 0 1 0 0 0 0
+   estimated Pr[Y = 1] =  0.4</code></pre>
+<p>Let’s try that a few more times.</p>
+<pre><code>   0 0 0 0 0 1 1 1 1 0  estimated Pr[Y = 1] =  0.4 
+   0 0 0 1 0 1 0 0 1 1  estimated Pr[Y = 1] =  0.4 
+   1 1 0 1 0 1 1 0 0 1  estimated Pr[Y = 1] =  0.6 
+   0 0 1 1 0 1 0 1 0 1  estimated Pr[Y = 1] =  0.5 
+   1 0 0 0 0 1 0 1 0 1  estimated Pr[Y = 1] =  0.4 
+   0 1 0 1 0 1 0 0 0 1  estimated Pr[Y = 1] =  0.4 
+   1 0 0 1 0 1 0 0 0 1  estimated Pr[Y = 1] =  0.4 
+   0 1 0 0 0 1 0 0 0 1  estimated Pr[Y = 1] =  0.3 
+   0 1 0 0 0 0 0 0 0 0  estimated Pr[Y = 1] =  0.1 
+   1 0 1 0 0 1 1 0 0 1  estimated Pr[Y = 1] =  0.5</code></pre>
+<p>The estimates are close, but not very exact. What if we use 100
+simulations?</p>
+<pre><code>   1 1 1 1 0 0 0 1 0 0 1 1 0 0 1 0 1 1 1 1 1 1 0 0 0 1 1 1 1 1 0 0 0 1 0 1 1 1 0 1 0 1 0 0 0 1 0 0 1 0 1 1 1 0 0 1 0 1 0 0 0 0 1 0 1 0 1 1 0 1 1 1 0 1 1 1 1 1 1 1 1 1 0 1 1 1 0 0 0 1 1 0 0 1 1 1 1 1 0 1
+   estimated Pr[Y = 1] =  0.59</code></pre>
+<p>That’s closer than most of the estimates based on ten simulation draws. Let’s
+try that a few more times without bothering to print all 100 simulated
+values,</p>
+<pre><code>   estimated Pr[Y = 1] =  0.48 
+   estimated Pr[Y = 1] =  0.51 
+   estimated Pr[Y = 1] =  0.62 
+   estimated Pr[Y = 1] =  0.54 
+   estimated Pr[Y = 1] =  0.5 
+   estimated Pr[Y = 1] =  0.52 
+   estimated Pr[Y = 1] =  0.49 
+   estimated Pr[Y = 1] =  0.52 
+   estimated Pr[Y = 1] =  0.42 
+   estimated Pr[Y = 1] =  0.45</code></pre>
+<p>What happens if we let <span class="math inline">\(M = 10,000\)</span> simulations?</p>
+<pre><code>   estimated Pr[Y = 1] =  0.5 
+   estimated Pr[Y = 1] =  0.5 
+   estimated Pr[Y = 1] =  0.51 
+   estimated Pr[Y = 1] =  0.49 
+   estimated Pr[Y = 1] =  0.5 
+   estimated Pr[Y = 1] =  0.5 
+   estimated Pr[Y = 1] =  0.51 
+   estimated Pr[Y = 1] =  0.5 
+   estimated Pr[Y = 1] =  0.5 
+   estimated Pr[Y = 1] =  0.49</code></pre>
+<p>Now the estimates are very close to the true probability being
+estimated (i.e., 0.5, because the flip is fair). This raises the
+questions of how many simulation draws we need in order to be
+confident our estimates are close to the values being estimated.</p>
+</div>
+<div id="law-of-large-numbers" class="section level2">
+<h2><span class="header-section-number">1.7</span> Law of large numbers</h2>
+<p>Visualization in the form of simple plots goes a long way toward
+understanding concepts in statistics and probability. A traditional
+way to plot what happens as the number of simulation draws <span class="math inline">\(M\)</span>
+increases is to keep a running tally of the estimate as each draw is
+made and plot the estimated event probability <span class="math inline">\(\mbox{Pr}[Y = 1]\)</span> for
+each <span class="math inline">\(m \in 1:M\)</span>.<label for="tufte-sn-18" class="margin-toggle sidenote-number">18</label><input type="checkbox" id="tufte-sn-18" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">18</span> See, for example, the quite wonderful little book,
+Bulmer, M.G., 1965. <em>Principles of Statistics</em>. Oliver and Boyd,
+Edinburgh.</span></p>
+<p>To calculate such a running tally of the estimate at each online, we can do this:</p>
+<pre><code>occur = 0
+for (m in 1:M)
+  y[m] = uniform_01_rng(M)
+  occur = occur + (y[m] == 1)
+  estimate[m] = occur / m</code></pre>
+<p>Recall that the expression <code>(y[m] == 1)</code> evaluates to 1 if the
+condition holds and 0 otherwise. The result of running the program is
+that <code>estimate[m]</code> will hold the estimate <span class="math inline">\(\mbox{Pr}[Y = 1]\)</span> after <span class="math inline">\(m\)</span>
+simulations. We can then plot the estimates as a function
+of the number of draws using a line plot to display the trend.</p>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-13"></span>
+<p class="caption marginnote shownote">
+Figure 1.1: Monte Carlo estimate of probability that a coin lands head as a function of the number of simulation draws. The line at 0.5 marks the true probability being estimated.
+</p>
+<img src="_main_files/figure-html/unnamed-chunk-13-1.png" alt="Monte Carlo estimate of probability that a coin lands head as a function of the number of simulation draws.  The line at 0.5 marks the true probability being estimated." width="80%"  />
+</div>
+<p>The <span class="math inline">\(x\)</span>-axis is plotted on the log scale in order to provide room for
+the early draws. With a log scale axis, each factor gets the same
+width rather than each multiple. That is, the interval <span class="math inline">\((10, 100)\)</span> is
+plotted with the same width as the intervals <span class="math inline">\((1, 10)\)</span> and <span class="math inline">\((100,\, 1\,000)\)</span>. Plotting on a linear scale, the interval <span class="math inline">\((1, 10\,000)\)</span>
+would take only a tenth of the width of the <span class="math inline">\(x\)</span>-axis, with nine tenths
+being given over to <span class="math inline">\((10\,000,\, 100\,000)\)</span>.</p>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-14"></span>
+<p class="caption marginnote shownote">
+Figure 1.2: Same plot as the previous one, but with the <span class="math inline">\(x\)</span>-axis on the linear scale, rather than the log scale.
+</p>
+<img src="_main_files/figure-html/unnamed-chunk-14-1.png" alt="Same plot as the previous one, but with the $x$-axis on the linear scale, rather than the log scale." width="80%"  />
+</div>
+<p>Plotting the progression of multiple simulations demonstrates the
+trend in errors.</p>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-15"></span>
+<p class="caption marginnote shownote">
+Figure 1.3: One hundred replicates of the previous plot overlaid (starting from one hundred tosses). Each line is the sequence of estimates of the probability that a fair coin toss lands head as a function of the number of simulation draws. The line at 0.5 marks the true probability which is being estimated. The overall reduction in estimation noise with increasing numbers of draws is illustrated by the decreasing band around the true value.
+</p>
+<img src="_main_files/figure-html/unnamed-chunk-15-1.png" alt="One hundred replicates of the previous plot overlaid (starting from one hundred tosses).  Each line is the sequence of estimates of the probability that a fair coin toss lands head as a function of the number of simulation draws.  The line at 0.5 marks the true probability which is being estimated. The overall reduction in estimation noise with increasing numbers of draws is illustrated by the decreasing band around the true value." width="80%"  />
+</div>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-16"></span>
+<p class="caption marginnote shownote">
+Figure 1.4: Same plot as before, but continuing the <span class="math inline">\(x\)</span>-axis from ten thousand to a million simulation draws. The <span class="math inline">\(y\)</span>-axis is only a tenth as wide, ranging between 0.49 and 0.51 rather than 0.4 and 0.6. This shows that convergence to the true value is scale free.
+</p>
+<img src="_main_files/figure-html/unnamed-chunk-16-1.png" alt="Same plot as before, but continuing the $x$-axis from ten thousand to a million simulation draws.  The $y$-axis is only a tenth as wide, ranging between 0.49 and 0.51 rather than 0.4 and 0.6.  This shows that convergence to the true value is scale free." width="80%"  />
+</div>
+<p>The <em>law of large numbers</em><label for="tufte-sn-19" class="margin-toggle sidenote-number">19</label><input type="checkbox" id="tufte-sn-19" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">19</span> Which technically comes in a strong and
+weak form.</span> says roughly that as the number of simulated values grows,
+the average will converge to the expected value. In this case, our
+estimate of <span class="math inline">\(\mbox{Pr}[Y = 1]\)</span> can be seen to converge to the true
+value of 0.5 as the number of simulations <span class="math inline">\(M\)</span> increases.
+Because the quantities involved are probabilistic, the exact specification is a
+little more subtle than the <span class="math inline">\(\epsilon\)</span>-<span class="math inline">\(\delta\)</span> proofs in calculus.</p>
+</div>
+<div id="simulation-notation" class="section level2">
+<h2><span class="header-section-number">1.8</span> Simulation notation</h2>
+<p>We will use parenthesized superscripts to pick out the elements of a sequence of simulations. For example,</p>
+<p><span class="math display">\[
+y^{(1)}, y^{(2)}, \ldots, y^{(M)}
+\]</span></p>
+<p>will be used for <span class="math inline">\(M\)</span> simulations of a single random variable
+<span class="math inline">\(Y\)</span>.<label for="tufte-sn-20" class="margin-toggle sidenote-number">20</label><input type="checkbox" id="tufte-sn-20" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">20</span> Each <span class="math inline">\(y^{(m)}\)</span> is a possible realization of <span class="math inline">\(Y\)</span>, which is why
+they are written using lowercase.</span> It’s important to keep in mind
+that this is <span class="math inline">\(M\)</span> simulations of a single random variable, not a single
+simulation of <span class="math inline">\(M\)</span> different random variables.</p>
+<p>Before we get going, we’ll need to introduce <em>indicator function</em>
+notation. For example, we write</p>
+<p><span class="math display">\[
+\mathrm{I}[y^{(m)} = 1]
+=
+\begin{cases}
+1 &amp; \mbox{if} \ y^{(m)} = 1
+\\[4pt]
+0 &amp; \mbox{otherwise}
+\end{cases}
+\]</span></p>
+<p>The indicator function maps a condition, such as <span class="math inline">\(y^{(m)} = 1\)</span> into
+the value 1 if the condition is true and 0 if it is false.<label for="tufte-sn-21" class="margin-toggle sidenote-number">21</label><input type="checkbox" id="tufte-sn-21" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">21</span> Square
+bracket notation is used for functions when the argument is itself a
+function. For example, we write <span class="math inline">\(\mbox{Pr}[Y &gt; 0]\)</span> because <span class="math inline">\(Y\)</span> is a
+random variable, which is modeled as a function. We also write
+<span class="math inline">\(\mathrm{I}[x^2 + y^2 = 1]\)</span> because the standard bound variables <span class="math inline">\(x\)</span>
+and <span class="math inline">\(y\)</span> are functions from contexts defining variable values.</span></p>
+<p>Now we can write out the formula for our estimate of <span class="math inline">\(\mbox{Pr}[Y = 1]\)</span> after <span class="math inline">\(M\)</span> draws,</p>
+<p><span class="math display">\[
+\begin{array}{rcl}
+\mbox{Pr}[Y = 1]
+&amp; \approx &amp;
+\frac{\displaystyle \mathrm{I}[y^{(1)} = 1]
+      \ + \ \mathrm{I}[y^{(2)} = 1]
+      \ + \ \cdots
+      \ + \ \mathrm{I}[y^{(M)} = 1]}
+     {\displaystyle M}
+\end{array}
+\]</span></p>
+<p>That is, our estimate is the proportion of the simulated values which
+take on the value 1. It quickly becomes tedious to write out
+sequences, so we will use standard summation notation, where we write</p>
+<p><span class="math display">\[
+\mathrm{I}\!\left[y^{(1)} = 1]
+      + \mathrm{I}[y^{(2)} = 1]
+      + \cdots
+      + \mathrm{I}[y^{(M)} = 1\right]
+\ = \
+\sum_{m=1}^M \mathrm{I}[y^{(m)} = 1]
+\]</span></p>
+<p>Thus we can write our simulation-based estimate of the probability
+that a fair coin flip lands heads as<label for="tufte-sn-22" class="margin-toggle sidenote-number">22</label><input type="checkbox" id="tufte-sn-22" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">22</span> In general, the way to estimate an event probability <span class="math inline">\(\phi(Y)\)</span> where <span class="math inline">\(\phi\)</span> defines some condition, given simulations <span class="math inline">\(y^{(1)}, \ldots, y^{(M)}\)</span> of <span class="math inline">\(Y\)</span>, is as <span class="math display">\[\mbox{Pr}[\phi(Y)] = \frac{1}{M} \sum_{m = 1}^M \mathrm{I}[\phi(y^{(m)})].\]</span></span></p>
+<p><span class="math display">\[
+\mbox{Pr}[Y = 1]
+\approx
+\frac{1}{M}
+\,
+\sum_{m=1}^M \mathrm{I}[y^{(m)} = 1]
+\]</span></p>
+<p>The form <span class="math inline">\(\frac{1}{M} \sum_{m=1}^M\)</span> will recur repeatedly in
+simulation — it just says to average over values indexed by <span class="math inline">\(m \in 1:M\)</span>.<label for="tufte-sn-23" class="margin-toggle sidenote-number">23</label><input type="checkbox" id="tufte-sn-23" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">23</span> We are finally in a position to state the <em>strong law of large numbers</em> as the event probability of a limit, <span class="math display">\[\mbox{Pr}\!\left\lbrack \lim_{M \rightarrow \infty} \frac{1}{M} \sum_{m = 1}^M \mathrm{I}\!\left\lbrack y^{(m)} = 1 \right\rbrack \ = \ 0.5 \right\rbrack,\]</span> where each <span class="math inline">\(y^{(m)}\)</span> is a separate fair coin toss. </span></p>
+</div>
+<div id="central-limit-theorem" class="section level2">
+<h2><span class="header-section-number">1.9</span> Central limit theorem</h2>
+<p>The law of large numbers tells us that with more simulations, our
+estimates become more and more accurate. But they do not tell us how
+quickly we can expect that convergence to proceed. The <em>central limit
+theorem</em> provides the convergence rate.</p>
+<p>First, we have to be careful about what we’re defining. First, we
+define the <em>error</em> for an estimate as the difference from the true
+value,</p>
+<p><span class="math display">\[
+\left( \frac{1}{M} \sum_{m=1} \mathrm{I}[y^{(m)} = 1] \right) - 0.5
+\]</span></p>
+<p>The <em>absolute error</em> is just the absolute value<label for="tufte-sn-24" class="margin-toggle sidenote-number">24</label><input type="checkbox" id="tufte-sn-24" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">24</span> In general, the
+absolute value function applied to a real number <span class="math inline">\(x\)</span> is written as
+<span class="math inline">\(|x|\)</span> and defined to be <span class="math inline">\(x\)</span> if <span class="math inline">\(x\)</span> is non-negative and <span class="math inline">\(-x\)</span> if <span class="math inline">\(x\)</span> is
+negative.</span> of this,</p>
+<p><span class="math display">\[
+\left| \,
+\left( \frac{1}{M} \sum_{m=1} \mathrm{I}[y^{(m)} = 1] \right) - 0.5
+\, \right|
+\]</span></p>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-17"></span>
+<p class="caption marginnote shownote">
+Figure 1.5: The absolute error of the simulation-based probability estimate as a function of the number of simulation draws. One hundred sequences of one million flips are shown.
+</p>
+<img src="_main_files/figure-html/unnamed-chunk-17-1.png" alt="The absolute error of the simulation-based probability estimate as a function of the number of simulation draws.  One hundred sequences of one million flips are shown." width="80%"  />
+</div>
+<p>Plotting both the number of simulations and the absolute error on the
+log scale reveals the rate at which the error decreases with more
+draws.</p>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-18"></span>
+<p class="caption marginnote shownote">
+Figure 1.6: The log of the absolute error. With both axes on the log scale, the slope of the relationship between the number of draws and estimation error is revealed. The central limit theorem predicts for each <span class="math inline">\(M\)</span> that <span class="math inline">\(68\%\)</span> percent of the estimates will be below the blue line and <span class="math inline">\(95\%\)</span> percent below the red line.
+</p>
+<img src="_main_files/figure-html/unnamed-chunk-18-1.png" alt="The log of the absolute error. With both axes on the log scale, the slope of the relationship between the number of draws and estimation error is revealed. The central limit theorem predicts for each $M$ that $68\%$ percent of the estimates will be below the blue line and $95\%$ percent below the red line." width="80%"  />
+</div>
+<p>The red and blue lines show the linear relationship between the log of
+the number of simulation draws and the log absolute error. The slope
+of these two lines is <span class="math inline">\(-\frac{1}{2}\)</span>.</p>
+<p>If we let <span class="math inline">\(\epsilon_M\)</span> be the absolute error after <span class="math inline">\(M\)</span> simulation
+draws, the linear relationship plotted in the figures have the
+form</p>
+<p><span class="math display">\[
+\log \epsilon_M = -\frac{1}{2} \, \log M + \mbox{const}.
+\]</span></p>
+<p>When writing “const” in a mathematical expression, the presumption is
+that it refers to a constant that does not depend on the free
+variables of interest (here, <span class="math inline">\(M\)</span>, the number of simulation draws).
+Ignoring constants lets us focus on the order of the dependency. The
+red line and blue line have the same slope, but different constants.</p>
+<p>Seeing how this plays out on the linear scale requires exponentiating
+both sides of the equation and reducing,</p>
+<p><span class="math display">\[
+\begin{array}{rcl}
+\exp(\log \epsilon_M)
+&amp; = &amp;
+\exp( -\frac{1}{2} \, \log M + \mbox{const} )
+\\[6pt]
+%
+\epsilon_M
+&amp; = &amp;
+\exp( -\frac{1}{2} \, \log M )
+\times
+\exp(\mbox{const})
+%
+\\[6pt]
+\epsilon_M
+&amp; = &amp;
+\exp( \log M )^{-\frac{1}{2}}
+\times
+\exp(\mbox{const})
+\\[6pt]
+\epsilon_M
+&amp; = &amp;
+\exp(\mbox{const}) \times M^{-\frac{1}{2}}
+\end{array}
+\]</span></p>
+<p>Dropping the constant, this relationship between the expected absolute
+error <span class="math inline">\(\epsilon_M\)</span> after <span class="math inline">\(M\)</span> simulation draws may be succinctly
+summarized using proportionality notation,<label for="tufte-sn-25" class="margin-toggle sidenote-number">25</label><input type="checkbox" id="tufte-sn-25" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">25</span> In general, we write <span class="math display">\[f(x)
+\propto g(x)\]</span> if there is a positive constant <span class="math inline">\(c\)</span> that does not depend
+on <span class="math inline">\(x\)</span> such that <span class="math display">\[f(x) = c \times g(x).\]</span> For example, <span class="math display">\[3x^2 \propto
+9x^2,\]</span> with <span class="math inline">\(c = \frac{1}{3}\)</span>.</span></p>
+<p><span class="math display">\[
+\displaystyle
+\epsilon_M
+\ \propto \
+\frac{\displaystyle 1}{\displaystyle \sqrt{M}}.
+\]</span></p>
+<p>This is a fundamental result in statistics derived from the
+<em>central limit theorem</em>. The central limit theorem governs the
+accuracy of almost all simulation-based estimates. We will return to a
+proper formulation when we have the scaffolding in place to deal with
+the pesky constant term.</p>
+<p>In practice, what does this mean? It means that if we want to get an
+extra decimal place of accuracy in our estimates, we need one hundred
+(100) times as many draws. For example, the plot shows error rates
+bounded by roughly 0.01 with <span class="math inline">\(10\,000\)</span> draws, yielding estimates that
+are very likely to be within <span class="math inline">\((0.49, 0.51).\)</span> To reduce that likely
+error bound to 0.001, that is, ensuring estimates are very likely in
+<span class="math inline">\((0.0499, 0.501),\)</span> requires 100 times as many draws (i.e., a whopping
+<span class="math inline">\(1\,000\,000\)</span> draws).<label for="tufte-sn-26" class="margin-toggle sidenote-number">26</label><input type="checkbox" id="tufte-sn-26" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">26</span> For some perspective, <span class="math inline">\(10\,000\)</span> is the number
+of at bats in an entire twenty-year career for a baseball player,
+the number of field goal attempts in an entire career of most basketball
+players, and the size of a very large disease study or meta-analysis in
+epidemiology.</span></p>
+<p>Usually, one hundred draws will provide a good enough estimate of most
+quantities of interest in applied statistics. The variability of the
+estimate based on a single draw depends on the variability of the
+quantity being estimated. One hundred draws reduces the expected
+estimation bound to one tenth of the variability of a single draw.
+Reducing that variability to one hundredth of the variability of a
+single draw would require ten thousand draws. In most applications,
+the extra estimation accuracy is not worth the extra computation.</p>
+
+</div>
+</div>
+<p style="text-align: center;">
+<a href="what-is-probability.html"><button class="btn btn-default">Previous</button></a>
+<a href="multiple-random-variables-and-probability-functions.html"><button class="btn btn-default">Next</button></a>
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>

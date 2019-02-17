@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="Probability and Statistics" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+<meta name="author" content="Bob Carpenter" />
+
+<meta name="date" content="2018-01-01" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS_CHTML-full" type="text/javascript"></script>
+
+<meta name="description" content="Probability and Statistics">
+
+<title>Probability and Statistics</title>
+
+<link href="libs/tufte-css/tufte-fonts.css" rel="stylesheet" />
+<link href="libs/tufte-css/tufte-background.css" rel="stylesheet" />
+<link href="libs/tufte-css/tufte-italics.css" rel="stylesheet" />
+<link href="libs/tufte-css/tufte.css" rel="stylesheet" />
+
+
+
+
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li><a href="index.html#preface">Preface</a></li>
+<li><a href="what-is-probability.html#what-is-probability">What is Probability?</a></li>
+<li><a href="random-variables-and-event-probabilities.html#random-variables-and-event-probabilities"><span class="toc-section-number">1</span> Random Variables and Event Probabilities</a></li>
+<li><a href="multiple-random-variables-and-probability-functions.html#multiple-random-variables-and-probability-functions"><span class="toc-section-number">2</span> Multiple Random Variables and Probability Functions</a></li>
+<li><a href="expectations-and-variance.html#expectations-and-variance"><span class="toc-section-number">3</span> Expectations and Variance</a></li>
+<li><a href="joint-marginal-and-conditional-probabilities.html#joint-marginal-and-conditional-probabilities"><span class="toc-section-number">4</span> Joint, Marginal, and Conditional Probabilities</a></li>
+<li><a href="continuous-random-variables.html#continuous-random-variables"><span class="toc-section-number">5</span> Continuous Random Variables</a></li>
+<li><a href="continuous-distributions-and-densities.html#continuous-distributions-and-densities"><span class="toc-section-number">6</span> Continuous Distributions and Densities</a></li>
+<li><a href="statistical-inference-and-inverse-problems.html#statistical-inference-and-inverse-problems"><span class="toc-section-number">7</span> Statistical Inference and Inverse Problems</a></li>
+<li><a href="rejection-sampling.html#rejection-sampling"><span class="toc-section-number">8</span> Rejection Sampling</a></li>
+<li><a href="posterior-predictive-inference.html#posterior-predictive-inference"><span class="toc-section-number">9</span> Posterior Predictive Inference</a></li>
+<li><a href="pseudorandom-number-generators.html#pseudorandom-number-generators"><span class="toc-section-number">10</span> Pseudorandom Number Generators</a></li>
+<li><a href="floating-point-arithmetic.html#floating-point-arithmetic"><span class="toc-section-number">11</span> Floating Point Arithmetic</a></li>
+<li><a href="normal-distribution.html#normal-distribution"><span class="toc-section-number">12</span> Normal Distribution</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="header">
+<h1 class="title">Probability and Statistics</h1>
+<h3 class="subtitle"><em>a simulation-based introduction</em></h3>
+<h4 class="author"><em>Bob Carpenter</em></h4>
+<h4 class="date"><em>2018</em></h4>
+</div>
+<div id="preface" class="section level1 unnumbered">
+<h1>Preface</h1>
+<p>This book provides a short, accessible introduction to <em>applied</em>
+probabilistic modeling and statistical inference.<label for="tufte-sn-1" class="margin-toggle sidenote-number">1</label><input type="checkbox" id="tufte-sn-1" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">1</span> Application areas
+include the physical, biological and social sciences, engineering,
+business and finance, education, government, and sport—anywhere
+there is data from which we want to draw conclusions or make
+decisions.</span></p>
+<div id="goal" class="section level2 unnumbered">
+<h2>Goal</h2>
+<p>After reading this book, you should have a solid grasp of how to draw
+sound inferences from noisy measurements and how to make reasoned
+decisions in the face of uncertainty.</p>
+</div>
+<div id="approach" class="section level2 unnumbered">
+<h2>Approach</h2>
+<p>This book differs from other books covering similar material in that
+it</p>
+<ul>
+<li>is short, top-down, and example-driven;</li>
+<li>assumes only introductory-level mathematics and
+computation;<label for="tufte-sn-2" class="margin-toggle sidenote-number">2</label><input type="checkbox" id="tufte-sn-2" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">2</span> Specifically, this book assumes some familiarity
+with algebra, integral calculus, and exposure to basic programming
+concepts.</span></li>
+<li>develops probability theory and statistical inference through simulation;</li>
+<li>takes an unapologetically Bayesian approach to modeling and inference;</li>
+<li>is fully reproducible with open-source code, figures, and text.</li>
+</ul>
+</div>
+<div id="licensing" class="section level2 unnumbered">
+<h2>Licensing</h2>
+<p>The text of this book is distributed under the <a href="https://creativecommons.org/licenses/by-nd/4.0/"><small>CC BY-ND
+4.0</small></a> license.
+The accompanying code is distributed under the <a href="https://opensource.org/licenses/BSD-3-Clause"><small>BSD
+3</small>-clause</a>
+license.</p>
+</div>
+<div id="acknowledgements" class="section level2 unnumbered">
+<h2>Acknowledgements</h2>
+<p>Thanks to Mitzi Morris for proofreading.</p>
+
+</div>
+</div>
+<p style="text-align: center;">
+<a href="what-is-probability.html"><button class="btn btn-default">Next</button></a>
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>

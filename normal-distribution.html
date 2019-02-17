@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="12 Normal Distribution | Probability and Statistics" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+<meta name="author" content="Bob Carpenter" />
+
+<meta name="date" content="2018-01-01" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS_CHTML-full" type="text/javascript"></script>
+
+<meta name="description" content="12 Normal Distribution | Probability and Statistics">
+
+<title>12 Normal Distribution | Probability and Statistics</title>
+
+<link href="libs/tufte-css/tufte-fonts.css" rel="stylesheet" />
+<link href="libs/tufte-css/tufte-background.css" rel="stylesheet" />
+<link href="libs/tufte-css/tufte-italics.css" rel="stylesheet" />
+<link href="libs/tufte-css/tufte.css" rel="stylesheet" />
+
+
+
+
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li><a href="index.html#preface">Preface</a></li>
+<li><a href="what-is-probability.html#what-is-probability">What is Probability?</a></li>
+<li><a href="random-variables-and-event-probabilities.html#random-variables-and-event-probabilities"><span class="toc-section-number">1</span> Random Variables and Event Probabilities</a></li>
+<li><a href="multiple-random-variables-and-probability-functions.html#multiple-random-variables-and-probability-functions"><span class="toc-section-number">2</span> Multiple Random Variables and Probability Functions</a></li>
+<li><a href="expectations-and-variance.html#expectations-and-variance"><span class="toc-section-number">3</span> Expectations and Variance</a></li>
+<li><a href="joint-marginal-and-conditional-probabilities.html#joint-marginal-and-conditional-probabilities"><span class="toc-section-number">4</span> Joint, Marginal, and Conditional Probabilities</a></li>
+<li><a href="continuous-random-variables.html#continuous-random-variables"><span class="toc-section-number">5</span> Continuous Random Variables</a></li>
+<li><a href="continuous-distributions-and-densities.html#continuous-distributions-and-densities"><span class="toc-section-number">6</span> Continuous Distributions and Densities</a></li>
+<li><a href="statistical-inference-and-inverse-problems.html#statistical-inference-and-inverse-problems"><span class="toc-section-number">7</span> Statistical Inference and Inverse Problems</a></li>
+<li><a href="rejection-sampling.html#rejection-sampling"><span class="toc-section-number">8</span> Rejection Sampling</a></li>
+<li><a href="posterior-predictive-inference.html#posterior-predictive-inference"><span class="toc-section-number">9</span> Posterior Predictive Inference</a></li>
+<li><a href="pseudorandom-number-generators.html#pseudorandom-number-generators"><span class="toc-section-number">10</span> Pseudorandom Number Generators</a></li>
+<li><a href="floating-point-arithmetic.html#floating-point-arithmetic"><span class="toc-section-number">11</span> Floating Point Arithmetic</a></li>
+<li><a href="normal-distribution.html#normal-distribution"><span class="toc-section-number">12</span> Normal Distribution</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="normal-distribution" class="section level1">
+<h1><span class="header-section-number">12</span> Normal Distribution</h1>
+<div id="limit-of-binomials" class="section level2">
+<h2><span class="header-section-number">12.1</span> Limit of binomials</h2>
+<p>In 1733, Abraham de Moivre noticed that as the number of trials in a
+binomial distribution grew, the resulting distribution became nearly
+symmetric and bell-shaped.<label for="tufte-sn-181" class="margin-toggle sidenote-number">181</label><input type="checkbox" id="tufte-sn-181" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">181</span> De Moivre, A., 1733. <em>Approximatio ad
+summam terminorum binomii</em>.</span> With 10 trials and a probability of
+success of 0.9 in each trial, the distribution is clearly asymmetric
+(i.e., skewed).</p>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-101"></span>
+<p class="caption marginnote shownote">
+Figure 12.1: Probability of number of successes in <span class="math inline">\(N = 10\)</span> independent trials, each with a 90% chance of success. The result is <span class="math inline">\(\mbox{binomial}(y \mid 10, 0.9)\)</span> by construction. With only ten trials, the distribution is highly asymmetric, with skew (longer tails) to the left.
+</p>
+<img src="_main_files/figure-html/unnamed-chunk-101-1.png" alt="Probability of number of successes in $N = 10$ independent trials, each with a 90% chance of success.  The result is $\mbox{binomial}(y \mid 10, 0.9)$ by construction. With only ten trials, the distribution is highly asymmetric, with skew (longer tails) to the left." width="70%"  />
+</div>
+<p>But when we increase the number of trials by a factor of 100 to
+<span class="math inline">\(N = 1\,000\)</span> without changing the 0.9 probability of success, the result is a nearly symmetric bell shape.</p>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-102"></span>
+<p class="caption marginnote shownote">
+Figure 12.2: Probability of number of successes in <span class="math inline">\(N = 1000\)</span> independent trials, each with a 90% chance of success. The familiar bell-shaped curve arises as <span class="math inline">\(N\)</span> grows.
+</p>
+<img src="_main_files/figure-html/unnamed-chunk-102-1.png" alt="Probability of number of successes in $N = 1000$ independent trials, each with a 90% chance of success. The familiar bell-shaped curve arises as $N$ grows." width="70%"  />
+</div>
+<p>de Moivre found that the normal density function (to be developed
+below), despite coming from a continuous distribution, provided a
+tight approximation to the binomial probablity mass function as <span class="math inline">\(N\)</span>
+becomes large.<label for="tufte-sn-182" class="margin-toggle sidenote-number">182</label><input type="checkbox" id="tufte-sn-182" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">182</span> This is because the interval between integers is 1, so
+that
+<span class="math display">\[\begin{array}{rcl}
+1 &amp; = &amp; \int_{-\infty}^{\infty} p(x) \mathrm{d}x
+\\[2pt]
+&amp; \approx &amp; \sum_{x = -\infty}^{\infty} p(x).
+\end{array}
+\]</span></span></p>
+</div>
+<div id="the-normal-motivated-by-least-square-errors" class="section level2">
+<h2><span class="header-section-number">12.2</span> The normal motivated by least square errors</h2>
+<p>In 1809, Carl Friedrich Gauss published his treatise on the motion of
+planets, in which he derives the normal distribution from the method
+of least squares.<label for="tufte-sn-183" class="margin-toggle sidenote-number">183</label><input type="checkbox" id="tufte-sn-183" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">183</span> Gauss, Carolo Friderico, 1809. <em>Theoria Motus
+Corporum Coelestium in sectionibus conicis solem ambientium.</em> Sumtibus
+Frid. Perthes et IH Besser, Hamburgi. English translation: Theory of
+Motion of the Celestial Bodies Moving in Conic Sections Around the
+Sun.</span> Gauss was faced with a sequence of noisy measurements <span class="math inline">\(y_1, \ldots, y_N\)</span> from some distribution and wanted to combine them by
+taking their average,</p>
+<p><span class="math display">\[
+\bar{y} = \frac{1}{N} \sum_{n=1}^N y_n.
+\]</span></p>
+<p>Gauss realized that the average <span class="math inline">\(\bar{y}\)</span> minimizes the sum of
+square differences from the observed values,<label for="tufte-sn-184" class="margin-toggle sidenote-number">184</label><input type="checkbox" id="tufte-sn-184" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">184</span> The expression
+<span class="math inline">\(\mbox{arg min}_y \, f(y)\)</span> returns the value of <span class="math inline">\(y\)</span> that minimizes
+<span class="math inline">\(f(y)\)</span>, e.g., <span class="math display">\[\mbox{arg min}_y \ (y - 3)^2 = 3\]</span>.</span></p>
+<p><span class="math display">\[
+\bar{y} = \mbox{arg min}_y \, \sum_{n=1}^N \left( y_n - y \right)^2.
+\]</span></p>
+<p>Gauss reasoned backward to the normal distribution, reasoning that for
+the average to be a good estimator, the distribution of the errors
+<span class="math inline">\(y_n - y\)</span> must have this same quadratic property. Working on the log
+scale, Gauss was looking for a distribution whose density functions
+would have roughly the property that</p>
+<p><span class="math display">\[
+\log p(y) = -y^2 + \mbox{const.}
+\]</span></p>
+<p>We have to work on the log scale here in order for the resulting
+density function to be normalizable.<label for="tufte-sn-185" class="margin-toggle sidenote-number">185</label><input type="checkbox" id="tufte-sn-185" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">185</span> Normalizability requires
+<span class="math display">\[
+\begin{array}{rcl}
+\int_{-\infty}^{\infty} p(y) \, \mathrm{d}y
+&amp; = &amp;
+\int_{-\infty}^{\infty}
+\exp(\mbox{const}) \times \exp(-y^2) \, \mathrm{d}y
+\\[4pt]
+&amp; = &amp;
+\exp(\mbox{const})
+\times
+\int_{-\infty}^{\infty} \exp(-y^2) \, \mathrm{d}y
+\end{array}
+\]</span>
+to be finite.</span></p>
+<p>In order for the standard deviation and variance to work out to unity,
+it is convenient to work with half th squared error. Therefore, the
+standard normal distribution is defined on the log scale up to an
+additive constant that doesn’t depend on <span class="math inline">\(y\)</span> by</p>
+<p><span class="math display">\[
+\log \mbox{normal}(y) = -\frac{1}{2} y^2 + \mbox{const.}
+\]</span></p>
+<p>This ensures that if <span class="math inline">\(Z \sim \mbox{normal}()\)</span>, then <span class="math inline">\(\mathbb{E}[Z] = 0\)</span> and <span class="math inline">\(\mbox{var}[Z] = \mbox{sd}[Z] = 1\)</span>.</p>
+<p>Converting back the linear scale gives us the kernel of the normal
+distribution,</p>
+<p><span class="math display">\[
+\mbox{normal}(y) \propto \exp \left( -\frac{1}{2} y^2 \right).
+\]</span></p>
+<p>The <em>kernel</em> of a probabilty function defines it as a function of
+parameters and variate outcome up to a proportion. Most of the algebra
+in statistics only requires probability functions up to a proportion,
+so it’s usually simpler to drop the normalizing constants.<label for="tufte-sn-186" class="margin-toggle sidenote-number">186</label><input type="checkbox" id="tufte-sn-186" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">186</span> It’s also
+faster computationally to drop normalizing constant, which often
+involve complicated expensive special function evaluation.</span></p>
+<p>Including the normalizing constants, the normal distribution is<label for="tufte-sn-187" class="margin-toggle sidenote-number">187</label><input type="checkbox" id="tufte-sn-187" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">187</span> The
+constant factor is defined by <span class="math display">\[ \int_{-\infty}^{\infty} \exp\left(
+-\frac{1}{2} y^2 \right) \ = \ \sqrt{2 \pi}. \]</span></span></p>
+<p><span class="math display">\[
+\mbox{normal}(y)
+\ = \
+\frac{1}{\sqrt{2 \pi}} \exp \left( -\frac{1}{2} y^2 \right).
+\]</span></p>
+<p>Now we have a distribution where the value <span class="math inline">\(y\)</span> that maximizes the
+density of the independent error terms <span class="math inline">\(y - y_n\)</span> is the one that
+minimizes square error,</p>
+<p><span class="math display">\[
+\begin{array}{rcl}
+\mbox{arg max}_y \prod_{n=1}^N \mbox{normal}(y - y_n)
+&amp; = &amp;
+\mbox{arg max}_y \log \prod_{n=1}^N \mbox{normal}(y - y_n)
+\\[6pt]
+&amp; = &amp; \mbox{arg max}_y \sum_{n=1}^N \log \mbox{normal}(y - y_n)
+\\[6pt]
+&amp; = &amp; \mbox{arg max}_y \sum_{n=1}^N -\frac{1}{2} \left( y - y_n \right)^2
+\\[6pt]
+&amp; = &amp; \mbox{arg max}_y -\frac{1}{2} \sum_{n=1}^N \left( y - y_n \right)^2
+\\[6pt]
+&amp; = &amp; \mbox{arg min}_y \frac{1}{2} \sum_{n=1}^N \left( y - y_n \right)^2
+\\[6pt]
+&amp; = &amp; \mbox{arg min}_y \sum_{n=1}^N \left( y - y_n \right)^2
+\\[6pt]
+&amp; = &amp; \bar{y}.
+\end{array}
+\]</span></p>
+</div>
+<div id="adding-location-and-scale-parameters" class="section level2">
+<h2><span class="header-section-number">12.3</span> Adding location and scale parameters</h2>
+<p>The standard normal distribution has an expectaiton of zero and standard
+deviation one. We can add a scale parameter <span class="math inline">\(\sigma &gt; 0\)</span> to multiply
+the standard deviation and a location parameter <span class="math inline">\(\mu\)</span> so that if <span class="math inline">\(Y \sim \mbox{normal}(\mu, \sigma)\)</span>, then <span class="math inline">\(\mathbb{E}[Y] = \mu\)</span> and
+<span class="math inline">\(\mbox{sd}[Y] = \sigma\)</span>.</p>
+<p>Starting with a standard normal variate,</p>
+<p><span class="math display">\[
+Z \sim \mbox{normal}(),
+\]</span></p>
+<p>we can scale it by <span class="math inline">\(\sigma\)</span> and shift by <span class="math inline">\(\mu\)</span> to get a new variable</p>
+<p><span class="math display">\[
+Y = \mu + \sigma \times Z,
+\]</span></p>
+<p>for which</p>
+<p><span class="math display">\[
+Y \sim \mbox{normal}(\mu, \sigma).
+\]</span></p>
+<p>Dealing with the required change of variables for the inverse
+transform<label for="tufte-sn-188" class="margin-toggle sidenote-number">188</label><input type="checkbox" id="tufte-sn-188" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">188</span> This inverse transform has its own name, the <em>z-transform</em>,
+and in general may be written as <span class="math display">\[Z = \frac{Y -
+\mathbb{E}[Y]}{\mbox{sd}[Y]}.\]</span> and used to standardize any random
+variable <span class="math inline">\(Y\)</span> with a finite expectation and variance. The resulting
+variable <span class="math inline">\(Z\)</span> has <span class="math inline">\(\mathbb{E}[Z] = 0\)</span> and <span class="math inline">\(\mbox{sd}[Z] = 1\)</span> by
+construction.</span></p>
+<p><span class="math display">\[
+Z
+\ = \
+\frac{Y - \mu}{\sigma},
+\]</span></p>
+<p>lets us derive the general normal density function for location
+parameter <span class="math inline">\(\mu\)</span> and scale parameter <span class="math inline">\(\sigma &gt; 0\)</span> as<label for="tufte-sn-189" class="margin-toggle sidenote-number">189</label><input type="checkbox" id="tufte-sn-189" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">189</span> It’s a standard
+Jacobian calculation for transform
+<span class="math display">\[
+Y = f(Z) = \mu + \sigma \times Z,
+\]</span>
+<span class="math display">\[
+Z = f^{-1}(Y) = \frac{Y - \mu}{\sigma},
+\]</span>
+and
+<span class="math display">\[
+p_Z(z) = \mbox{normal}(),
+\]</span>
+from which the Jacobian calculation gives us
+<span class="math display">\[
+\begin{array}{rcl}
+p_Y(y)
+&amp; = &amp;
+\mbox{normal}(f^{-1}(y))
+\times
+\left|
+\frac{\mathrm{d}}{\mathrm{d}y&#39;} f^{-1}(y&#39;) \Big|_{y&#39; = y}
+\right|
+\\[8pt]
+&amp; = &amp;
+\mbox{normal}\left( \frac{y - \mu}{\sigma} \right)
+\times \frac{1}{\sigma}
+\\[8pt]
+&amp; = &amp; \frac{1}{\sqrt{2\pi}} \, \frac{1}{\sigma} \,
+      \exp \left( \left( \frac{y - \mu}{\sigma} \right)^2 \right).
+\end{array}
+\]</span></span>
+<span class="math display">\[
+\mbox{normal}(y \mid \mu, \sigma)
+\ = \
+\frac{1}{\sqrt{2 \pi}}
+\,
+\frac{1}{\sigma}
+\, 
+\exp \! \left(
+-\frac{1}{2}
+\left( \frac{y - \mu}{\sigma} \right)^2
+\right).
+\]</span></p>
+<p>Presented this way, the formula makes clear that the normal density
+function is a product of three factors,</p>
+<ul>
+<li>a factor deriving from the standard normal distribution,
+<span class="math inline">\(\mbox{normal}(z) = \exp(-\frac{1}{2} z^2)\)</span>, applied to the inverse of
+the location-scale transform, <span class="math inline">\(\frac{y - \mu}{\sigma}\)</span>.</li>
+<li>a normalizing factor of <span class="math inline">\(\frac{1}{\sigma}\)</span> that depends on the
+scale,</li>
+<li>a constant normalizing factor of <span class="math inline">\(\frac{1}{\sqrt{2 \pi}}\)</span>, and</li>
+</ul>
+</div>
+<div id="central-limit-theorem-1" class="section level2">
+<h2><span class="header-section-number">12.4</span> Central limit theorem</h2>
+<p>Laplace proved the central limit theorem in 1812, which established
+the sense in which the normal distribution is normal. The theorem
+tells us that if we take a sequence of independent, finite
+expectation, finite variance random variables and add them, the sum
+approaches a normal distribution. It goes even further and tells us
+which normal distribution, based on the expectations and variances.
+Let’s state it mathematically as a proper theorem.</p>
+<p><em>Central Limit Theorem</em> (Laplace 1812).
+Suppose</p>
+<p><span class="math display">\[
+Y = Y_1, Y_2, \ldots, Y_N
+\]</span></p>
+<p>is a sequence of independent, identically distributed random variables
+with</p>
+<p><span class="math display">\[
+\mathbb{E}[Y_n] = \mu
+\]</span></p>
+<p>and</p>
+<p><span class="math display">\[
+\mbox{sd}[Y_n] = \sigma.
+\]</span></p>
+<p>Define the average of <span class="math inline">\(Y\)</span> as a new random variable</p>
+<p><span class="math display">\[
+Z = \frac{1}{N} \sum_{n=1}^N Y_n.
+\]</span></p>
+<p>As <span class="math inline">\(N \rightarrow \infty\)</span>, the average has a normal distribution with
+the same location as the <span class="math inline">\(Y_n\)</span> and a scale reduced by a factor of
+<span class="math inline">\(\sqrt{\frac{1}{\sigma}}\)</span>.</p>
+<p><span class="math display">\[
+\textstyle
+p_Z(z)
+\rightarrow
+\mbox{normal}\left(
+z
+\ \Bigg| \
+\mu, \,
+\frac{1}{\sqrt{N}} \times \sigma
+\right).
+\]</span></p>
+<p>The theorem can be generalized to variables that do not have the same
+distribution as long as they are independent and have finite
+expectations and variances.</p>
+<p>Many natural phenomena, such as adult human height in either sex, are
+the result of a number of relatively small, additive effects, the
+combination of which leads to normality no matter how the additive
+effects are distributed. Practically speaking, this is why the normal
+distribution makes sense as a representation of many natural
+phenomena.</p>
+</div>
+<div id="maximum-entropy-distribution" class="section level2">
+<h2><span class="header-section-number">12.5</span> Maximum entropy distribution</h2>
+<p>The normal distribution <span class="math inline">\(\mbox{normal}(\mu, \sigma)\)</span> is the
+distribution with the maximum entropy among all distributions with
+expectation <span class="math inline">\(\mu\)</span> and standard deviation <span class="math inline">\(\sigma\)</span>.</p>
+<p>The <em>entropy</em> of a random variable <span class="math inline">\(Y\)</span> is defined to be its expected
+log density,</p>
+<p><span class="math display">\[
+\mathrm{H}[Y]
+\ = \
+\mathbb{E}\!\left[ \log p_Y(Y) \right].
+\]</span></p>
+<p>For a continuous distribution, this unfolds into the integral</p>
+<p><span class="math display">\[
+\mathrm{H}[Y]
+\ = \
+\int_{-\infty}^{\infty} \log p_Y(y) \times p_Y(y) \, \mathrm{d}y.
+\]</span></p>
+<p>Because it is a simple expectation, we can compute entropy using
+simulations <span class="math inline">\(y^{(1)}, \ldots, y^{(M)}\)</span> from <span class="math inline">\(p_Y(y)\)</span> as</p>
+<p><span class="math display">\[
+\mathrm{H}[Y]
+\approx
+\frac{1}{M} \, \sum_{m=1}^M \log p_Y\left( y^{(m)} \right).
+\]</span></p>
+</div>
+<div id="computational-approximation" class="section level2">
+<h2><span class="header-section-number">12.6</span> Computational approximation</h2>
+</div>
+<div id="lognormal-distribution" class="section level2">
+<h2><span class="header-section-number">12.7</span> Lognormal distribution</h2>
+<p>The normal distribution arises naturally as the the distribution of a
+random variable resulting from a sum of effects. What if effects are
+multiplicative rather than additive, so that it is the product,</p>
+<p><span class="math display">\[
+Y = V_1 \times \cdots \times V_N
+\]</span></p>
+<p>of positive effects <span class="math inline">\(V_n &gt; 0\)</span>. Because the effects <span class="math inline">\(V_n\)</span> are positive,
+we can work on the log scale, where</p>
+<p><span class="math display">\[
+\log Y = \log V_1 + \cdots \log V_N.
+\]</span></p>
+<p>In this case, <span class="math inline">\(\log Y\)</span> should have a roughly normal distribution,
+being the sum of <span class="math inline">\(N\)</span> additive terms. If <span class="math inline">\(\log Y \sim \mbox{normal}(\mu, \sigma)\)</span>, then <span class="math inline">\(Y\)</span> has what is called a <em>lognormal
+distribution</em>. The lognormal density function can be calculated by
+accounting for the change of variables,<label for="tufte-sn-190" class="margin-toggle sidenote-number">190</label><input type="checkbox" id="tufte-sn-190" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">190</span> To calculate the Jacobian for
+the change of variables, note that if <span class="math inline">\(Z \sim \mbox{normal}(\mu, \sigma)\)</span> and <span class="math inline">\(Y = \exp(Z)\)</span>, then
+<span class="math display">\[
+\begin{array}{rcl}
+p_Y(y \mid \mu, \sigma)
+&amp; = &amp;
+p_Z(\exp^{-1}(y) \mid \mu, \sigma)
+\times
+\left|
+\frac{\mathrm{d}}{\mathrm{d}y&#39;} \exp^{-1}(y&#39;)
+\Bigg|_{y&#39; = y}
+\right|
+\\[6pt]
+&amp; = &amp;
+\mbox{normal}(\log y \mid \mu, \sigma)
+\times
+\left|
+\frac{\mathrm{d}}{\mathrm{d}y&#39;} \log y&#39;
+\Bigg|_{y&#39; = y}
+\right|
+\\[6pt]
+&amp; = &amp;
+\mbox{normal}(\log y \mid \mu, \sigma) \times \frac{1}{y}.
+\end{array}
+\]</span></span>
+so that</p>
+<p><span class="math display">\[
+\begin{array}{rcl}
+\displaystyle
+p_Y(y \mid \mu, \sigma)
+&amp; = &amp;
+\displaystyle
+\mbox{lognormal}(y \mid \mu, \sigma)
+\\[6pt]
+&amp; = &amp;
+\displaystyle
+\frac{1}{y} \times \mbox{normal}(\log y \mid \mu, \sigma)
+\\[4pt]
+&amp; = &amp;
+\displaystyle
+\frac{1}{y}
+\, \frac{1}{\sqrt{2\pi}}
+\, \frac{1}{\sigma}
+\, \exp \left(
+- \frac{1}{2} \left( \frac{\log y - \mu}{\sigma} \right)^2 \right).
+\end{array}
+\]</span></p>
+<p>To see the heart of what’s going on without the location and scale
+complicating matters, the kernel of the lognormal distribution
+derived from the standard normal is just</p>
+<p><span class="math display">\[
+\mbox{lognormal}(y \mid 0, 1)
+\ \propto \
+\frac{1}{y} \, \exp \left( -\frac{1}{2} \left( \log y \right)^2 \right).
+\]</span></p>
+
+</div>
+</div>
+<p style="text-align: center;">
+<a href="floating-point-arithmetic.html"><button class="btn btn-default">Previous</button></a>
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>

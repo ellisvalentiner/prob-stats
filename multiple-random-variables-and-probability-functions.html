@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="2 Multiple Random Variables and Probability Functions | Probability and Statistics" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+<meta name="author" content="Bob Carpenter" />
+
+<meta name="date" content="2018-01-01" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS_CHTML-full" type="text/javascript"></script>
+
+<meta name="description" content="2 Multiple Random Variables and Probability Functions | Probability and Statistics">
+
+<title>2 Multiple Random Variables and Probability Functions | Probability and Statistics</title>
+
+<link href="libs/tufte-css/tufte-fonts.css" rel="stylesheet" />
+<link href="libs/tufte-css/tufte-background.css" rel="stylesheet" />
+<link href="libs/tufte-css/tufte-italics.css" rel="stylesheet" />
+<link href="libs/tufte-css/tufte.css" rel="stylesheet" />
+
+
+
+
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li><a href="index.html#preface">Preface</a></li>
+<li><a href="what-is-probability.html#what-is-probability">What is Probability?</a></li>
+<li><a href="random-variables-and-event-probabilities.html#random-variables-and-event-probabilities"><span class="toc-section-number">1</span> Random Variables and Event Probabilities</a></li>
+<li><a href="multiple-random-variables-and-probability-functions.html#multiple-random-variables-and-probability-functions"><span class="toc-section-number">2</span> Multiple Random Variables and Probability Functions</a></li>
+<li><a href="expectations-and-variance.html#expectations-and-variance"><span class="toc-section-number">3</span> Expectations and Variance</a></li>
+<li><a href="joint-marginal-and-conditional-probabilities.html#joint-marginal-and-conditional-probabilities"><span class="toc-section-number">4</span> Joint, Marginal, and Conditional Probabilities</a></li>
+<li><a href="continuous-random-variables.html#continuous-random-variables"><span class="toc-section-number">5</span> Continuous Random Variables</a></li>
+<li><a href="continuous-distributions-and-densities.html#continuous-distributions-and-densities"><span class="toc-section-number">6</span> Continuous Distributions and Densities</a></li>
+<li><a href="statistical-inference-and-inverse-problems.html#statistical-inference-and-inverse-problems"><span class="toc-section-number">7</span> Statistical Inference and Inverse Problems</a></li>
+<li><a href="rejection-sampling.html#rejection-sampling"><span class="toc-section-number">8</span> Rejection Sampling</a></li>
+<li><a href="posterior-predictive-inference.html#posterior-predictive-inference"><span class="toc-section-number">9</span> Posterior Predictive Inference</a></li>
+<li><a href="pseudorandom-number-generators.html#pseudorandom-number-generators"><span class="toc-section-number">10</span> Pseudorandom Number Generators</a></li>
+<li><a href="floating-point-arithmetic.html#floating-point-arithmetic"><span class="toc-section-number">11</span> Floating Point Arithmetic</a></li>
+<li><a href="normal-distribution.html#normal-distribution"><span class="toc-section-number">12</span> Normal Distribution</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="multiple-random-variables-and-probability-functions" class="section level1">
+<h1><span class="header-section-number">2</span> Multiple Random Variables and Probability Functions</h1>
+<div id="multiple-random-variables" class="section level2">
+<h2><span class="header-section-number">2.1</span> Multiple random variables</h2>
+<p>Random variables do not exist in isolation. We started with a single
+random variable <span class="math inline">\(Y\)</span> representing the result of a single, specific coin
+flip. Suppose we fairly flip the coin three times? Then we can have
+random variables <span class="math inline">\(Y_1, Y_2, Y_3\)</span> representing the results of
+each of the flips. We can assume each flip is independent in that it
+doesn’t depend on the result of other flips. Each of these variables
+<span class="math inline">\(Y_n\)</span> for <span class="math inline">\(n \in 1:3\)</span> has <span class="math inline">\(\mbox{Pr}[Y_n = 1] = 0.5\)</span> and
+<span class="math inline">\(\mbox{Pr}[Y_n = 0] = 0.5\)</span>.</p>
+<p>We can combine multiple random variables using arithmetic operations.
+We have already seen comparison operators in writing the event <span class="math inline">\(Y = 1\)</span>. If <span class="math inline">\(Y_1, \ldots, Y_{10}\)</span> are random variables representing ten
+coin flips, then we can define their sum as</p>
+<p><span class="math display">\[
+Z = Y_1 + Y_2 + Y_3
+\]</span></p>
+<p>We can simulate values of <span class="math inline">\(Z\)</span> by simulating values of <span class="math inline">\(Y_1, Y_2, Y_3\)</span> and
+adding them.</p>
+<pre><code>y1 = uniform_01_rng()
+y2 = uniform_01_rng()
+y3 = uniform_01_rng()
+z = y1 + y2 + y3
+print &#39;z = &#39; z</code></pre>
+<p>It is easier and less error prone to collapse similar values into
+arrays and operate on the arrays collectively, or with loops if
+necessary.</p>
+<pre><code>for (n in 1:3)
+  y[n] = uniform_01_rng()
+z = sum(y)
+print &#39;z = &#39; z</code></pre>
+<p>Running this program a few times we get</p>
+<pre><code>   z = 2
+   z = 3
+   z = 1
+   z = 3
+   z = 1</code></pre>
+<p>We can use simulation to evaluate the probability of an outcome that
+combines multiple random variables. For example, to evaluate
+<span class="math inline">\(\mbox{Pr}[Z = 2]\)</span>, we run the simulation many times and count the
+proportion of results that are two.<label for="tufte-sn-27" class="margin-toggle sidenote-number">27</label><input type="checkbox" id="tufte-sn-27" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">27</span> The sum is calculated using
+notation <code>sum(y[m, ])</code>, which is defined to be <code>sum(y[m, ]) = y[m, 1] + ... + y[m, N],</code> where <code>N</code> is the number of entries in row <code>m</code> of the
+variable <code>y</code>.</span></p>
+<pre><code>for (m in 1:M)
+  for (n in 1:3)
+    y[m, n] = uniform_01_rng()
+  z[m] = sum(y[m, ])
+Pr_is_two = sum(z == 2) / M</code></pre>
+<p>As in our other probability estimates, we simulate the variable of
+interest <span class="math inline">\(Z\)</span> a total of <span class="math inline">\(M\)</span> times, yielding <span class="math inline">\(z^{(1)}, \ldots, z^{(m)}\)</span>. Here, that requires simulating <span class="math inline">\(y_1^{(m)}, y_2^{(m)}, y_3^{(m)}\)</span> and adding them for each <span class="math inline">\(z^{(m)}\)</span>. We then just count the
+number of times <code>Z</code> is simulated to be equal to 2 and divide by the
+number of simulations.</p>
+<p>Letting <span class="math inline">\(M = 100\,000\)</span>, and running five times, we get</p>
+<pre><code>   Pr[Z == 2] = 0.375
+   Pr[Z == 2] = 0.374
+   Pr[Z == 2] = 0.374
+   Pr[Z == 2] = 0.373
+   Pr[Z == 2] = 0.378</code></pre>
+<p>Nailing down that final digit is going to require one hundred times as
+many iterations (i.e, <span class="math inline">\(M = 10\,000\,000\)</span> iterations). Let’s see what
+that looks like.</p>
+<pre><code>   Pr[Z == 2] = 0.375
+   Pr[Z == 2] = 0.375
+   Pr[Z == 2] = 0.375
+   Pr[Z == 2] = 0.375
+   Pr[Z == 2] = 0.375</code></pre>
+<p>We can do the same for the other numbers, to get a complete picture of
+taking the probability of each number of heads in separate coin flips.</p>
+<pre><code>   Pr[Z == 0] = 0.125
+   Pr[Z == 1] = 0.375
+   Pr[Z == 2] = 0.375
+   Pr[Z == 3] = 0.125</code></pre>
+<p>What if we flip four coins instead of three?</p>
+<pre><code>   Pr[Z == 0] = 0.062
+   Pr[Z == 1] = 0.250
+   Pr[Z == 2] = 0.375
+   Pr[Z == 3] = 0.250
+   Pr[Z == 4] = 0.062</code></pre>
+</div>
+<div id="discrete-random-variables" class="section level2">
+<h2><span class="header-section-number">2.2</span> Discrete random variables</h2>
+<p>So far, we have only considered random numbers that take a finite
+number of integer values. A random variable that only takes values in
+the integers, i.e., values in</p>
+<p><span class="math display">\[
+\mathbb{Z} = \ldots -2, -1, 0, 1, 2, \ldots
+\]</span></p>
+<p>is said to be a <em>discrete random variable.</em><label for="tufte-sn-28" class="margin-toggle sidenote-number">28</label><input type="checkbox" id="tufte-sn-28" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">28</span> In general, any countable
+set of numerical values could be used as values of a discrete random
+variable. A set of values is <em>countable</em> if each of its members can
+be assigned a unique counting number in <span class="math inline">\(\mathbb{N} = 0, 1, 2, \ldots\)</span>. The integers <span class="math inline">\(\mathbb{Z}\)</span> can be mapped to natural numbers
+<span class="math inline">\(\mathbb{N}\)</span> by interleaving, <span class="math display">\[\begin{array}{rcl}\mathbb{Z} &amp; &amp;
+\mathbb{N} \\ \hline 0 &amp; \mapsto &amp; 0 \\
+-1 &amp; \mapsto &amp; 1 \\ 1 &amp; \mapsto &amp; 2 \\ -2 &amp; \mapsto &amp;3 \\ 2 &amp; \mapsto
+&amp; 4 \\ &amp; \vdots &amp; \end{array}\]</span></span></p>
+</div>
+<div id="probability-mass-functions" class="section level2">
+<h2><span class="header-section-number">2.3</span> Probability mass functions</h2>
+<p>It’s going to be convenient to have a function that maps each possible
+outcome in a variable to its probability. In general, this will be
+possible if and only if the variable is discrete, as defined in the
+previous section.</p>
+<p>For example, if we reconsider <span class="math inline">\(Z = Y_1 + \cdots Y_4\)</span>, the number of
+heads in four separate coin flips, we can define a function<label for="tufte-sn-29" class="margin-toggle sidenote-number">29</label><input type="checkbox" id="tufte-sn-29" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">29</span> We
+implicitly assume that functions return zero for arguments not listed.</span></p>
+<p><span class="math display">\[
+\begin{array}{rclll}
+p_Z(0) &amp; = &amp; 1/16 &amp; &amp; \mathrm{TTTT}
+\\
+p_Z(1) &amp; = &amp; 4/16 &amp; &amp; \mathrm{HTTT, THTT, TTHT, TTTH}
+\\
+p_Z(2) &amp; = &amp; 6/16 &amp; &amp; \mathrm{HHTT, HTHT, HTTH, THHT, THTH, TTTH}
+\\
+p_Z(3) &amp; = &amp; 4/16 &amp; &amp; \mathrm{HHHT, HHTH, HTHH, THHH}
+\\
+p_Z(4) &amp; = &amp; 1/16 &amp; &amp; \mathrm{HHHH}
+\end{array}
+\]</span></p>
+<p>There are sixteen possible outcomes of flipping four coins. Because
+the flips are separate and fair, each possible outcome is equally
+likely. The sequences corresponding to each count of heads (i.e.,
+value of <span class="math inline">\(Z\)</span>) are recorded in the rightmost columns. The
+probabilities are derived by dividing the number of ways a value for
+<span class="math inline">\(Z\)</span> can arise by the number of possible outcomes.</p>
+<p>This function <span class="math inline">\(p_Z\)</span> was constructed to map a value <span class="math inline">\(u\)</span> for <span class="math inline">\(Z\)</span> to the
+event probability that <span class="math inline">\(Z = u\)</span>,<label for="tufte-sn-30" class="margin-toggle sidenote-number">30</label><input type="checkbox" id="tufte-sn-30" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">30</span> Conventionally, this is written as
+<span class="math display">\[p_Z(z) = \mbox{Pr}[Z = z],\]</span> but that can be confusing with upper
+case <span class="math inline">\(Z\)</span> denoting a random variable and lower case <span class="math inline">\(z\)</span> denoting an
+ordinary variable.</span></p>
+<p><span class="math display">\[
+p_Z(u) = \mbox{Pr}[Z = u].
+\]</span></p>
+<p>A function defined as above is said to be the <em>probability mass
+function</em> of the random variable <span class="math inline">\(Z\)</span>. Every discrete random variable has
+a unique probability mass function.</p>
+<p>Probablity mass functions represent probabilities of a discrete set of
+outcomes. The sum of all such probabilities must be one because at
+least one of the outcomes must occur.<label for="tufte-sn-31" class="margin-toggle sidenote-number">31</label><input type="checkbox" id="tufte-sn-31" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">31</span> More formally, if <span class="math inline">\(Y\)</span> is a
+discrete random variable, then <span class="math display">\[\sum_u \, p_Y(u) = 1,\]</span> where the
+summation variable <span class="math inline">\(u\)</span> ranges over all possible values of <span class="math inline">\(Y\)</span>. We are
+going to start writing this with the standard overloading of lower and
+upper case <span class="math inline">\(Y\)</span> as <span class="math display">\[\sum_y \, p_Y(y) = 1.\]</span></span></p>
+<p>With large numbers of counts based on simulation, we can more readily
+apprehend what is going on with a plot. Discrete simulations are
+typically plotted using bar plots, where the outcomes are arrayed on
+the <span class="math inline">\(x\)</span> axis with a vertical bar over each one whose height is
+proportional to the frequency of that outcome.</p>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-25"></span>
+<p class="caption marginnote shownote">
+Figure 2.1: Plot of <span class="math inline">\(M = 100\,000\)</span> simulations of the probability mass function of a random variable defined as the number of heads in ten specific coin flips.
+</p>
+<img src="_main_files/figure-html/unnamed-chunk-25-1.png" alt="Plot of $M = 100\,000$ simulations of the probability mass function of a random variable defined as the number of heads in ten specific coin flips." width="70%"  />
+</div>
+<p>The actual frequencies are not relevant, only the relative sizes.
+A simple probability estimate from simulation provides a probability
+for each outcome proportional to its height.<label for="tufte-sn-32" class="margin-toggle sidenote-number">32</label><input type="checkbox" id="tufte-sn-32" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">32</span> And proportional to its
+area because the bars are of equal width.</span></p>
+<p>This plot can easily be repeated to see what happens as the number of
+bins grows.</p>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-26"></span>
+<p class="caption marginnote shownote">
+Figure 2.2: Plot of <span class="math inline">\(M = 1\,000\,000\)</span> simulations of a variable <span class="math inline">\(Z\)</span> representing the number of heads in <span class="math inline">\(N\)</span> coin flips. Each plot represents a different <span class="math inline">\(N\)</span>. Because the bars are the same width and the <span class="math inline">\(x\)</span> axes are scaled to the same range in all plots, the total length of all bars laid end to end is the same in each plot; similarly, the total area of the bars in each plot is the same.
+</p>
+<img src="_main_files/figure-html/unnamed-chunk-26-1.png" alt="Plot of $M = 1\,000\,000$ simulations of a variable $Z$ representing the number of heads in $N$ coin flips.  Each plot represents a different $N$.  Because the bars are the same width and the $x$ axes are scaled to the same range in all plots, the total length of all bars laid end to end is the same in each plot;  similarly, the total area of the bars in each plot is the same." width="80%"  />
+</div>
+</div>
+<div id="dice" class="section level2">
+<h2><span class="header-section-number">2.4</span> Dice</h2>
+<p>Let <span class="math inline">\(Y\)</span> be a random variable representing a fair throw of a six-sided
+die. We can describe this variable easily through it’s probability
+mass function, which is uniform (i.e., assigns each possible outcome
+the same probability).</p>
+<p><span class="math display">\[
+p_Y(y) \ = \
+\begin{cases}
+\frac{1}{6} &amp; \mbox{if} \ y \in 1:6
+\\[4pt]
+0 &amp; \mbox{otherwise}
+\end{cases}
+\]</span></p>
+<p>Games like <em>Monopoly</em> use a pair of six-sided dice and consider the sum of the results. That is, <span class="math inline">\(Y_1\)</span> and <span class="math inline">\(Y_2\)</span> are fair six-sided die rolls and <span class="math inline">\(Z = Y_1 + Y_2\)</span> is the result. Games like <em>Dungeons &amp; Dragons</em> use a trio of six-sided dice and consider the sum of the results. In that scenario, <span class="math inline">\(Y_1, Y_2, Y_3\)</span> are the results of fair six-sided die rolls and <span class="math inline">\(Z = Y_1 + Y_2 + Y_3\)</span>. Dungeons and Dragons also uses four six-sided die of which the best 3 are summed to produce a result. Let’s simulate some of these approaches and see what the results look like based on <span class="math inline">\(M = 100\,000\)</span> simulations.<label for="tufte-sn-33" class="margin-toggle sidenote-number">33</label><input type="checkbox" id="tufte-sn-33" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">33</span> The simulations are identical to before, only using <code>1:6</code> in the range of uniform variables.</span></p>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-27"></span>
+<p class="caption marginnote shownote">
+Figure 2.3: Estimated <span class="math inline">\(p_Y(y)\)</span> for case of <span class="math inline">\(Y\)</span> being the sum of three six-sided dice (3d6) or the sum of the highest three of four six-sided dice (3 of 4d6).
+</p>
+<img src="_main_files/figure-html/unnamed-chunk-27-1.png" alt="Estimated $p_Y(y)$ for case of $Y$ being the sum of three six-sided dice (3d6) or the sum of the highest three of four six-sided dice (3 of 4d6)." width="70%"  />
+</div>
+<p>Dungeons and Dragons also uses 20-sided dice.<label for="tufte-sn-34" class="margin-toggle sidenote-number">34</label><input type="checkbox" id="tufte-sn-34" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">34</span> In physical games, an
+icosahedral die is used. The icosahedron is a regular polyhedron with
+20 equilateral triangular faces, giving it the largest number of faces
+among the five Platonic solids.</span> The fifth edition of the game
+introduced the notion of <em>advantage</em>, where two 20-sided dice are
+rolled and the higher result retained, as well as <em>disadvantage</em>,
+which retains the lower result of the two dice. Here’s a simulation
+using <span class="math inline">\(M = 100\,000\)</span>. The counts are converted to estimated
+probabilities on the vertical axis in the usual way by dividing by
+<span class="math inline">\(M\)</span>.</p>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-28"></span>
+<p class="caption marginnote shownote">
+Figure 2.4: Estimated <span class="math inline">\(p_Y(y)\)</span> for case of <span class="math inline">\(Y\)</span> being a single twenty-sided die (d20), the higher two twenty-sided die rolls (max 2d20), and the lower of two 20-sided die rolls (min 2d20).
+</p>
+<img src="_main_files/figure-html/unnamed-chunk-28-1.png" alt="Estimated $p_Y(y)$ for case of $Y$ being a single twenty-sided die (d20), the higher two twenty-sided die rolls (max 2d20), and the lower of two 20-sided die rolls (min 2d20)." width="70%"  />
+</div>
+<p>The most likely roll is a 20 when taking the best of two rolls and the
+most likely roll is 1 when taking the worst of two rolls.<label for="tufte-sn-35" class="margin-toggle sidenote-number">35</label><input type="checkbox" id="tufte-sn-35" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">35</span> The chance
+for a 20 when taking the best of two 20-sided die rolls is <span class="math inline">\(1 - \left(\frac{19}{20}\right)^2 \approx 0.098\)</span>; the chance of rolling 1
+is <span class="math inline">\(\left(\frac{1}{20}\right)^2 = 0.0025\)</span>. The probabilities are
+reversed when taking the worst of two 20-sided die rolls.</span> The min and
+max plots are mirror images of each other as is to be expected by the
+consecutive nature of the numbers and the min/max operations.</p>
+</div>
+<div id="spinners-and-the-bernoulli-distribution" class="section level2">
+<h2><span class="header-section-number">2.5</span> Spinners and the Bernoulli distribution</h2>
+<p>Some games, such as <em>All Star Baseball</em>, come with spinners rather
+than dice. The beauty of spinners is that they can be divided into
+two areas, one with a 27% chance of occurring in a fair spin and one
+with a 73% chance of occurring.<label for="tufte-sn-36" class="margin-toggle sidenote-number">36</label><input type="checkbox" id="tufte-sn-36" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">36</span> 27% is roughly the chance of a hit in
+an at bat.</span> Now suppose we have a random variable <span class="math inline">\(Y\)</span> representing
+the result of a fair spin. Its probability mass function is</p>
+<p><span class="math display">\[
+p_Y(y)
+\ = \
+\begin{cases}
+0.27 &amp; \mbox{if} \ \ y = 1
+\\
+0.73 &amp; \mbox{if} \ \ y = 0
+\end{cases}
+\]</span></p>
+<p>To simplify our notation, we are going to start defining useful
+functions that can be used as probability mass functions. Our first
+example is the so-called Bernoulli<label for="tufte-sn-37" class="margin-toggle sidenote-number">37</label><input type="checkbox" id="tufte-sn-37" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">37</span> Named after Jacob Bernoulli
+(1654–1705), one of several prominent mathematicians in the family.</span>
+distribution. We define it as a function with somewhat peculiar
+notation,</p>
+<p><span class="math display">\[
+\mathrm{Bernoulli}(y \mid \theta)
+\ = \
+\begin{cases}
+\theta &amp; \mbox{if} \ \ y = 1
+\\
+1 - \theta &amp; \mbox{if} \ \ y = 0
+\end{cases}
+\]</span></p>
+<p>The vertical bar (<span class="math inline">\(\mid\)</span>) separates the <em>variate</em> argument <span class="math inline">\(y\)</span>, which
+we think of as an outcome, from the <em>parameter</em> argument <span class="math inline">\(\theta \in [0, 1]\)</span>, which determines the probability of the outcome. In this
+case, the variate <span class="math inline">\(y\)</span> is discrete, and can take on only the values
+zero and one, so we write <span class="math inline">\(y \in 0:1\)</span>. The parameter <span class="math inline">\(\theta\)</span>, on the
+other hand, is continuous and can take on any value between zero and
+one (inclusive of endpoints), so we write <span class="math inline">\(y \in [0, 1]\)</span>.<label for="tufte-sn-38" class="margin-toggle sidenote-number">38</label><input type="checkbox" id="tufte-sn-38" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">38</span> Interval
+notation <span class="math inline">\([0, 1]\)</span> is used for the set of values <span class="math inline">\(x\)</span> such that <span class="math inline">\(0 \leq x \leq 1\)</span>. Parentheses are used for exclusive endpoints, so that <span class="math inline">\((0, 1)\)</span> is taken to be the set of <span class="math inline">\(x\)</span> such that <span class="math inline">\(0 &lt; x &lt; 1\)</span>.</span></p>
+<p>This notation allows us to simplify our baseball example. Going back
+to our example random variable <span class="math inline">\(Y\)</span> which had a 27% chance of being 1
+and a 73% chance of being 0, we can write</p>
+<p><span class="math display">\[
+p_Y(y) = \mathrm{Bernoulli}(y \mid 0.27).
+\]</span></p>
+<p>To simplify notation even further, we will say that a random variable
+<span class="math inline">\(U\)</span> has a Bernoulli distribution and write</p>
+<p><span class="math display">\[
+U \sim \mathrm{Bernoulli}(\theta)
+\]</span></p>
+<p>to indicate that the probability mass function of <span class="math inline">\(U\)</span> is</p>
+<p><span class="math display">\[
+p_U(u) = \mathrm{Bernoulli}(u \mid \theta).
+\]</span></p>
+</div>
+<div id="cumulative-distribution-functions" class="section level2">
+<h2><span class="header-section-number">2.6</span> Cumulative distribution functions</h2>
+<p>In Dungeons &amp; Dragons, the players are often concerned with
+probabilities of rolling higher than a given number (or equivalently,
+rolling lower than a given number. For example, they may need to roll
+a 15 to sneak by an orc. Such probabilities are conventionally given
+in the form of cumulative distribution functions. If <span class="math inline">\(Y\)</span> is a random
+variable, its <em>cumulative distribution function</em> <span class="math inline">\(F_Y\)</span> is defined by</p>
+<p><span class="math display">\[
+F_Y(y) = \mbox{Pr}[Y \leq y].
+\]</span></p>
+<p>The event probability on the right is calculated the same way as
+always in a simulation, by counting the number of simulated values in
+which the condition holds and dividing by the number of simulations.</p>
+<p>We can plot the cumulative distribution function for the straight
+twenty-sided die roll and the rolls with advantage (best of two rolls)
+or disadvantage (worst of two rolls). Here’s the result using the
+same simulations as in the last plot, with <span class="math inline">\(M = 100\,000\)</span>.</p>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-29"></span>
+<p class="caption marginnote shownote">
+Figure 2.5: Cumulative distribution function for three variables corresponding to rolling a single 20-sided die, or rolling two 20-sided dice and taking the best or worst result.
+</p>
+<img src="_main_files/figure-html/unnamed-chunk-29-1.png" alt="Cumulative distribution function for three variables corresponding to rolling a single 20-sided die, or rolling two 20-sided dice and taking the best or worst result." width="70%"  />
+</div>
+<p>The plot is rendered as a line plot, though this isn’t quite sensible
+for discrete distributions—the intermediate values are not real.
+It’s easy to see that there’s a 50% chance of rolling 5 or lower in a
+single die throw; with the best of 2 it’s more like a 20% chance and
+with the worst of 2, it’s more like a 75% chance.</p>
+<p>Usually in Dungeons &amp; Dragons, players care about rolling more than a
+given number, not less, or they’d have to be subtracting all the time.
+This is where the complementary cumulative distribution function comes
+in. For a random variable <span class="math inline">\(Y\)</span>, the <em>complementary cumulative
+distribution function</em> is</p>
+<p><span class="math display">\[
+F^{\complement}_Y(y) \ = \ 1 - F_Y(y) \ = \ \mbox{Pr}[Y &gt; y].
+\]</span></p>
+<p>It’s easier to see with a plot how it relates to the usual cumulative
+distribution function.</p>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-30"></span>
+<p class="caption marginnote shownote">
+Figure 2.6: Complementary cumulative distributions for a single 20-sided die, the best of two dice, and the worst of two dice.
+</p>
+<img src="_main_files/figure-html/unnamed-chunk-30-1.png" alt="Complementary cumulative distributions for a single 20-sided die, the best of two dice, and the worst of two dice." width="70%"  />
+</div>
+</div>
+<div id="infinite-discrete-random-variables" class="section level2">
+<h2><span class="header-section-number">2.7</span> Infinite discrete random variables</h2>
+<p>Consider an experiment in which a coin is tossed until a heads appears
+Let the random variable <span class="math inline">\(U\)</span> be the number of tosses that came up tails
+before the first head comes up. The legal sequences are H (0 tails),
+TH (1 tails), TTH (2 tails), and so on. There is no upper limit to
+how many tails may appear before the first heads.</p>
+<p>Here’s some code to create <span class="math inline">\(M\)</span> simulations of the variable <span class="math inline">\(U\)</span>.<label for="tufte-sn-39" class="margin-toggle sidenote-number">39</label><input type="checkbox" id="tufte-sn-39" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">39</span> This
+code uses a while loop, which repeats as long as its condition
+evaluates to true (i.e., 1). Here, the condition compares the output
+of the random number generator directly rather than assigning to an
+intermediate value. We have also introduced the increment operator
+<code>+=</code>, which adds the value of the right hand side to the variable on
+the left hand side.</span></p>
+<pre><code>for (m in 1:M)
+  u[m] = 0
+  while (uniform_01_rng() == 0)
+    u[m] += 1</code></pre>
+<p>This looks dangerous! The body of a while-loop (here <code>u[m] + 1</code>) is
+executed iteratively as long as the condition is true.<label for="tufte-sn-40" class="margin-toggle sidenote-number">40</label><input type="checkbox" id="tufte-sn-40" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">40</span> If we write
+<code>while (1 + 1 == 2)</code> we produce what is known as an <em>infinite loop</em>,
+i.e., one that never terminates.</span> Shouldn’t we be worried that the
+random number generator will just continue to throw tails (i.e., 0)
+so that the program never terminates?<label for="tufte-sn-41" class="margin-toggle sidenote-number">41</label><input type="checkbox" id="tufte-sn-41" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">41</span> The answer is “yes,” in general,
+because programmers are error prone.</span> In this case, no, because the
+odds are vanishingly small that <span class="math inline">\(U\)</span> gets large. For example,</p>
+<p><span class="math display">\[
+\begin{array}{rcl}
+\mbox{Pr}[U &lt; 10]
+&amp; = &amp;
+p_U(0) + p_U(1) + \cdots p_U(9)
+\\[6pt]
+&amp; = &amp;
+\frac{1}{2} + \cdots + \frac{1}{1024}
+\\[6pt]
+&amp; \approx &amp;
+0.999.
+\end{array}
+\]</span></p>
+<p>Going further, <span class="math inline">\(\mbox{Pr}[U &lt; 20] \approx 0.999\,999\)</span>, and so on. So
+there’s not much chance of running very long at all, much less forever.</p>
+<p>With the concern of non-termination out of the way, let’s see what we
+get with <span class="math inline">\(M = 50\)</span> simulations of <span class="math inline">\(U\)</span>.</p>
+<pre><code>      1   0   0   0   0   2   0   0   0   1
+      1   9   0   0   0   4   1   2   0   0
+      0   1   1   0   2   2   0   1   1   1
+      0   4   1   1   1   1   1   3   0   2
+      1   3   1   3   3   1   8   1   2   0</code></pre>
+<p>It’s very hard to discern a pattern here. There are a lot of zero
+values, but also some large values. For cases like these, we can use
+a bar plot to plot the values. This time, we’re going to use <span class="math inline">\(M = 10\,000\)</span> to get a better picture of the pattern.</p>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-32"></span>
+<p class="caption marginnote shownote">
+Figure 2.7: Frequency of outcomes in <span class="math inline">\(10\,000\)</span> simulation draws of <span class="math inline">\(U\)</span>, the number of tails seen before a head in a coin-tossing experiment.
+</p>
+<img src="_main_files/figure-html/unnamed-chunk-32-1.png" alt="Frequency of outcomes in $10\,000$ simulation draws of $U$, the number of tails seen before a head in a coin-tossing experiment." width="70%"  />
+</div>
+<p>The <span class="math inline">\(x\)</span>-axis represents the value of <span class="math inline">\(U\)</span> and the <span class="math inline">\(y\)</span>-axis the number
+of times that value arose in the simulation.<label for="tufte-sn-42" class="margin-toggle sidenote-number">42</label><input type="checkbox" id="tufte-sn-42" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">42</span> Despite <span class="math inline">\(U\)</span> having
+infinitely many possible values, it will only take on finitely many of
+them in a finite sample.</span> Each additional throw of tails appears to
+cut the probability of occurrence in half result seems to have about
+half the probability of the previous one. This is what we should
+expect because each coin toss brings a 50% probability of a tails
+result. This exponential decay<label for="tufte-sn-43" class="margin-toggle sidenote-number">43</label><input type="checkbox" id="tufte-sn-43" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">43</span> Exponential decay means each
+additional outcome is only a fraction as likely as the previous one.</span>
+in the counts with the number of tails thrown is more obvious when
+plotted on the log scale.</p>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-33"></span>
+<p class="caption marginnote shownote">
+Figure 2.8: Frequency of outcomes in <span class="math inline">\(10\,000\)</span> simulation draws of <span class="math inline">\(U\)</span>, the number of tails seen before a head in a coin-tossing experiment, this time with the outcome count on the log scale to illustrate the exponentially decreasing probabilities of each successive number of tails.
+</p>
+<img src="_main_files/figure-html/unnamed-chunk-33-1.png" alt="Frequency of outcomes in $10\,000$ simulation draws of $U$, the number of tails seen before a head in a coin-tossing experiment, this time with the outcome count on the log scale to illustrate the exponentially decreasing probabilities of each successive number of tails." width="70%"  />
+</div>
+<p>There is a 50% probability that the first toss is heads, yielding a
+sequence of zero tails, and <span class="math inline">\(U = 0\)</span>. Each successive number of tails
+is half as likely as the previous, because another tail will have to
+be thrown, which has a 50% probability.<label for="tufte-sn-44" class="margin-toggle sidenote-number">44</label><input type="checkbox" id="tufte-sn-44" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">44</span> In symbols,
+<span class="math display">\[
+\mbox{Pr}[U = n + 1]
+\ = \
+\frac{1}{2} \mbox{Pr}[U = n].
+\]</span></span></p>
+<p>Thus the overall probability mass function for <span class="math inline">\(U\)</span> is<label for="tufte-sn-45" class="margin-toggle sidenote-number">45</label><input type="checkbox" id="tufte-sn-45" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">45</span> An elementary
+result of calculus is that <span class="math display">\[\sum_{n = 0}^{\infty}
+\frac{1}{2^{n + 1}} \ = \ \frac{1}{2} + \frac{1}{4} + \frac{1}{8} +
+\frac{1}{16} + \cdots \ = \ 1.\]</span></span></p>
+<p><span class="math display">\[
+\begin{array}{rclcl}
+p_U(0) &amp; = &amp; \frac{1}{2} &amp; = &amp; \frac{1}{2}
+\\
+p_U(1) &amp; = &amp;  \frac{1}{2} \times \frac{1}{2} &amp; = &amp; \frac{1}{4}
+\\
+p_U(2) &amp; = &amp; \frac{1}{2} \times \frac{1}{2} \times \frac{1}{2} &amp; = &amp; \frac{1}{8}
+\\
+&amp; \vdots &amp;
+\\
+p_U(u) &amp; = &amp; \underbrace{\frac{1}{2} \times
+                         \cdots \times \frac{1}{2}}_{u + 1 \ \mathrm{times}}
+&amp; = &amp;
+\left( \frac{1}{2} \right)^{u + 1}
+\\
+&amp; \vdots &amp;
+\end{array}
+\]</span></p>
+<p>Even though there are infinitely many possible realizations of the
+random variable <span class="math inline">\(U\)</span>, simulation may still be used to compute event
+probabilities, such as <span class="math inline">\(\mbox{Pr}[U \leq 3]\)</span>, by</p>
+<pre><code>for (m in 1:M)
+  u[m] = sim_u()
+  leq3[m] = (u[m] &lt;= 3)
+
+print &#39;est Pr[U &lt;= 3] = &#39;, sum(leq3) / M</code></pre>
+<p>Let’s see what we get with $M = <span class="math inline">\(100\,000\)</span>,</p>
+<pre><code>   est Pr[U &lt;= 3] = 0.937</code></pre>
+<p>Writing out the analytic answer involves an infinte sum,</p>
+<p><span class="math display">\[
+\mbox{Pr}[U \leq 3]
+\ = \
+\sum_{u = 0}^{\infty} p_U(u) \mathrm{I}[u \leq 3].
+\]</span></p>
+<p>We can recognize that all of the terms where <span class="math inline">\(u &gt; 3\)</span> are zero, so that
+this reduces to</p>
+<p><span class="math display">\[
+\begin{array}{rcl}
+\mbox{Pr}[U \leq 3]
+&amp; = &amp;
+p_U(0) + p_U(1) + p_U(2) + p_U(3)
+\\[8pt]
+&amp; = &amp;
+\frac{1}{2}
++ \frac{1}{4}
++ \frac{1}{8}
++ \frac{1}{16}
+\\[8pt]
+&amp; \approx &amp; 0.938.
+\end{array}
+\]</span></p>
+<p>Simulation is not that clever. It just blindly simulates values of
+<span class="math inline">\(u\)</span>, many of which turn out to be larger than three. In the sequence
+of simulated values, many were larger than three—the histogram
+summarized a much larger simulation, none of the values of which were
+that large.</p>
+<p>Given that we only ever run a finite number of iterations and thus
+only ever see a finite number of values, how does simulation get the
+right answer?<label for="tufte-sn-46" class="margin-toggle sidenote-number">46</label><input type="checkbox" id="tufte-sn-46" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">46</span> Spoiler alert! The technical answer, like so much in
+statistics, is that the central limit theorem kicks in.</span> Isn’t there
+some kind of bias from only visiting smallish values? The answer is
+“no” precisely because the values that are not simulated are so rare.
+Their total probability mass, when added together is small, so they
+cannot have much influence on the simulated answer. For simulations
+to get the right answer,<label for="tufte-sn-47" class="margin-toggle sidenote-number">47</label><input type="checkbox" id="tufte-sn-47" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">47</span> Given some qualifications!</span> they need only
+visit the typical values seen in simulation, not the extreme
+values.<label for="tufte-sn-48" class="margin-toggle sidenote-number">48</label><input type="checkbox" id="tufte-sn-48" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">48</span> The sparsity problem grows exponentially worse in higher
+dimensions and uncountably worse with continuous random variables.</span></p>
+</div>
+<div id="the-chevalier-de-meres-challenge" class="section level2">
+<h2><span class="header-section-number">2.8</span> The Chevalier de Méré’s challenge</h2>
+<p>Antoine Gombaud, the Chevalier de Méré,<label for="tufte-sn-49" class="margin-toggle sidenote-number">49</label><input type="checkbox" id="tufte-sn-49" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">49</span> Self appointed!</span> challenged
+Blaise Pascal to explain how it was possible that thre probability of
+throwing at least one six in four throws of a single six-sided die is
+slightly greater than <span class="math inline">\(\frac{1}{2}\)</span>, whereas the probability of
+throwing two sixes in 24 throws of a pair of six-sided die was
+slightly less than <span class="math inline">\(\frac{1}{2}\)</span>.<label for="tufte-sn-50" class="margin-toggle sidenote-number">50</label><input type="checkbox" id="tufte-sn-50" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">50</span> Smith, D. A., 1929. <em>A Source Book
+on Mathematics</em>. McGraw-Hill, New York; cited in Bulmer, 1967, p. 26.</span>
+We can evaluate these claims by simulation directly.<label for="tufte-sn-51" class="margin-toggle sidenote-number">51</label><input type="checkbox" id="tufte-sn-51" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">51</span> Working out the
+example analytically, there is a <span class="math inline">\(\frac{35}{36}\)</span> chance of <em>not</em>
+throwing double six with two six-sided dice, and so <span class="math inline">\(\left( \frac{35}{36} \right)^{24}\)</span> is the probability of <em>not</em> throwing at
+least one double six in 24 throws, and so <span class="math display">\[1 - \left( \frac{35}{36}
+\right)^{24} \approx 0.491\]</span> is the probability of throwing at least
+one double-six in 24 fair throws of a pair of six-sided dice.</span></p>
+<p>To represent the problem in probabilistic notation, we introduce a
+random variable <span class="math inline">\(Y_{1, k} \in 1:6\)</span> and <span class="math inline">\(Y_{2, k} \in 1:6\)</span> for each of
+the two dice in each of the <span class="math inline">\(k \in 1:24\)</span> throws. Define the outcome of
+the game as the random variable</p>
+<p><span class="math display">\[
+Z \ = \
+\begin{cases}
+1 \ \ \mbox{if there is a} \ k \ \mbox{such that} \ Y_{1,k} = Y_{2,k} = 6,
+\ \mbox{and}
+\\[4pt]
+0 \ \ \mbox{otherwise}
+\end{cases}
+\]</span></p>
+<p>That is, <span class="math inline">\(Z = 1\)</span> if there is at least one double-six in the 24 throws.
+The Chevalier de Méré was inquiring about the the value of the event
+probability <span class="math inline">\(\mbox{Pr}[Z = 1]\)</span>, i.e., the chance of winning by
+throwing at least one double six in 24 fair throws of a pair of dice.</p>
+<p>We will introduce variables for the full range of simulated random
+variable values and simulation indexes in the following program.<label for="tufte-sn-52" class="margin-toggle sidenote-number">52</label><input type="checkbox" id="tufte-sn-52" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">52</span> The
+simulation indexes use parentheses rather than the traditional
+brackets and come first so that, e.g., the simulated value <code>y(m)</code> will
+consist of a <span class="math inline">\(2 \times 24\)</span> collection of values, matching the size of
+<span class="math inline">\(Y\)</span>.</span></p>
+<pre><code>for (m in 1:M)
+  for (k in 1:24)
+    y(m)[1, k] = uniform_rng(1:6)
+    y(m)[2, k] = uniform_rng(1:6)
+    z(m)[k] = y(m)[1, k] + y(m)[2, k]
+  success(m) = (sum(z(m) == 12) &gt; 0)
+print &#39;Pr[double-six in 24 throws] = &#39; sum(success) / M</code></pre>
+<p>Let’s run that for <span class="math inline">\(M = 100\,000\)</span> simulations a few times and see
+what the estimated event probabilities look like.</p>
+<pre><code>   Pr[double-six in 24 throws] = 0.493
+   Pr[double-six in 24 throws] = 0.492
+   Pr[double-six in 24 throws] = 0.495
+   Pr[double-six in 24 throws] = 0.493
+   Pr[double-six in 24 throws] = 0.489</code></pre>
+<p>This shows the result to be around 0.49. The Chevalier de Méré
+should not bet that he’ll roll at least one pair of sixes in 24
+throws! To nail down the last digit, we could use <span class="math inline">\(10\,000\,000\)</span>
+simulations rather than <span class="math inline">\(100\,000\)</span>. As shown in the previous note,
+calculating the result analytically yields 0.491 to three decimal
+places, which is in agreement with the simulation-based estimates.</p>
+<p>The Chevalier de Méré was reputedly perplexed by the difference
+between the chance of at least one double-six in 24 throws of two dice
+versus the chance of at least one six in 4 throws of a single
+die.<label for="tufte-sn-53" class="margin-toggle sidenote-number">53</label><input type="checkbox" id="tufte-sn-53" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">53</span> The probability of at least one six in four die rolls works out
+to <span class="math display">\[1 - \left( \frac{5}{6} \right)^4 \approx 0.518.\]</span> As noted above,
+the probability of at least one double six in 24 die rolls is <span class="math inline">\(\approx 0.491.\)</span></span></p>
+</div>
+<div id="sampling-without-replacement" class="section level2">
+<h2><span class="header-section-number">2.9</span> Sampling without replacement</h2>
+<p>Drawing from a deck of cards is typically done without replacement.
+Once a card is drawn, it may not be drawn again. A traditional deck
+of playing cards consists of 52 cards, each marked with a value</p>
+<p><span class="math display">\[
+2, 3, \ldots, 10, \mathrm{J}, \mathrm{Q}, \mathrm{K}, \mathrm{A}
+\]</span></p>
+<p>and a suit from</p>
+<p><span class="math display">\[
+\clubsuit, \, \diamondsuit, \ \heartsuit, \ \spadesuit
+\]</span></p>
+<p>The lettered values are called jack, queen, king, and ace, and the
+suits are called clubs, diamonds, hearts, and spades. Traditionally
+the diamonds and hearts are colored red and the clubs and spades
+colored black (here they are indicated by unfilled vs. filled
+shading).</p>
+<p>A hand of cards consists of some number of cards drawn from a deck.
+When cards are drawn from a deck, they are not replaced. This is
+called sampling without replacement. Thus a hand of cards can contain
+at most 52 cards, because after 52 cards are drawn, there are none
+left.<label for="tufte-sn-54" class="margin-toggle sidenote-number">54</label><input type="checkbox" id="tufte-sn-54" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">54</span> In some games, multiple decks are often used.</span> Drawing without
+replacement also affects probabilities of particular hands.</p>
+<p>For example, drawing two cards from a fresh deck, the chance of
+getting two aces is not <span class="math inline">\(\left(\frac{4}{52}\right)^2\)</span>, but rather
+<span class="math inline">\(\left(\frac{4}{52} \times \frac{3}{51}\right) \approx 0.0045.\)</span> The
+chance of drawing an ace on the first draw is <span class="math inline">\(\frac{4}{52}\)</span> because
+there are 4 aces among the 52 cards and each card is assumed to be
+equally likely to be drawn from any deck. But after the first ace is
+drawn, there are only 51 cards remaining, and among those, only 3
+aces. So the chance of the second card being an ace is only
+<span class="math inline">\(\frac{3}{51}\)</span>.</p>
+<p>We can verify that with a quick simulation.</p>
+<pre><code>total = 0
+for (m in 1:M)
+  y &lt;- draw_cards(2)
+  if (is_ace(y[1]) &amp;&amp; is_ace(y[2]))
+    total += 1
+print &#39;Pr[draw 2 aces] = &#39; total / M</code></pre>
+<p>Let’s run that with <span class="math inline">\(M = 10\,000\)</span>, a few</p>
+<pre><code>   Pr[draw 2 aces] = 0.0053
+   Pr[draw 2 aces] = 0.0055
+   Pr[draw 2 aces] = 0.0048
+   Pr[draw 2 aces] = 0.0043
+   Pr[draw 2 aces] = 0.0042
+   Pr[draw 2 aces] = 0.0045
+   Pr[draw 2 aces] = 0.0049
+   Pr[draw 2 aces] = 0.0034</code></pre>
+<p>Curiously, we are now not getting a single digit of accuracy, even
+with <span class="math inline">\(10\,000\)</span> draws. What happened?</p>
+<p>A fundamental problem with accuracy of simulation-based estimates is
+that rare events are hard to estimate with random draws. If the event
+of drawing two aces only has a 0.45% chance (roughly 1 in 200) of
+occurring, we need a lot of simulation events to see it often enough
+to get a good estimate of even that first digit. With <span class="math inline">\(10\,000\)</span>
+draws, the number of two-ace draws we expect to see is about 50 if
+they occur at roughly a 1 in 200 hands rate. We know from prior
+experience that estimating a number with only 50 draws is not going to
+be very accurate. So what we need to do is increase the number of
+draws. Let’s run that again with <span class="math inline">\(M = 1\,000\,000\)</span> draws.</p>
+<pre><code>   Pr[draw 2 aces] = 0.0045
+   Pr[draw 2 aces] = 0.0046
+   Pr[draw 2 aces] = 0.0046
+   Pr[draw 2 aces] = 0.0045</code></pre>
+<p>Now with an expected <span class="math inline">\(5\,000\)</span> occurrences of a two-ace hand, we have a
+much better handle on the relative accuracy, having nailed down at
+least the first digit and gotten close with the second digit.</p>
+</div>
+<div id="error-versus-relative-error" class="section level2">
+<h2><span class="header-section-number">2.10</span> Error versus relative error</h2>
+<p>Suppose we have an estimate <span class="math inline">\(\hat{y}\)</span> for a quantity <span class="math inline">\(y\)</span>. One natural
+way to measure the accuracy of the estimate is to consider its
+<em>error</em>,</p>
+<p><span class="math display">\[
+\mathrm{err} = \hat{y} - y.
+\]</span></p>
+<p>If the estimate is too high, the error will be positive, and if the
+estimate is too low, the error will be negative. The problem with
+this standard notion of error arises when the estimand <span class="math inline">\(y\)</span> is very
+small or very large.</p>
+<p>Now consider an estimand of <span class="math inline">\(y = 0.01\)</span> and an estimate of <span class="math inline">\(\hat{y} = 0.015\)</span>. The error is just <span class="math inline">\(y - \hat{y}\)</span> = 0.005$, which looks small.
+But compared to the magnitude of <span class="math inline">\(y\)</span>, which is only 0.01, the error
+is relatively large.</p>
+<p>The <em>relative error</em> of an estimate <span class="math inline">\(\hat{y}\)</span> of a quantity <span class="math inline">\(y\)</span> can
+be defined relative to the scale of the estimand as</p>
+<p><span class="math display">\[
+\mathrm{rel\_err} = \frac{\hat{y} - y}{\left| \, y \, \right|}.
+\]</span></p>
+<p>This delivers results that are scaled in units of of <span class="math inline">\(y\)</span>. The
+relative error for our estimate <span class="math inline">\(\hat{y} = 0.015\)</span> for an estimand <span class="math inline">\(y = 0.01\)</span> has relative error of</p>
+<p><span class="math display">\[
+\frac{0.015 - 0.01}{\left| 0.01 \right|} = 0.5.
+\]</span></p>
+<p>That’s a 50% relative error, which now looks quite large compared to
+the 0.005 error.<label for="tufte-sn-55" class="margin-toggle sidenote-number">55</label><input type="checkbox" id="tufte-sn-55" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">55</span> An estimate of <span class="math inline">\(\hat{y} = 0.015\)</span> has an error of
+<span class="math inline">\(-0.005\)</span> and a relative error of <span class="math inline">\(-0.5\)</span>, or 50% too low.</span></p>
+<p>If the sign of error doesn’t matter, errors are often reported as
+absolute values, i.e., as <em>absolute error</em> and <em>absolute relative
+error</em>.</p>
+<p>The central limit theorem provides guarantees only about the error;
+to calculate its implications for relative error, the true value of
+the estimand must be known.</p>
+</div>
+<div id="the-earl-of-yarboroughs-wager" class="section level2">
+<h2><span class="header-section-number">2.11</span> The Earl of Yarborough’s wager</h2>
+<p>If an event has a probability of <span class="math inline">\(\theta\)</span>, the <em>odds</em> of it happening are
+given by the function</p>
+<p><span class="math display">\[
+\mathrm{odds}(\theta) = \frac{\theta}{1 - \theta}.
+\]</span></p>
+<p>For example, if there is a 25% chance of an event happening, the odds
+of it happening are <span class="math inline">\(\frac{0.25}{1 - 0.25} = \frac{1}{3}\)</span>. In other
+words, it’s three times as probable that the event does not occur than
+that it occurs. Odds are written as <span class="math inline">\(1:3\)</span> and pronounced “one to
+three” rather than being written as <span class="math inline">\(\frac{1}{3}\)</span> and pronounced “one
+in three”.<label for="tufte-sn-56" class="margin-toggle sidenote-number">56</label><input type="checkbox" id="tufte-sn-56" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">56</span> When reporting odds, it is common to report the odds as
+“three to one <em>against</em>” for an event with a 25% probability.</span></p>
+<p>The Earl of Yarborough<label for="tufte-sn-57" class="margin-toggle sidenote-number">57</label><input type="checkbox" id="tufte-sn-57" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">57</span> Many early developments in probability were
+bankrolled by gambling aristocrats.</span> reputedly laid a thousand to one
+odds against drawing a 13-card whist hand that contained no card
+higher than a 9.<label for="tufte-sn-58" class="margin-toggle sidenote-number">58</label><input type="checkbox" id="tufte-sn-58" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">58</span> Bulmer, 1967, p. 26.</span> There is a total of 32 cards
+that are 9 or lower (and hence 20 cards 10 or higher). We can use the
+same argument to calculate the Earl’s odds of drawing his eponymous
+hand at</p>
+<p><span class="math display">\[
+\begin{array}{rcl}
+\mbox{Pr}\left[\mbox{draw a Yarborough}\right]
+&amp; = &amp; \frac{32}{52} \times \frac{31}{51} \times \cdots \times \frac{20}{40}
+\\[6pt]
+&amp; = &amp; \prod_{n = 0}^{12} \frac{32 - n}{52 - n}
+\\[6pt]
+&amp; \approx &amp; 0.00055
+\end{array}
+\]</span></p>
+<p>The <span class="math inline">\(n\)</span> in the second line represents the number of cards drawn
+previously. The true odds are roughly one in 2000, or rounded to the
+nearest integer</p>
+<p><span class="math display">\[
+1:1817 \approx \frac{0.00055}{1 - 0.00055}
+\]</span></p>
+<p>Rounded to the nearest integer, the odds are 1817:1 against, so the
+Earl should expect to profit from his bet.<label for="tufte-sn-59" class="margin-toggle sidenote-number">59</label><input type="checkbox" id="tufte-sn-59" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">59</span> Modulo the fact that one
+rare event might ruin him—these market-making schemes require a
+large bankroll and many repetitions to avoid ruin.</span></p>
+</div>
+<div id="binomial-and-repeated-binary-trials" class="section level2">
+<h2><span class="header-section-number">2.12</span> Binomial and repeated binary trials</h2>
+<p>Suppose we have a sequence of random variables, <span class="math inline">\(V_1, \ldots, V_N\)</span>,
+each with a Bernoulli distribution <span class="math inline">\(V_n \sim \mathrm{Bernoulli}(\theta)\)</span>. That is, each <span class="math inline">\(V_n\)</span> takes on the value 1
+with a probabilty of <span class="math inline">\(\theta\)</span>.</p>
+<p>We can think of <span class="math inline">\(V_1, \ldots, V_N\)</span> as <span class="math inline">\(N\)</span> repeated binary trials, each
+with a <span class="math inline">\(\theta\)</span> chance of success.<label for="tufte-sn-60" class="margin-toggle sidenote-number">60</label><input type="checkbox" id="tufte-sn-60" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">60</span> The term “success” is the
+conventional name for the result 1 in an abstract binary trial, with
+result 0 being “failure”.</span> That is, each <span class="math inline">\(V_n\)</span> is a completely
+independent trial and each trial has a <span class="math inline">\(\theta\)</span> chance of success. By
+independent, we mean that the success of <span class="math inline">\(Y_n\)</span> does not depend on
+<span class="math inline">\(Y_{n&#39;}\)</span> if <span class="math inline">\(n \neq n&#39;\)</span>.</p>
+<p>What can we say about the number of successes in <span class="math inline">\(N\)</span> trials? Let</p>
+<p><span class="math display">\[
+\begin{array}{rcl}
+Y &amp; = &amp; V_1 + \cdots + V_N
+\\[3pt]
+&amp; = &amp; \sum_{n = 1}^N V_n,
+\end{array}
+\]</span></p>
+<p>and the question reduces to what we can say about the random variable
+<span class="math inline">\(Y\)</span>. Repeated binary trials come up so often that the distribution of
+<span class="math inline">\(Y\)</span> has a name, the <em>binomial distribution</em>. Pascal figured out that
+for any number of trials <span class="math inline">\(N \geq 0\)</span>, chance of success <span class="math inline">\(\theta \in [0, 1]\)</span>, the probability of a total number of successes <span class="math inline">\(y \in 0:N\)</span> is</p>
+<p><span class="math display">\[
+p_Y(y) = \mathrm{Binomial}(y \mid N, \theta),
+\]</span></p>
+<p>where<label for="tufte-sn-61" class="margin-toggle sidenote-number">61</label><input type="checkbox" id="tufte-sn-61" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">61</span> The value <span class="math inline">\({N \choose y}\)</span> is called the <em>binomial coefficient</em>
+due to its use here, and defined by <span class="math display">\[{N \choose y} = \frac{N!}{(N -
+y)! \times y!}.\]</span> The value of the <em>factorial</em> <span class="math inline">\(m!\)</span> for <span class="math inline">\(m &gt; 0\)</span> is
+<span class="math display">\[m! = m \times (m - 1) \times (m - 2) \times \cdots 1.\]</span> The recursive
+definition has base case <span class="math inline">\(0! = 1\)</span> and inductive case <span class="math inline">\((n + 1)! = n \times n!.\)</span> The postfix factorial operator binds more tightly than
+multiplication, so this resolves as <span class="math inline">\(n \times (n!)\)</span>. </span></p>
+<p><span class="math display">\[
+\mathrm{Binomial}(y \mid N, \theta)
+\ = \
+{N \choose y} \times \theta^y \times (1 - \theta)^{N - y}.
+\]</span></p>
+</div>
+<div id="variance-of-the-bernoulli-and-binomial" class="section level2">
+<h2><span class="header-section-number">2.13</span> Variance of the Bernoulli and binomial</h2>
+<p>If <span class="math inline">\(Y \sim \mathrm{Bernoulli}(\theta)\)</span>, then</p>
+<p><span class="math display">\[
+\begin{array}{rcl}
+\mathbb{E}[Y]
+&amp; = &amp;
+\sum_{y \in 0:1} p_Y(y) \times y
+&amp; = &amp;
+\\[2pt]
+&amp; = &amp; \mathrm{Bernoulli}(0 \mid \theta) \times 0
+      + \mathrm{Bernoulli}(1 \mid \theta) \times 1
+\\[2pt]
+&amp; = &amp; (1 - \theta) \times 0 + \theta \times 1
+\\[2pt]
+&amp; = &amp; \theta.
+\end{array}
+\]</span></p>
+<p>Plugging this into the formula for variance yields</p>
+<p><span class="math display">\[
+\begin{array}{rcl}
+\mathrm{var}[Y]
+&amp; = &amp;
+\mathbb{E}\left[ (Y - \mathbb{E}[Y])^2 \right]
+\\[2pt]
+&amp; = &amp;
+\sum_{y \in 0:1} p_Y(y) \times (y - \theta)^2
+\\[2pt]
+&amp; = &amp; (1 - \theta) \times (0 - \theta)^2
+      +  \theta \times (1 - \theta)^2
+\\[2pt]
+&amp; = &amp;
+(1 - \theta) \times \theta^2
++ \theta \times (1 - 2 \times \theta + \theta^2)
+\\[2pt]
+&amp; = &amp;
+\theta^2 - \theta^3
++ \theta - 2 \times \theta^2 + \theta^3
+\\[2pt]
+&amp; = &amp;
+\theta - \theta^2
+\\[2pt]
+&amp; = &amp;
+\theta \times (1 - \theta).
+\end{array}
+\]</span></p>
+</div>
+<div id="the-multinomial-distribution" class="section level2">
+<h2><span class="header-section-number">2.14</span> The multinomial distribution</h2>
+<p>The binomial distribution is for repeated binary trials—the
+multinomial distribution extends the same idea to repeated categorical
+trials. Just as a multiple coin tosses can be represented by a
+binomial distribution, multiple die rolls can be represented by
+multinomial distributions.</p>
+</div>
+<div id="counts-and-the-poisson-distribution" class="section level2">
+<h2><span class="header-section-number">2.15</span> Counts and the Poisson distribution</h2>
+<p>Consider two binomial random variables,</p>
+<p><span class="math display">\[
+Y \sim \mathrm{binomial}(N, \theta),
+\]</span></p>
+<p>and</p>
+<p><span class="math display">\[
+Z \sim \mathrm{binomial}(2 \times N, \frac{1}{2} \theta).
+\]</span></p>
+<p>The variable <span class="math inline">\(Z\)</span> has a maximum value that is twice as large of that of
+<span class="math inline">\(Y\)</span>, yet it has the same expectation,</p>
+<p><span class="math display">\[
+\mathbb{E}[Y] = \mathbb{E}[Z] = N \times \theta.
+\]</span></p>
+<p>Poisson is the limit of the binomial in the sense that</p>
+<p><span class="math display">\[
+\mathrm{Poisson}(y \mid \lambda)
+\ = \
+\lim_{N \rightarrow \infty}
+\mathrm{Binomial}(y \mid N, \frac{1}{N} \lambda)
+\]</span></p>
+<p>We can plot this out in a series of binomials:
+binomial(N, lambda / N) for N in ceil(lambda), *= sqrt(10) …</p>
+
+</div>
+</div>
+<p style="text-align: center;">
+<a href="random-variables-and-event-probabilities.html"><button class="btn btn-default">Previous</button></a>
+<a href="expectations-and-variance.html"><button class="btn btn-default">Next</button></a>
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>

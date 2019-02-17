@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="3 Expectations and Variance | Probability and Statistics" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+<meta name="author" content="Bob Carpenter" />
+
+<meta name="date" content="2018-01-01" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS_CHTML-full" type="text/javascript"></script>
+
+<meta name="description" content="3 Expectations and Variance | Probability and Statistics">
+
+<title>3 Expectations and Variance | Probability and Statistics</title>
+
+<link href="libs/tufte-css/tufte-fonts.css" rel="stylesheet" />
+<link href="libs/tufte-css/tufte-background.css" rel="stylesheet" />
+<link href="libs/tufte-css/tufte-italics.css" rel="stylesheet" />
+<link href="libs/tufte-css/tufte.css" rel="stylesheet" />
+
+
+
+
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li><a href="index.html#preface">Preface</a></li>
+<li><a href="what-is-probability.html#what-is-probability">What is Probability?</a></li>
+<li><a href="random-variables-and-event-probabilities.html#random-variables-and-event-probabilities"><span class="toc-section-number">1</span> Random Variables and Event Probabilities</a></li>
+<li><a href="multiple-random-variables-and-probability-functions.html#multiple-random-variables-and-probability-functions"><span class="toc-section-number">2</span> Multiple Random Variables and Probability Functions</a></li>
+<li><a href="expectations-and-variance.html#expectations-and-variance"><span class="toc-section-number">3</span> Expectations and Variance</a></li>
+<li><a href="joint-marginal-and-conditional-probabilities.html#joint-marginal-and-conditional-probabilities"><span class="toc-section-number">4</span> Joint, Marginal, and Conditional Probabilities</a></li>
+<li><a href="continuous-random-variables.html#continuous-random-variables"><span class="toc-section-number">5</span> Continuous Random Variables</a></li>
+<li><a href="continuous-distributions-and-densities.html#continuous-distributions-and-densities"><span class="toc-section-number">6</span> Continuous Distributions and Densities</a></li>
+<li><a href="statistical-inference-and-inverse-problems.html#statistical-inference-and-inverse-problems"><span class="toc-section-number">7</span> Statistical Inference and Inverse Problems</a></li>
+<li><a href="rejection-sampling.html#rejection-sampling"><span class="toc-section-number">8</span> Rejection Sampling</a></li>
+<li><a href="posterior-predictive-inference.html#posterior-predictive-inference"><span class="toc-section-number">9</span> Posterior Predictive Inference</a></li>
+<li><a href="pseudorandom-number-generators.html#pseudorandom-number-generators"><span class="toc-section-number">10</span> Pseudorandom Number Generators</a></li>
+<li><a href="floating-point-arithmetic.html#floating-point-arithmetic"><span class="toc-section-number">11</span> Floating Point Arithmetic</a></li>
+<li><a href="normal-distribution.html#normal-distribution"><span class="toc-section-number">12</span> Normal Distribution</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="expectations-and-variance" class="section level1">
+<h1><span class="header-section-number">3</span> Expectations and Variance</h1>
+<p>Almost all quantities of interest in statistics, ranging from
+parameter estimates to event probabilities and forecasts can be
+expressed as expectations of random variables. Expectation ties
+directly to simulation because expectations are computed as averages
+of samples of those random variables.</p>
+<p>Variance is a measure of the variation of a random variable. It’s
+also defined as an expectation. Curiously, it is on the quadratic
+scale—it’s defined in terms of squared differences from expected
+values. This chapter will show why this is the natural measure of
+variation and how it relates to expectations.</p>
+<div id="the-expectation-of-a-random-variable" class="section level2">
+<h2><span class="header-section-number">3.1</span> The expectation of a random variable</h2>
+<p>Suppose we have a discrete random variable <span class="math inline">\(Y\)</span>. Its <em>expectation</em> is
+defined as its average value, which is a weighted average of its
+values, where the weights are the probabilities.</p>
+<p><span class="math display">\[
+\mathbb{E}\!\left[ Y \right]
+\ = \
+\sum_{y \in Y} \, y \times p_Y(y).
+\]</span></p>
+<p>The notation <span class="math inline">\(y \in Y\)</span> is meant to indicate the summation is over all
+possible values <span class="math inline">\(y\)</span> that the random variable <span class="math inline">\(Y\)</span> may take on.</p>
+<p>For example, if <span class="math inline">\(Y\)</span> is the result of a fair coin flip, then</p>
+<p><span class="math display">\[
+\mathbb{E}\left[ Y \right]
+\ = \
+0 \times \frac{1}{2} + 1 \times \frac{1}{2}
+\ = \
+\frac{1}{2}.
+\]</span></p>
+<p>Now suppose <span class="math inline">\(Y\)</span> is the result of a fair six-sided die roll. The
+expected value of <span class="math inline">\(Y\)</span> is</p>
+<p><span class="math display">\[
+\mathbb{E} \left[ Y \right]
+\ = \
+1 \times \frac{1}{6}
++ 2 \times \frac{1}{6}
++ \cdots
++ 6 \times \frac{1}{6}
+\ = \
+\frac{21}{6}
+\ = \
+3.5.
+\]</span></p>
+<p>Now suppose <span class="math inline">\(U\)</span> is the result of a fair twenty-sided die roll. Using
+the same formula as above, the expectation works out to
+<span class="math inline">\(\frac{210}{20} = 10.5\)</span>.<label for="tufte-sn-62" class="margin-toggle sidenote-number">62</label><input type="checkbox" id="tufte-sn-62" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">62</span> In general, the expectation of a die roll is
+half the number of faces plus 0.5, because <span class="math display">\[\sum_{n=1}^N n \times
+\frac{1}{N} \ = \ \frac{1}{N} \sum_{n=1}^N n \ = \ \frac{1}{N}\frac{N \times (N +
+1)}{2} \ = \frac{N + 1}{2}.\]</span></span></p>
+</div>
+<div id="expectations-as-simulation-averages" class="section level2">
+<h2><span class="header-section-number">3.2</span> Expectations as simulation averages</h2>
+<p>We have been computing expectations all along for event
+probabilities. Expectations are the natural calculation for
+simulations, because</p>
+<p><span class="math display">\[
+\mathbb{E}\left[ Y \right]
+\ = \
+\lim_{M \rightarrow \infty} \frac{1}{M} \sum_{m = 1}^M y^{(m)},
+\]</span></p>
+<p>where the <span class="math inline">\(y^{(m)}\)</span> are individual simulations of <span class="math inline">\(Y\)</span>.</p>
+<p>For any finite <span class="math inline">\(M\)</span>, we get an estimate of the expectation defined as</p>
+<p><span class="math display">\[
+\mathbb{E}\left[ Y \right]
+\ = \
+\frac{1}{M} \sum_{m = 1}^M y^{(m)}.
+\]</span></p>
+</div>
+<div id="event-probabilities-as-expectations-of-indicators" class="section level2">
+<h2><span class="header-section-number">3.3</span> Event probabilities as expectations of indicators</h2>
+<p>The event probability estimates from sampling can be viewed as
+calculating the expectation of the value of an indicator function.
+For example,<label for="tufte-sn-63" class="margin-toggle sidenote-number">63</label><input type="checkbox" id="tufte-sn-63" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">63</span> The expectation is implicitly the expectation of
+a new random variable defined as <span class="math inline">\(Z = \mathrm{I}[Y = 1].\)</span></span></p>
+<p><span class="math display">\[
+\begin{array}{rcl}
+\mathrm{Prob}\!\left[ Y = 1 \right]
+&amp; = &amp;
+\mathbb{E}\left[\mathrm{I}\left[Y = 1\right]\right]
+\\[6pt]
+&amp; \approx &amp;
+\displaystyle \frac{1}{M} \sum_{m = 1}^M \, \mathrm{I}\!\left[y^{(m)} = 1\right].
+\end{array}
+\]</span></p>
+<p>The indicator function converts an event to a numerical 1 or 0, then
+the expectation does the averaging. The second line provides an
+estimate of the expectation based on a finite number of simulations
+of the random variable <span class="math inline">\(y^{(m)}\)</span> used to define the event.</p>
+</div>
+<div id="the-variance-of-a-random-variable" class="section level2">
+<h2><span class="header-section-number">3.4</span> The variance of a random variable</h2>
+<p>Variance is a measure of how much a random variable can be expected to
+vary around its expected value. For example, consider a random
+variable <span class="math inline">\(Y\)</span> representing a fair throw of a six-sided die. The
+expected value is <span class="math inline">\(\mathbb{E}[Y] = 3.5\)</span>, but the result may vary
+between 1 and 6.</p>
+<p>Variance measures the expected square difference between a random
+variable and its expected value.</p>
+<p><span class="math display">\[
+\mathrm{var}[Y]
+\ = \
+\mathbb{E}\!\left[
+\left( Y - \mathbb{E}[Y] \right)^2
+\right].
+\]</span></p>
+<p>The nested expectation, <span class="math inline">\(\mathbb{E}[Y]\)</span>, is just the expectation
+of <span class="math inline">\(Y\)</span>, and as such it’s a constant. The expectation operator
+<span class="math inline">\(\mathbb{E}[\, \cdot \,]\)</span> captures its random variables. Thus we
+could have written this as</p>
+<p><span class="math display">\[
+\mathbb{E}\!\left[ \left(Y - c\right)^2 \right],
+\]</span></p>
+<p>where the constant <span class="math inline">\(c = \mathbb{E}[Y]\)</span>.</p>
+<p>In our example of the six-sided die, the expectation is the average
+roll, <span class="math inline">\(\mathrm{E}[Y] = 3.5\)</span>. As is often the case with averages of
+discrete random variables, 3.5 is not itself a possible value of the
+variable. That is, it’s not possible to roll a 3.5 on a six-sided
+die.</p>
+<p>We can continue working out the expectation notation for our example,
+expanding</p>
+<p><span class="math display">\[
+\begin{array}{rcl}
+\mathbb{E}\!\left[ \left(Y - 3.5\right)^2 \right]
+&amp; = &amp;
+\sum_{y \in Y} p_Y(y) \times \left(y - 3.5\right)^2
+\\[6pt]
+&amp; = &amp;
+\sum_{y \in 1:6} \frac{1}{6} \times \left(y - 3.5\right)^2
+\\[6pt]
+&amp; = &amp;
+\frac{1}{6}
+\left(
+(1 - 3.5)^2
++ (2 - 3.5)^2
++ (3 - 3.5)^2
++ (4 - 3.5)^2
++ (5 - 3.5)^2
++ (6 - 3.5)^2
+\right)
+\\[6pt]
+&amp; = &amp; \frac{1}{6} \left(
+      6.25 + 2.25 + 0.25 + 0.25 + 2.25 + 6.25
+      \right)
+\\[6pt]
+&amp; \approx &amp; 2.92.
+\end{array}
+\]</span></p>
+<p>We can, of course, use simulation to calculate variances.</p>
+<pre><code>sum_sq_diffs = 0
+for (m in 1:M) {
+  y = uniform_rng(1:6)
+  sum_sq_diffs += (y - 3.5)^2
+print &#39;estimated var[Y] = &#39; sum_sq_diffs / M</code></pre>
+<p>And running that for <span class="math inline">\(M = 1\,000\,000\)</span> iterations gives us</p>
+<pre><code>   estimated var[Y] = 2.92</code></pre>
+<p>We see that the extreme values have an outsized influence on the sum
+of squared errors. That’s because we’re dealing with squared error,
+which reduces small errors (e.g., <span class="math inline">\(0.5^2 = 0.25\)</span>) and magnifies large
+errors (e.g., <span class="math inline">\(5^2 = 25\)</span>). We can see a plot of the squared
+differences from the mean that wold be involved in calculating
+the variance of a 20-sided die.</p>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-40"></span>
+<p class="caption marginnote shownote">
+Figure 3.1: Squared differences from the mean of 10.5 for a 20-sided die roll. The mean is indicated with a dashed vertical line.
+</p>
+<img src="_main_files/figure-html/unnamed-chunk-40-1.png" alt="Squared differences from the mean of 10.5 for a 20-sided die roll.  The mean is indicated with a dashed vertical line." width="70%"  />
+</div>
+</div>
+<div id="why-squared-error" class="section level2">
+<h2><span class="header-section-number">3.5</span> Why squared error?</h2>
+<p>Why are we calculating average squared difference from the expectation
+rather than, say, average absolute difference? The answer has to do
+with the nature of averages. It turns out the average is the <span class="math inline">\(x\)</span>
+that minimizes the sum of squared differences,</p>
+<p><span class="math display">\[
+\mathrm{sqe}(x, y) = \sum_{n \in 1:N} (y_n - x)^2,
+\]</span></p>
+<p>or equivalently, minimizes the average (or mean) squared difference,</p>
+<p><span class="math display">\[
+\mathrm{msqe}(x, y) = \frac{1}{N} \sum_{n \in 1:N} (y_n - x)^2.
+\]</span></p>
+<p>That is,</p>
+<p><span class="math display">\[
+\mathrm{avg}(y)
+\ = \
+\frac{1}{N} \sum_{n = 1}^N y_n
+\ = \
+\mathrm{argmin}_x \ \mathrm{msqe}(x, y)
+\]</span></p>
+<p>The notation <span class="math inline">\(\mathrm{argmin}_x \ f(x)\)</span> is meant to return the <span class="math inline">\(x\)</span>
+at which <span class="math inline">\(f(x)\)</span> takes on its minimum value. For example,
+<span class="math inline">\(\mathrm{argmin}_u (u - 1)^2 + 7 = 1\)</span>, whereas the minimum value
+is given by <span class="math inline">\(\mathrm{min}_u (u - 1)^2 + 7 = 7\)</span>.</p>
+<p>Averages themselves are important because expectations are defined in
+terms of averages, and event probabilities are defined in terms of
+expectations. Furthermore, the central limit theorem governs the
+convergence of averages as estimates of quantities of interest in
+terms of squared error.</p>
+</div>
+<div id="standard-deviations-for-scale-correction" class="section level2">
+<h2><span class="header-section-number">3.6</span> Standard deviations for scale correction</h2>
+<p>The difficulty in managing variance is that it has different units
+than the variable it is measuring the variation of. For example, if
+<span class="math inline">\(Y\)</span> reprents the fill of a bottle with units in milliliters, then
+<span class="math inline">\(\mathrm{var}[Y]\)</span> has units of squared milliliters. Squared
+milliliters are not natural. As we saw even with the calculation for
+a single six-sided die, values of 1 and 6 had 6.25 squared difference
+from the expected value of 3.5, whereas 3 and 4 had only 0.25 squared
+difference from the expected value. Small values (below one) get
+smaller (<span class="math inline">\(0.5^2 = 0.25\)</span>) and large values are amplified (<span class="math inline">\(2.5^2 = 6.25\)</span>).</p>
+<p>Instead of dealing with variance, with its quadratic scale and
+mismatched units, it is common to convert back at the end to ordinary
+units by taking a square root. The <em>standard deviation</em> of a random
+variable is defined as the square root of its variance,</p>
+<p><span class="math display">\[
+\mathrm{sd}[Y] = \sqrt{\mathrm{var}\left[ Y \right]}.
+\]</span></p>
+<p>While it is not known why Karl Pearson coined the term “standard
+deviation”,<label for="tufte-sn-64" class="margin-toggle sidenote-number">64</label><input type="checkbox" id="tufte-sn-64" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">64</span> Pearson, K., 1893. Contributions to the mathematical
+theory of evolution. <em>Philosophical Transactions of the Royal Society
+of London, Series A</em>. Nov 16: 329–333, which on page 330 coins the
+term stating only, “standard deviations—a term used in the memoir
+for what corresponds in frequency curves to the error of mean
+square.”</span> the key consideration here is that <span class="math inline">\(\mathrm{sd}[Y]\)</span> has the
+same units as the variable <span class="math inline">\(Y\)</span> itself and is thus much easier to
+interpret.</p>
+
+</div>
+</div>
+<p style="text-align: center;">
+<a href="multiple-random-variables-and-probability-functions.html"><button class="btn btn-default">Previous</button></a>
+<a href="joint-marginal-and-conditional-probabilities.html"><button class="btn btn-default">Next</button></a>
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>

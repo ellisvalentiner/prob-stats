@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="4 Joint, Marginal, and Conditional Probabilities | Probability and Statistics" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+<meta name="author" content="Bob Carpenter" />
+
+<meta name="date" content="2018-01-01" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS_CHTML-full" type="text/javascript"></script>
+
+<meta name="description" content="4 Joint, Marginal, and Conditional Probabilities | Probability and Statistics">
+
+<title>4 Joint, Marginal, and Conditional Probabilities | Probability and Statistics</title>
+
+<link href="libs/tufte-css/tufte-fonts.css" rel="stylesheet" />
+<link href="libs/tufte-css/tufte-background.css" rel="stylesheet" />
+<link href="libs/tufte-css/tufte-italics.css" rel="stylesheet" />
+<link href="libs/tufte-css/tufte.css" rel="stylesheet" />
+
+
+
+
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li><a href="index.html#preface">Preface</a></li>
+<li><a href="what-is-probability.html#what-is-probability">What is Probability?</a></li>
+<li><a href="random-variables-and-event-probabilities.html#random-variables-and-event-probabilities"><span class="toc-section-number">1</span> Random Variables and Event Probabilities</a></li>
+<li><a href="multiple-random-variables-and-probability-functions.html#multiple-random-variables-and-probability-functions"><span class="toc-section-number">2</span> Multiple Random Variables and Probability Functions</a></li>
+<li><a href="expectations-and-variance.html#expectations-and-variance"><span class="toc-section-number">3</span> Expectations and Variance</a></li>
+<li><a href="joint-marginal-and-conditional-probabilities.html#joint-marginal-and-conditional-probabilities"><span class="toc-section-number">4</span> Joint, Marginal, and Conditional Probabilities</a></li>
+<li><a href="continuous-random-variables.html#continuous-random-variables"><span class="toc-section-number">5</span> Continuous Random Variables</a></li>
+<li><a href="continuous-distributions-and-densities.html#continuous-distributions-and-densities"><span class="toc-section-number">6</span> Continuous Distributions and Densities</a></li>
+<li><a href="statistical-inference-and-inverse-problems.html#statistical-inference-and-inverse-problems"><span class="toc-section-number">7</span> Statistical Inference and Inverse Problems</a></li>
+<li><a href="rejection-sampling.html#rejection-sampling"><span class="toc-section-number">8</span> Rejection Sampling</a></li>
+<li><a href="posterior-predictive-inference.html#posterior-predictive-inference"><span class="toc-section-number">9</span> Posterior Predictive Inference</a></li>
+<li><a href="pseudorandom-number-generators.html#pseudorandom-number-generators"><span class="toc-section-number">10</span> Pseudorandom Number Generators</a></li>
+<li><a href="floating-point-arithmetic.html#floating-point-arithmetic"><span class="toc-section-number">11</span> Floating Point Arithmetic</a></li>
+<li><a href="normal-distribution.html#normal-distribution"><span class="toc-section-number">12</span> Normal Distribution</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="joint-marginal-and-conditional-probabilities" class="section level1">
+<h1><span class="header-section-number">4</span> Joint, Marginal, and Conditional Probabilities</h1>
+<div id="diagnostic-accuracy" class="section level2">
+<h2><span class="header-section-number">4.1</span> Diagnostic accuracy</h2>
+<p>What if I told you that you just tested positive on a diagnostic test
+with 95% accuracy, but that there’s only a 16% chance that you have
+the disease in question? This running example will explain how this
+can happen.<label for="tufte-sn-65" class="margin-toggle sidenote-number">65</label><input type="checkbox" id="tufte-sn-65" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">65</span> The example diagnostic accuracies and disease prevalences
+we will use for simulation are not unrealistic—this kind of thing
+happens all the time in practice, which is why there are often
+batteries of follow-up tests after preliminary positive test results.</span></p>
+<p>Suppose the random variable <span class="math inline">\(Z \in 0:1\)</span> represents whether a
+particular subject has a specific disease.<label for="tufte-sn-66" class="margin-toggle sidenote-number">66</label><input type="checkbox" id="tufte-sn-66" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">66</span> <span class="math inline">\(Z = 1\)</span> if the subject has
+the disease and <span class="math inline">\(Z = 0\)</span> if not.</span> Now suppose there is a diagnostic
+test for whether a subject has the disease. Further suppose the
+random variabel <span class="math inline">\(Y \in 0:1\)</span> represents the result of applying the test
+to the same subject.<label for="tufte-sn-67" class="margin-toggle sidenote-number">67</label><input type="checkbox" id="tufte-sn-67" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">67</span> <span class="math inline">\(Y = 1\)</span> if the test result is positive and <span class="math inline">\(Y = 0\)</span> if it’s negative.</span></p>
+<p>Now suppose the test is 95% accurate in the sense that</p>
+<ul>
+<li>if the test is administered to a subject with the disease (i.e., <span class="math inline">\(Z = 1\)</span>), there’s a 95% chance the test result will be positive (i.e.,
+<span class="math inline">\(Y = 1\)</span>), and</li>
+<li>if the test is administered to a subject without the disease (i.e.,
+<span class="math inline">\(Z = 0\)</span>), there’s a 95% chance the test result will be negative
+(i.e., <span class="math inline">\(Y = 0)\)</span>.</li>
+</ul>
+<p>We’re going to pause the example while we introduce the probability
+notation required to talk about it more precisely.</p>
+</div>
+<div id="conditional-probability" class="section level2">
+<h2><span class="header-section-number">4.2</span> Conditional probability</h2>
+<p>Conditional probability notation expresses the diagnostic test’s
+accuracy for people have the disease (<span class="math inline">\(Z = 1\)</span>) as</p>
+<p><span class="math display">\[
+\mbox{Pr}[Y = 1 \mid Z = 1] = 0.95
+\]</span></p>
+<p>and for people who don’t have the disease (<span class="math inline">\(Z = 0\)</span>) as</p>
+<p><span class="math display">\[
+\mbox{Pr}[Y = 0 \mid Z = 0] = 0.95.
+\]</span></p>
+<p>We read <span class="math inline">\(\mbox{Pr}[\mathrm{A} \mid \mathrm{B}]\)</span> as the <em>conditional
+probability</em> of event <span class="math inline">\(\mathrm{A}\)</span> given that we know event
+<span class="math inline">\(\mathrm{B}\)</span> occurred. Knowing that event <span class="math inline">\(\mathrm{B}\)</span> occurs often,
+but not always, gives us information about the probability of
+<span class="math inline">\(\mathrm{A}\)</span> occurring.</p>
+<p>The conditional probability function <span class="math inline">\(\mbox{Pr}[\, \cdot \mid \mathrm{B}]\)</span> behaves just like the unconditional probability function
+<span class="math inline">\(\mbox{Pr}[\, \cdot \,]\)</span>. That is, it satisfies all of the laws of
+probability we have introduced for event probabilities. The
+difference is in the semantics—conditional probabilities are
+restricted to selecting a way the world can be that is consistent with
+the event <span class="math inline">\(\mathrm{B}\)</span> occurring.<label for="tufte-sn-68" class="margin-toggle sidenote-number">68</label><input type="checkbox" id="tufte-sn-68" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">68</span> Formally, an event <span class="math inline">\(\mathrm{B}\)</span> is
+modeled as a set of ways the world can be, i.e., a subset <span class="math inline">\(\mathrm{B} \subseteq \Omega\)</span> of the sample space <span class="math inline">\(\Omega\)</span>. The conditional
+probability function <span class="math inline">\(\mbox{Pr}[\, \cdot \mid \mathrm{B}]\)</span> can be
+interpreted as an ordinary probability distribution with sample space
+<span class="math inline">\(\mathrm{B}\)</span> instead of the original <span class="math inline">\(\Omega\)</span>.</span></p>
+<p>For example, the sum of exclusive and exhaustive probabilities must be
+one, and thus the diagnostic error probabilities are one minus the
+correct diagnosis probabilities,<label for="tufte-sn-69" class="margin-toggle sidenote-number">69</label><input type="checkbox" id="tufte-sn-69" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">69</span> These error rates are often called the
+false positive rate and false negative rate, the positive and negative
+in this case being the test result and the false coming from not
+matching the true disease status.</span></p>
+<p><span class="math display">\[
+\mbox{Pr}[Y = 0 \mid Z = 1] = 0.05
+\]</span></p>
+<p>and</p>
+<p><span class="math display">\[
+\mbox{Pr}[Y = 1 \mid Z = 0] = 0.05.
+\]</span></p>
+</div>
+<div id="joint-probability" class="section level2">
+<h2><span class="header-section-number">4.3</span> Joint probability</h2>
+<p>Joint probability notation expresses the probability of multiple
+events happening. For instance, <span class="math inline">\(\mbox{Pr}[Y = 1, Z = 1]\)</span> is the
+probability of both events, <span class="math inline">\(Y = 1\)</span> and <span class="math inline">\(Z = 1\)</span>, occurring.</p>
+<p>In general, if <span class="math inline">\(\mathrm{A}\)</span> and <span class="math inline">\(\mathrm{B}\)</span> are events,<label for="tufte-sn-70" class="margin-toggle sidenote-number">70</label><input type="checkbox" id="tufte-sn-70" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">70</span> We use
+capital roman letters for event variables to distinguish them from
+random variables for which we use capital italic letters.</span> we write
+<span class="math inline">\(\mbox{Pr}[\mathrm{A}, \mathrm{B}]\)</span> for the event of both <span class="math inline">\(\mathrm{A}\)</span>
+and <span class="math inline">\(\mathrm{B}\)</span> occurring. Because joint probability is defined in
+terms of conjunction (“and” in English), the definition is symmetric,
+<span class="math display">\[\mbox{Pr}[\mathrm{A}, \mathrm{B}] = \mbox{Pr}[\mathrm{B},
+\mathrm{A}].\]</span></p>
+<p>In the context of a joint probability <span class="math inline">\(\mbox{Pr}[\mathrm{A}, \mathrm{B}]\)</span>, the single
+event <span class="math inline">\(\mbox{Pr}[\mathrm{A}]\)</span> is called a <em>marginal probability</em>.<label for="tufte-sn-71" class="margin-toggle sidenote-number">71</label><input type="checkbox" id="tufte-sn-71" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">71</span> Because of
+symmetry, <span class="math inline">\(\mbox{Pr}[\mathrm{B}]\)</span> is also a marginal probability.</span></p>
+<p>Joint probability is defined relative to conditional and marginal
+probabilities by</p>
+<p><span class="math display">\[
+\mbox{Pr}[\mathrm{A}, \mathrm{B}]
+\ = \
+\mbox{Pr}[\mathrm{A} \mid \mathrm{B}] \times \mbox{Pr}[\mathrm{B}].
+\]</span></p>
+<p>In words, the probability of events <span class="math inline">\(\mathrm{A}\)</span> and <span class="math inline">\(\mathrm{B}\)</span> occurring is the same
+as the probability of event <span class="math inline">\(\mathrm{B}\)</span> occurring times the probabilty of <span class="math inline">\(\mathrm{A}\)</span>
+occurring given that <span class="math inline">\(\mathrm{B}\)</span> occurs.</p>
+<p>The relation between joint and conditional probability involves simple
+multiplication, which may be rearranged by dividing both sides by
+<span class="math inline">\(\mbox{Pr}[\mathrm{B}]\)</span> to yield</p>
+<p><span class="math display">\[
+\mbox{Pr}[\mathrm{A} \mid \mathrm{B}]
+\ = \
+\frac{\displaystyle \mbox{Pr}[\mathrm{A}, \mathrm{B}]}
+     {\displaystyle \mbox{Pr}[\mathrm{B}]}.
+\]</span></p>
+<p>Theoretically, it is simplest to take joint probability as the
+primitive so that this becomes the definition of conditional
+probability. In practice, all that matters is the relation between
+conditional and joint probability.</p>
+</div>
+<div id="dividing-by-zero-not-a-number-or-infinity" class="section level2">
+<h2><span class="header-section-number">4.4</span> Dividing by zero: not-a-number or infinity</h2>
+<p>Conditional probabilities are not well defined in the situation where
+<span class="math inline">\(\mbox{Pr}[B] = 0\)</span>. In such a situation, <span class="math inline">\(\mbox{Pr}[\mathrm{A}, \mathrm{B}] = 0\)</span>, because <span class="math inline">\(B\)</span> has probability zero.</p>
+<p>In practice, if we try to evaluate such a condition using standard
+computer floating-point arithmetic, we wind up dividing zero by zero.</p>
+<pre><code>Pr_A_and_B = 0.0
+Pr_B = 0.0
+Pr_A_given_B = Pr_A_and_B / Pr_B
+print &#39;Pr[A | B] = &#39; Pr_A_given_B</code></pre>
+<p>Running that, we get</p>
+<pre><code>   Pr[A | B] = NaN</code></pre>
+<p>The value <code>NaN</code> indicates what is known as the <em>not-a-number</em>
+value.<label for="tufte-sn-72" class="margin-toggle sidenote-number">72</label><input type="checkbox" id="tufte-sn-72" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">72</span> There are technically two types of not-a-number values in the
+IEEE 754 standard, of which we will only consider the non-signaling
+version.</span> This is a special floating-point value that is different
+from all other values and used to indicate a domain error on an
+operation. Other examples that will return not-a-number values
+include <code>log(-1)</code>.</p>
+<p>If we instead divide a positive or negative number by zero,</p>
+<pre><code>print &#39;1.0 / 0.0 = &#39; 1.0 / 0.0
+print &#39;-3.2 / 0.0 = &#39; -3.2 / 0.0</code></pre>
+<p>we get</p>
+<pre><code>   1.0 / 0.0 = Inf
+   -3.2 / 0.0 = -Inf</code></pre>
+<p>These values denote positive infinity (<span class="math inline">\(\infty\)</span>) and negative infinity
+(<span class="math inline">\(-\infty\)</span>), respectively. Like not-a-number, these are special
+reserved floating-point values with the expected interactions with
+other numbers.<label for="tufte-sn-73" class="margin-toggle sidenote-number">73</label><input type="checkbox" id="tufte-sn-73" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">73</span> For example, adding a finite number and an infinity
+yields the infinity and subtracting two infinities produces a
+not-a-number value. For details, see <a href="https://ieeexplore.ieee.org/document/4610935">754-2008—IEEE standard for floating-point
+arithmetic</a>.</span></p>
+</div>
+<div id="simulating-the-diagnostic-example" class="section level2">
+<h2><span class="header-section-number">4.5</span> Simulating the diagnostic example</h2>
+<p>What we don’t know so far in the running example is what the
+probability is of a subject having the disease or not. This
+probability, known as the <em>prevalence</em> of the disease, is often the
+main quantity of interest in an epidemiological study.</p>
+<p>Let’s suppose in our case that 1% of the population has the disease in
+question. That is, we assume</p>
+<p><span class="math display">\[
+\mbox{Pr}[Z = 1] = 0.01
+\]</span></p>
+<p>Now we have enough information to run a simulation of all
+of the joint probabilities. We just follow the marginal and
+conditional probabilities. First, we generate <span class="math inline">\(Z\)</span>, whether or not the
+subject has the disease, then we generate <span class="math inline">\(Y\)</span>, the result of the test,
+conditional on the disease status <span class="math inline">\(Z\)</span>.</p>
+<pre><code>for (m in 1:M)
+  z[m] = bernoulli_rng(0.01)
+  if (z[m] == 1)
+    y[m] = bernoulli_rng(0.95)
+  else
+    y[m] = bernoulli_rng(0.05)
+print &#39;estimated Pr[Y = 1] = &#39; sum(y) / M
+print &#39;estimated Pr[Z = 1] = &#39; sum(z) / M</code></pre>
+<p>The program computes the marginals for <span class="math inline">\(Y\)</span> and <span class="math inline">\(Z\)</span> directly. This is
+straightforward because both <span class="math inline">\(Y\)</span> and <span class="math inline">\(Z\)</span> are simulated in every
+iteration (as <code>y[m]</code> and <code>z[m]</code> in the code). Marginalization using
+simulation requires no work whatsoever.<label for="tufte-sn-74" class="margin-toggle sidenote-number">74</label><input type="checkbox" id="tufte-sn-74" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">74</span> Marginalization can be
+tedious, impractical, or impossible to carry out analytically.</span></p>
+<p>Let’s run that with <span class="math inline">\(M = 100\,000\)</span> and see what we get.</p>
+<pre><code>   estimated Pr[Y = 1] = 0.060
+   estimated Pr[Z = 1] = 0.010</code></pre>
+<p>We know that the marginal <span class="math inline">\(\mbox{Pr}[Z = 1]\)</span> is 0.01, so the estimate is
+close to the true value for <span class="math inline">\(Z\)</span>; we’ll see below that it’s also close
+to the true value of <span class="math inline">\(\mbox{Pr}[Y = 1]\)</span>.</p>
+<p>We can also use the simulated values to estimate conditional
+probabilities. To estimate, we just follow the formula for the
+conditional distribution,</p>
+<p><span class="math display">\[
+\mbox{Pr}[A \mid B]
+\ = \
+\frac{\displaystyle \mbox{Pr}[A, B]}
+     {\displaystyle \mbox{Pr}[B]}.
+\]</span></p>
+<p>Specifically, we count the number of draws in which both A and B
+occur, then divide by the number of draws in which the event B occurs.</p>
+<pre><code>for (m in 1:M)
+  z[m] = bernoulli_rng(0.01)
+  if (z[m] == 1)
+    y[m] = bernoulli_rng(0.95)
+  else
+    y[m] = bernoulli_rng(0.05)
+  y1z1[m] = (y[m] == 1 &amp; z[m] == 1)
+  y1z0[m] = (y[m] == 1 &amp; z[m] == 0)
+
+print &#39;estimated Pr[Y = 1 | Z = 1] = &#39; sum(y1z1) / sum(z == 1)
+print &#39;estimated Pr[Y = 1 | Z = 0] = &#39; sum(y1z0) / sum(z == 0)</code></pre>
+<p>We set the indicator variable <code>y1z1[m]</code> to 1 if <span class="math inline">\(Y = 1\)</span> and <span class="math inline">\(Z = 1\)</span> in
+the <span class="math inline">\(m\)</span>-th simulation; <code>y1z0</code> behaves similarly. The operator <code>&amp;</code> is
+used for conjuncton (logical and) in the usual way.<label for="tufte-sn-75" class="margin-toggle sidenote-number">75</label><input type="checkbox" id="tufte-sn-75" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">75</span> The logical and
+operation is often written as <code>&amp;&amp;</code> in programming languages to
+distinguish it from bitwise and, which is conventionally written <code>&amp;</code>.</span></p>
+<p>Recall that <code>z == 0</code>
+is an array where entry <span class="math inline">\(m\)</span> is 1 if the condition holds, here <span class="math inline">\(z^{(m)} = 0\)</span>.</p>
+<p>The resulting etsimates with <span class="math inline">\(M = 100\,000\)</span> draws are pretty close to
+the true values,</p>
+<pre><code>   estimated Pr[Y = 1 | Z = 1] = 0.952
+   estimated Pr[Y = 1 | Z = 0] = 0.051</code></pre>
+<p>The true values were stipulated as part of the example to be
+<span class="math inline">\(\mbox{Pr}[Y = 1 \mid Z = 1] = 0.95\)</span> and <span class="math inline">\(\mbox{Pr}[Y = 1 \mid Z = 0] = 0.05\)</span>. Not surprisingly, knowing the value of <span class="math inline">\(Z\)</span> (the disease
+status) provides quite a bit of information about the value of <span class="math inline">\(Y\)</span>
+(the diagnostic test result).</p>
+<p>Now let’s do the same thing the other way around,and look at the
+probability of having the disease based on the test result, i.e.,
+<span class="math inline">\(\mbox{Pr}[Z = 1 \mid Y = 1]\)</span> and <span class="math inline">\(\mbox{Pr}[Z = 1 \mid Y = 0]\)</span>.<label for="tufte-sn-76" class="margin-toggle sidenote-number">76</label><input type="checkbox" id="tufte-sn-76" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">76</span> The
+program is just like the last one.</span></p>
+<pre><code>   estimated Pr[Z = 1 | Y = 1] = 0.159
+   estimated Pr[Z = 1 | Y = 0] = 0.001</code></pre>
+<p>Did we make a mistake in coding up our simulation? We estimated
+<span class="math inline">\(\mbox{Pr}[Z = 1 \mid Y = 1]\)</span> at around 16%, which says that if the
+subject has a positive test result (<span class="math inline">\(Y = 1\)</span>), there is only a 16%
+chance they have the disease (<span class="math inline">\(Z = 1\)</span>). How can that be when the test
+is 95% accurate and simulated as such?</p>
+<p>The answer hinges on the prevalence of the disease. We assumed only
+1% of the population suffered from the disease, so that 99% of the
+people being tested were disease free. Among the disease free (<span class="math inline">\(Z = 0\)</span>) that are tested, 5% of them have false positives (<span class="math inline">\(Y = 1\)</span>).
+That’s a lot of patients, around 5% times 99%, which is nearly 5% of
+the population. On the other hand, among the 1% of the population
+with the disease, almost all of them test positive. This means
+roughly five times as many disease-free subjects test positive for the
+disease as disease-carrying subjects test positive.</p>
+</div>
+<div id="analyzing-the-diagnostic-example" class="section level2">
+<h2><span class="header-section-number">4.6</span> Analyzing the diagnostic example</h2>
+<p>The same thing can be done with algebra as we did in the previous
+section with simulations.<label for="tufte-sn-77" class="margin-toggle sidenote-number">77</label><input type="checkbox" id="tufte-sn-77" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">77</span> Computationally, precomputed algebra is a
+big win over simulations in terms of both compute time and accuracy.
+It may not be a win when the derivations get tricky and human time is
+taken into consideration.</span> Now we can evaluate joint probabilities,
+e.g.,</p>
+<p><span class="math display">\[
+\begin{array}{rcl}
+\mbox{Pr}[Y = 1, Z = 1]
+&amp; = &amp; \mbox{Pr}[Y = 1 \mid Z = 1] \times \mbox{Pr}[Z = 1]
+\\[4pt]
+&amp; = &amp; 0.95 \times 0.01
+\\
+&amp; = &amp; 0.0095.
+\end{array}
+\]</span></p>
+<p>Similarly, we can work out the probability the remaining probabilities
+in the same way, for example, the probability of a subject having the
+disase and getting a negative test result,</p>
+<p><span class="math display">\[
+\begin{array}{rcl}
+\mbox{Pr}[Y = 0, Z = 1]
+&amp; = &amp; \mbox{Pr}[Y = 0 \mid Z = 1] \times \mbox{Pr}[Z = 1]
+\\[4pt]
+&amp; = &amp; 0.05 \times 0.01
+\\
+&amp; = &amp; 0.0005.
+\end{array}
+\]</span></p>
+<p>Doing the same thing for the disease-free patients completes a
+four-by-four table of probabilities,</p>
+<p><span class="math display">\[
+\begin{array}{|r|r|r|}
+\hline
+\mbox{Probability} &amp; Y = 1  &amp; Y = 0
+\\ \hline
+Z = 1 &amp; 0.0095 &amp; 0.0005
+\\ \hline
+Z = 0 &amp; 0.0450 &amp; 0.8500
+\\ \hline
+\end{array}
+\]</span></p>
+<p>For example, the top-left entry records the fact that <span class="math inline">\(\mbox{Pr}[Y = 1, Z = 1] = 0.0095.\)</span> The next entry to the right indicates that
+<span class="math inline">\(\mbox{Pr}[Y = 0, Z = 1] = 0.0005.\)</span></p>
+<p>The marginal probabilities (e.g., <span class="math inline">\(\mbox{Pr}[Y = 1]\)</span>) can be computed
+by summing the probabilities of all alternatives that lead to <span class="math inline">\(Y = 1\)</span>,
+here <span class="math inline">\(Z = 1\)</span> and <span class="math inline">\(Z = 0\)</span></p>
+<p><span class="math display">\[
+\mbox{Pr}[Y = 1]
+\ = \
+\mbox{Pr}[Y = 1, Z = 1]
++ \mbox{Pr}[Y = 1, Z = 0]
+\]</span></p>
+<p>We can extend our two-by-two table by writing the sums in what
+would’ve been the margins of the original table above.</p>
+<p><span class="math display">\[
+\begin{array}{|r|r|r|r|}
+\hline
+\mbox{Probability} &amp; Y = 1  &amp; Y = 0 &amp; Y = 1 \ \mbox{or} \ Y = 0
+\\ \hline
+Z = 1 &amp; 0.0095 &amp; 0.0005 &amp; \mathit{0.0100}
+\\ \hline
+Z = 0 &amp; 0.0450 &amp; 0.8500 &amp; \mathit{0.9900}
+\\ \hline
+Z = 1 \ \mbox{or} \ Z = 0 &amp; \mathit{0.0545} &amp; \mathit{0.8505}
+&amp; \mathbf{1.0000}
+\\ \hline
+\end{array}
+\]</span></p>
+<p>Here’s the same table with the symbolic values.</p>
+<p><span class="math display">\[
+\begin{array}{|r|r|r|r|}
+\hline
+\mbox{Probability} &amp; Y = 1  &amp; Y = 0 &amp; Y = 1 \ \mbox{or} \ Y = 0
+\\ \hline
+Z = 1 &amp; \mbox{Pr}[Y = 1, Z = 1] &amp; \mbox{Pr}[Y = 0, Z = 1]
+&amp; \mbox{Pr}[Z = 1]
+\\ \hline
+Z = 0 &amp; \mbox{Pr}[Y = 1, Z = 0] &amp; \mbox{Pr}[Y = 0, Z = 0]
+&amp; \mbox{Pr}[Z = 0]
+\\ \hline
+Z = 1 \ \mbox{or} \ Z = 0
+&amp; \mbox{Pr}[Y = 1] &amp; \mbox{Pr}[Y = 0]
+&amp; \mbox{Pr}[ \ ]
+\\ \hline
+\end{array}
+\]</span></p>
+<p>For example, that <span class="math inline">\(\mbox{Pr}[Z = 1] = 0.01\)</span> can be read off the top of
+the right margin column—it is the sum of the two table entries in
+the top row, <span class="math inline">\(\mbox{Pr}[Y = 1, Z = 1]\)</span> and <span class="math inline">\(\mbox{Pr}[Y = 0, Z = 1]\)</span>.</p>
+<p>In the same way, <span class="math inline">\(\mbox{Pr}[Y = 0] = 0.8505\)</span> can be read off the right
+of the bottom margin row, being the sum of the entries in the right
+column, <span class="math inline">\(\mbox{Pr}[Y = 0, Z = 1]\)</span> and <span class="math inline">\(\mbox{Pr}[Y = 0, Z = 0]\)</span>.</p>
+<p>The extra headings define the table so that
+each entry is the probability of the event on the top row and on the
+left column. This is why it makes sense to record the grand sum of
+1.00 in the bottom right of the table.</p>
+</div>
+<div id="joint-and-conditional-distribution-notation" class="section level2">
+<h2><span class="header-section-number">4.7</span> Joint and conditional distribution notation</h2>
+<p>Recall that the probability mass function <span class="math inline">\(p_Y(y)\)</span> for a discrete
+random variable <span class="math inline">\(Y\)</span> is defined by</p>
+<p><span class="math display">\[
+p_Y(y) = \mbox{Pr}[Y = y].
+\]</span></p>
+<p>As before, capital <span class="math inline">\(Y\)</span> is the random variable, <span class="math inline">\(y\)</span> is a potential
+value for <span class="math inline">\(Y\)</span>, and <span class="math inline">\(Y = y\)</span> is the event that the random variable <span class="math inline">\(Y\)</span>
+takes on value <span class="math inline">\(y\)</span>.</p>
+<p>The <em>joint probability mass function</em> for two discrete random variables
+<span class="math inline">\(Y\)</span> and <span class="math inline">\(Z\)</span> is defined by the joint probability,</p>
+<p><span class="math display">\[
+p_{Y,Z}(y, z) = \mbox{Pr}[Y = y, Z = z].
+\]</span></p>
+<p>The notation follows the previous notation with <span class="math inline">\(Y, Z\)</span> indicating that
+the first argument is the value of <span class="math inline">\(Y\)</span> and the second that of <span class="math inline">\(Z\)</span>.</p>
+<p>Similarly, the conditional probablity mass function is defined by</p>
+<p><span class="math display">\[
+p_{Y \mid Z}(y \mid z) = \mbox{Pr}[Y = y \mid Z = z].
+\]</span></p>
+<p>It can equivalently be defined as</p>
+<p><span class="math display">\[
+p_{Y \mid Z}(y \mid z)
+\ = \
+\frac{\displaystyle p_{Y, Z}(y, z)}
+     {\displaystyle p_{Z}(z)}.
+\]</span></p>
+<p>The notation again follows that of the conditional probability
+function through which the conditional probability mass function is
+defined.</p>
+</div>
+<div id="bayess-rule" class="section level2">
+<h2><span class="header-section-number">4.8</span> Bayes’s Rule</h2>
+<p>Bayes’s rule relates the conditional probability <span class="math inline">\(\mbox{Pr}[\mathrm{A} \mid \mathrm{B}]\)</span>
+for events <span class="math inline">\(\mathrm{A}\)</span> and <span class="math inline">\(\mathrm{B}\)</span> to the inverse conditional probability
+<span class="math inline">\(\mbox{Pr}[\mathrm{A} \mid \mathrm{B}]\)</span> and the marginal probability <span class="math inline">\(\mbox{Pr}[\mathrm{B}]\)</span>.
+The rule requires a partition of the event <span class="math inline">\(\mathrm{A}\)</span> into events <span class="math inline">\(\mathrm{A}_1, \ldots, \mathrm{A}_K\)</span>, which are mutually exclusive and exhaust <span class="math inline">\(\mathrm{A}\)</span>. That is,</p>
+<p><span class="math display">\[
+\mbox{Pr}[\mathrm{A}_k, \mathrm{A}_{k&#39;}] = 0
+\ \ \mbox{if} \ \ k \neq k&#39;,
+\]</span></p>
+<p>and</p>
+<p><span class="math display">\[
+\begin{array}{rcl}
+\mbox{Pr}[\mathrm{A}]
+&amp; = &amp; \mbox{Pr}[\mathrm{A}_1] + \cdots + \mbox{Pr}[\mathrm{A}_K].
+\\[3pt]
+&amp; = &amp; \sum_{k \in 1:K} \mbox{Pr}[\mathrm{A}_k].
+\end{array}
+\]</span></p>
+<p>The basic rule of probability used to derive each line is noted to the
+right.</p>
+<p><span class="math display">\[
+\begin{array}{rcll}
+\mbox{Pr}[\mathrm{A} \mid \mathrm{B}]
+&amp; = &amp;
+\frac{\displaystyle \mbox{Pr}[\mathrm{A}, \mathrm{B}]}
+     {\displaystyle \mbox{Pr}[\mathrm{B}]}
+&amp; \ \ \ \ \mbox{[conditional definition]}
+\\[6pt]
+&amp; = &amp;
+\frac{\displaystyle \mbox{Pr}[\mathrm{B} \mid \mathrm{A}] \times \mbox{Pr}[\mathrm{A}]}
+     {\displaystyle \mbox{Pr}[\mathrm{B}]}
+&amp; \ \ \ \ \mbox{[joint definition]}
+\\[6pt]
+&amp; = &amp;
+\frac{\displaystyle \mbox{Pr}[\mathrm{B} \mid \mathrm{A}] \times \mbox{Pr}[\mathrm{A}]}
+     {\displaystyle \sum_{k \in 1:K} \displaystyle \mbox{Pr}[\mathrm{B}, \mathrm{A}_k]}
+&amp; \ \ \ \ \mbox{[marginalization]}
+\\[6pt]
+&amp; = &amp;
+\frac{\displaystyle \mbox{Pr}[\mathrm{B} \mid \mathrm{A}] \times \mbox{Pr}[\mathrm{A}]}
+     {\displaystyle \sum_{k \in 1:K} \mbox{Pr}[\mathrm{B} \mid \mathrm{A}_k] \times \mbox{Pr}[\mathrm{A}_k]}.
+&amp; \ \ \ \ \mbox{[joint definition]}
+\end{array}
+\]</span></p>
+<p>Letting <span class="math inline">\(\mathrm{A}\)</span> be the event <span class="math inline">\(Y = y\)</span>, <span class="math inline">\(\mathrm{B}\)</span> be the event
+<span class="math inline">\(Z = z\)</span>, and <span class="math inline">\(A_k\)</span> be the event <span class="math inline">\(Y = k\)</span>, Bayes’s rule can be
+instantiated to</p>
+<p><span class="math display">\[
+\mbox{Pr}[Y = y \mid Z = z]
+\ = \
+\frac{\displaystyle
+        \mbox{Pr}[Z = z \mid Y = y] \times \mbox{Pr}[Y = y]}
+     {\displaystyle
+       \sum_{y&#39; \in 1:K} \mbox{Pr}[Z = z \mid Y = y&#39;] \times \mbox{Pr}[Y = y&#39;]}.
+\]</span></p>
+<p>This allows us to express Bayes’s rule in terms of probabilty mass
+functions as</p>
+<p><span class="math display">\[
+p_{Y \mid Z}(y \mid z)
+\ = \
+\frac{\displaystyle p_{Z \mid Y}(z \mid y) \times p_{Y}(y)}
+     {\displaystyle \sum_{y&#39; \in 1:K} p_{Z \mid Y}(z \mid y&#39;) \times p_Y(y&#39;)}.
+\]</span></p>
+<p>Bayes’s rule can be extended to infinite partitions of the event <span class="math inline">\(B\)</span>,
+or in the probability mass function case, a variable <span class="math inline">\(Y\)</span> taking on
+infinitely many possible values.</p>
+</div>
+<div id="fermat-and-the-problem-of-points" class="section level2">
+<h2><span class="header-section-number">4.9</span> Fermat and the problem of points</h2>
+<p>Blaise Pascal and Pierre de Fermat studied the problem of how to
+divide the pot<label for="tufte-sn-78" class="margin-toggle sidenote-number">78</label><input type="checkbox" id="tufte-sn-78" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">78</span> The <em>pot</em> is the total amount bet by both players.</span> of
+a game of chance that was interrupted before it was finished. As a
+simple example, Pascal and Fermat considered a game in which each turn
+a fair coin was flipped, and the first player would score a win a
+point if the result was heads and the second player if the result was
+tails. The first player to score ten points wins the game.</p>
+<p>Now suppose a game is interrupted after 15 flips, at a point where the
+first player has 8 points and the second player only 7. What is the
+probability of the first player winning the match were it to continue?</p>
+<p>We can put that into probability notation by letting <span class="math inline">\(Y_n\)</span> be the
+number of points for the first player after <span class="math inline">\(n\)</span> turns.</p>
+<p><span class="math inline">\(Y_{n, 1}\)</span> be the
+number of heads for player 1 after <span class="math inline">\(n\)</span> flips, <span class="math inline">\(Y_{n, 2}\)</span> be the same
+for player 2. Let <span class="math inline">\(Z\)</span> be a binary random variable taking value 1 if
+the first player wins and 0 if the other player wins. Fermat managed
+to evaluate a formula like Fermat evaluated <span class="math inline">\(\mbox{Pr}[Z = 1 \mid Y_{n, 1} = 8, Y_{n, 2} = 7]\)</span> by enumerating the possible game continuations
+and adding up the probabilities of the ones in which the first player
+wins.</p>
+<p>We can solve Fermat and Pascal’s problem by simulation. As usual, our
+estimate is just the proportion of the simulations in which the first
+player wins. The value of <code>pts</code> must be given as input—that is the
+starting point for simulating the completion of the game, assuming
+neither player yet has ten points.<label for="tufte-sn-79" class="margin-toggle sidenote-number">79</label><input type="checkbox" id="tufte-sn-79" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">79</span> For illustrative purposes only!
+In robust code, validation should produce diagnostic error messages
+for invalid inputs.</span></p>
+<pre><code>for (m in 1:M)
+  while (pts[1] &lt; 10 &amp; pts[2] &lt; 10)
+    toss = uniform_01_rng()
+    if (toss == 1) pts[1] += 1
+    else pts[2] += 1
+    if (pts[1] == 10) win[m] = 1
+    else if (pts[2] == 10) win[m] = 0
+print &#39;est. Pr[player 1 wins] = &#39; sum(win) / M</code></pre>
+<p>If the while-loop terminates because one player has ten points, then
+<code>wins[m]</code> must have been set in the previous value of the loop.<label for="tufte-sn-80" class="margin-toggle sidenote-number">80</label><input type="checkbox" id="tufte-sn-80" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">80</span> In
+general, programs should be double-checked (ideally by a third party)
+to make sure <em>invariants</em> like this one (i.e., <code>win[m]</code> is always set)
+actually hold. Test code goes a long way to ensuring robustness.</span></p>
+<p>Let’s run that a few times with <span class="math inline">\(M = 100\,000\)</span>, starting with the
+<code>pts</code> set to <code>(8, 7)</code>, to simulate Fermat and Pascal’s problem.</p>
+<pre><code>   est. Pr[player 1 wins] = 0.688
+   est. Pr[player 1 wins] = 0.687
+   est. Pr[player 1 wins] = 0.688
+   est. Pr[player 1 wins] = 0.688
+   est. Pr[player 1 wins] = 0.690</code></pre>
+<p>This is very much in line with the result Fermat derived by brute
+force, namely <span class="math inline">\(\frac{11}{16} \approx 0.688.\)</span><label for="tufte-sn-81" class="margin-toggle sidenote-number">81</label><input type="checkbox" id="tufte-sn-81" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">81</span> There are at most four
+more turns required, which have a total of <span class="math inline">\(2^4 = 16\)</span> possible
+outcomes, HHHH, HHHT, HHTH, <span class="math inline">\(\ldots,\)</span> TTTH, TTTT, of which 11 produce
+wins for the first player.</span></p>
+</div>
+<div id="independence-of-random-variables" class="section level2">
+<h2><span class="header-section-number">4.10</span> Independence of random variables</h2>
+<p>Informally, we say that a pair of random variables is independent if
+knowing about one variable does not provide any information about the
+other. If <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> are the variables in question, this property
+can be stated directly in terms of their probability mass functions as</p>
+<p><span class="math display">\[
+p_{X}(x) = p_{X|Y}(x \mid y).
+\]</span></p>
+<p>In practice, we use an equivalent definition. Random variables <span class="math inline">\(X\)</span>
+and <span class="math inline">\(Y\)</span> are said to be <em>independent</em> if</p>
+<p><span class="math display">\[
+p_{X,Y}(x, y) = p_X(x) \times p_Y(y).
+\]</span></p>
+<p>for all <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>.<label for="tufte-sn-82" class="margin-toggle sidenote-number">82</label><input type="checkbox" id="tufte-sn-82" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">82</span> This is equivalent to requiring the events <span class="math inline">\(X \leq x\)</span> and <span class="math inline">\(Y \leq y\)</span> to be independent for every <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>.
+Events A and B are said to be <em>independent</em> if <span class="math inline">\(\mbox{Pr}[\mathrm{A}, \mathrm{B}] \ = \ \mbox{Pr}[\mathrm{A}] \times \mbox{Pr}[\mathrm{B}]\)</span>.</span></p>
+<p>By way of example, we have been assuming that a fair dice throw
+involves the throw of two independent and fair dice. That is, if
+<span class="math inline">\(Y_1\)</span> is the first die and <span class="math inline">\(Y_2\)</span> is the second die, then <span class="math inline">\(Y_1\)</span> is
+independent of <span class="math inline">\(Y_2\)</span>.</p>
+<p>In the diagnostic testing example, the disease state <span class="math inline">\(Z\)</span> and the test
+result <span class="math inline">\(Y\)</span> are not independent.<label for="tufte-sn-83" class="margin-toggle sidenote-number">83</label><input type="checkbox" id="tufte-sn-83" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">83</span> That would be a very poor test,
+indeed!</span>. This can easily be verified because <span class="math inline">\(p_{Y|Z}(y \mid z) \neq p_Y(y)\)</span>.</p>
+</div>
+<div id="independence-of-multiple-random-variables" class="section level2">
+<h2><span class="header-section-number">4.11</span> Independence of multiple random variables</h2>
+<p>It would be nice to be able to say that a set of random <span class="math inline">\(Y_1, \ldots, Y_N\)</span> was independent if each of its pairs of random variables was
+independent. We’d settle for being able to say that the joint
+probability factors into the product of marginals,</p>
+<p><span class="math display">\[
+p_{Y_1, \ldots, Y_N}(y_1, \ldots, y_N)
+\ = \
+p_{Y_1}(y1) \times \cdots \times p_{Y_N}(y_N).
+\]</span></p>
+<p>But neither of these is enough.<label for="tufte-sn-84" class="margin-toggle sidenote-number">84</label><input type="checkbox" id="tufte-sn-84" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">84</span> Analysis in general and probability
+theory in particular defeat simple definitions with nefarious edge
+cases.</span> For a set of random variables to be <em>independent</em>, the
+probability of each of its subsets must factor into the product of its
+marginals.<label for="tufte-sn-85" class="margin-toggle sidenote-number">85</label><input type="checkbox" id="tufte-sn-85" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">85</span> More precisely, <span class="math inline">\(Y_1, \ldots, Y_N\)</span> are <em>independent</em> if
+for every <span class="math inline">\(M \leq N\)</span> and permutation <span class="math inline">\(\pi\)</span> of <span class="math inline">\(1:N\)</span> (i.e., a bijection
+between <span class="math inline">\(1:N\)</span> and itself), we have <span class="math display">\[\begin{array}{l}
+\displaystyle p_{Y_{\pi(1)},
+\ldots, Y_{\pi(M)}}(u_1, \ldots, u_M)
+\\ \displaystyle \mbox{ } \ \ \ = \
+p_{Y_{\pi(1)}}(u_1) \times \cdots \times p_{Y_{\pi(M)}}(u_M)
+\end{array}\]</span>
+for all <span class="math inline">\(u_1, \ldots, u_M.\)</span></span></p>
+</div>
+<div id="conditional-independence" class="section level2">
+<h2><span class="header-section-number">4.12</span> Conditional independence</h2>
+<p>Often, a pair of variables are not independent only because they both
+depend on a third variable. The random variables <span class="math inline">\(Y_1\)</span> and <span class="math inline">\(Y_2\)</span> are
+said to be <em>conditionally independent</em> given the variable <span class="math inline">\(Z\)</span> if they
+are independent after conditioning,</p>
+<p><span class="math display">\[
+p_{Y_1, Y_2 \mid Z}(y_1, y_2 \mid z)
+\ = \
+p_{Y_1 \mid Z}(y_1 \mid z) \times p_{Y_2 \mid Z}(y_2 \mid z).
+\]</span></p>
+</div>
+<div id="conditional-expectations" class="section level2">
+<h2><span class="header-section-number">4.13</span> Conditional expectations</h2>
+<p>The expectation <span class="math inline">\(\mathbb{E}[Y]\)</span> of a random variable <span class="math inline">\(Y\)</span> is its
+average value (weighted by density or mass, depending on whether it is
+continuous or discrete). The conditional expectation <span class="math inline">\(\mathbb{E}[Y \mid A]\)</span> given some event <span class="math inline">\(A\)</span> is defined to be the average value of <span class="math inline">\(Y\)</span>
+conditioned on the event <span class="math inline">\(A\)</span>,</p>
+<p><span class="math display">\[
+\mathbb{E}[Y \mid A]
+\ = \
+\int_Y y \times p_{Y \mid A}(y \mid A) \, \mathrm{d} y,
+\]</span></p>
+<p>where <span class="math inline">\(p_{Y \mid A}\)</span> is the density of <span class="math inline">\(Y\)</span> conditioned on event <span class="math inline">\(A\)</span>
+occurring. This conditional density <span class="math inline">\(p_{Y \mid A}\)</span> is defined just
+like the ordinary density <span class="math inline">\(p_Y\)</span> only with the conditional cumulative
+distribution function <span class="math inline">\(F_{Y \mid A}\)</span> instead of the standard
+cumulative distribution function <span class="math inline">\(F_Y\)</span>,</p>
+<p><span class="math display">\[
+p_{Y \mid A}(y \mid A)
+\ = \
+\frac{\mathrm{d}}{\mathrm{d} y} F_{Y \mid A}(y \mid A).
+\]</span></p>
+<p>The conditional cumulative distribution function <span class="math inline">\(F_{Y \mid A}\)</span>
+is, in turn, defined by the conditioning on the event probability,</p>
+<p><span class="math display">\[
+F_{Y \mid A}(y \mid A)
+\ = \
+\mbox{Pr}[Y &lt; y \mid A].
+\]</span></p>
+<p>This also works to condition on zero probability events, such as
+<span class="math inline">\(\Theta = \theta\)</span>, by taking the usual definition of conditional
+density,</p>
+<p><span class="math display">\[
+\mathbb{E}[Y \mid \Theta = \theta]
+\ = \
+\int_Y y \times p_{Y \mid \Theta}(y \mid \theta) \, \mathrm{d}y.
+\]</span></p>
+<p>When using discrete variables, integrals are replaced with sums.</p>
+</div>
+<div id="independent-and-identically-distributed-variables" class="section level2">
+<h2><span class="header-section-number">4.14</span> Independent and identically distributed variables</h2>
+<p>If the variables <span class="math inline">\(Y_1, \ldots, Y_N\)</span> are not only independent, but also
+have the same probability mass functions (i.e., <span class="math inline">\(p_{Y_n} = p_{Y_{m}}\)</span>
+for all <span class="math inline">\(m, n \in 1:N\)</span>), we say that they are <em>independent and
+identically distributed</em>, or “iid” for short. Many of our statistical
+models, such as linear regression, will make the assumption that
+observations are conditionally independent and identically
+distributed.</p>
+
+</div>
+</div>
+<p style="text-align: center;">
+<a href="expectations-and-variance.html"><button class="btn btn-default">Previous</button></a>
+<a href="continuous-random-variables.html"><button class="btn btn-default">Next</button></a>
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>

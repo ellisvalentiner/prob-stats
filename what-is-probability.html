@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="What is Probability? | Probability and Statistics" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+<meta name="author" content="Bob Carpenter" />
+
+<meta name="date" content="2018-01-01" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS_CHTML-full" type="text/javascript"></script>
+
+<meta name="description" content="What is Probability? | Probability and Statistics">
+
+<title>What is Probability? | Probability and Statistics</title>
+
+<link href="libs/tufte-css/tufte-fonts.css" rel="stylesheet" />
+<link href="libs/tufte-css/tufte-background.css" rel="stylesheet" />
+<link href="libs/tufte-css/tufte-italics.css" rel="stylesheet" />
+<link href="libs/tufte-css/tufte.css" rel="stylesheet" />
+
+
+
+
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li><a href="index.html#preface">Preface</a></li>
+<li><a href="what-is-probability.html#what-is-probability">What is Probability?</a></li>
+<li><a href="random-variables-and-event-probabilities.html#random-variables-and-event-probabilities"><span class="toc-section-number">1</span> Random Variables and Event Probabilities</a></li>
+<li><a href="multiple-random-variables-and-probability-functions.html#multiple-random-variables-and-probability-functions"><span class="toc-section-number">2</span> Multiple Random Variables and Probability Functions</a></li>
+<li><a href="expectations-and-variance.html#expectations-and-variance"><span class="toc-section-number">3</span> Expectations and Variance</a></li>
+<li><a href="joint-marginal-and-conditional-probabilities.html#joint-marginal-and-conditional-probabilities"><span class="toc-section-number">4</span> Joint, Marginal, and Conditional Probabilities</a></li>
+<li><a href="continuous-random-variables.html#continuous-random-variables"><span class="toc-section-number">5</span> Continuous Random Variables</a></li>
+<li><a href="continuous-distributions-and-densities.html#continuous-distributions-and-densities"><span class="toc-section-number">6</span> Continuous Distributions and Densities</a></li>
+<li><a href="statistical-inference-and-inverse-problems.html#statistical-inference-and-inverse-problems"><span class="toc-section-number">7</span> Statistical Inference and Inverse Problems</a></li>
+<li><a href="rejection-sampling.html#rejection-sampling"><span class="toc-section-number">8</span> Rejection Sampling</a></li>
+<li><a href="posterior-predictive-inference.html#posterior-predictive-inference"><span class="toc-section-number">9</span> Posterior Predictive Inference</a></li>
+<li><a href="pseudorandom-number-generators.html#pseudorandom-number-generators"><span class="toc-section-number">10</span> Pseudorandom Number Generators</a></li>
+<li><a href="floating-point-arithmetic.html#floating-point-arithmetic"><span class="toc-section-number">11</span> Floating Point Arithmetic</a></li>
+<li><a href="normal-distribution.html#normal-distribution"><span class="toc-section-number">12</span> Normal Distribution</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="what-is-probability" class="section level1 unnumbered">
+<h1>What is Probability?</h1>
+<p>The fundamental nature of probability as used in applied statistical
+inference was described succintly by John Stuart Mill as part of his
+larger program of characterizing inductive reasoning,<label for="tufte-sn-3" class="margin-toggle sidenote-number">3</label><input type="checkbox" id="tufte-sn-3" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">3</span> Mill, John
+Stuart. 1882. <em>A System of Logic: Raciocinative and Inductive</em>.
+Eighth edition. Harper &amp; Brothers, Publishers, New York. Part III,
+Chapter 18.</span></p>
+<blockquote>
+<p>We must remember that the probability of an event is not a quality
+of the event itself, but a mere name for the degree of ground which
+we, or some one else, have for expecting it. <br /> <span class="math inline">\(\ldots\)</span> Every event is
+in itself certain, not probable; if we knew all, we should either know
+positively that it will happen, or positively that it will not. But
+its probability to us means the degree of expectation of its
+occurrence, which we are warranted in entertaining by our present
+evidence.</p>
+</blockquote>
+<p>Mill is saying that our estimate of the probability of an event
+fundamentally depends on how much we know. For example, if you ask me
+now to forecast the weather on a random day in Edinburgh next year,
+I’ll forecast 52% because it rains on average 191 days per year in
+Edinburgh.<label for="tufte-sn-4" class="margin-toggle sidenote-number">4</label><input type="checkbox" id="tufte-sn-4" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">4</span> World Weather and Climate (2018) <a href="https://weather-and-climate.com/average-monthly-Rainy-days,Edinburgh-uk,Scotland">Edinburgh
+rainfall</a>.</span>
+If I know the day is in December, I’ll make an estimate of 65%
+conditioned on knowing that it rains on average 20 days in December.
+Continuing to add information, if it’s December 7 and I have
+up-to-date radar, then my estimate of the chance of rain on December 8
+or December 9 might be anything, depending on the current
+meteorological conditions.<label for="tufte-sn-5" class="margin-toggle sidenote-number">5</label><input type="checkbox" id="tufte-sn-5" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">5</span> The current forecast from
+<a href="https://weather.com/weather/today/l/55.95,-3.19">weather.com</a> as of
+11:30 pm December 7, 2018 is a 60% chance of rain on December 8 and
+a 10% chance of rain on December 9.</span></p>
+<p>Putting Mill’s view in more modern terms, probability is a relative
+measure of uncertainty conditioned on available information. In other
+words, probability involves statements about an agent’s or collection
+of agents’ knowledge of the world, not about the world directly.<label for="tufte-sn-6" class="margin-toggle sidenote-number">6</label><input type="checkbox" id="tufte-sn-6" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">6</span> In
+philosophical terms, the nature of probability is <em>epistemic</em> (based
+on knowledge) rather than <em>ontological</em> (based on metaphysics) or
+<em>deontic</em> (based on belief).</span> This allows us to believe the world is
+deterministic, while still reasoning probabilistically based on
+available evidence. Apparently, this was Pierre-Simon Laplace’s
+position, as he wrote,<label for="tufte-sn-7" class="margin-toggle sidenote-number">7</label><input type="checkbox" id="tufte-sn-7" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">7</span> Pierre-Simon Laplace. 1814. <em>A Philosophical
+Essay on Probabilities</em>. English translation of the 6th edition,
+Truscott, F.W. and Emory, F.L. 1951. Dover Publications. page 4.</span></p>
+<blockquote>
+<p>We may regard the present state of the universe as the effect of its
+past and the cause of its future. An intellect which at a certain
+moment would know all forces that set nature in motion, and all
+positions of all items of which nature is composed, if this
+intellect were also vast enough to submit these data to analysis, it
+would embrace in a single formula the movements of the greatest
+bodies of the universe and those of the tiniest atom; for such an
+intellect nothing would be uncertain and the future just like the
+past would be present before its eyes.</p>
+</blockquote>
+<p>It also provides us the wiggle room to take sides with Albert
+Einstein, who wrote,<label for="tufte-sn-8" class="margin-toggle sidenote-number">8</label><input type="checkbox" id="tufte-sn-8" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">8</span> Albert Einstein. 1926. Personal letter to Max
+Born. December 4.</span></p>
+<blockquote>
+<p>The theory [quantum mechanics] says a lot, but does not really bring
+us any closer to the secret of the “old one.” I, at any rate, am
+convinced that He does not throw dice.</p>
+</blockquote>
+<p>Probability theory merely provides a mathematically and logically
+consistent approach to quantifying uncertainty and performing
+inductive inference.</p>
+
+</div>
+<p style="text-align: center;">
+<a href="index.html"><button class="btn btn-default">Previous</button></a>
+<a href="random-variables-and-event-probabilities.html"><button class="btn btn-default">Next</button></a>
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>

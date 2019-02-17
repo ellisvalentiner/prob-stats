@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="11 Floating Point Arithmetic | Probability and Statistics" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+<meta name="author" content="Bob Carpenter" />
+
+<meta name="date" content="2018-01-01" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS_CHTML-full" type="text/javascript"></script>
+
+<meta name="description" content="11 Floating Point Arithmetic | Probability and Statistics">
+
+<title>11 Floating Point Arithmetic | Probability and Statistics</title>
+
+<link href="libs/tufte-css/tufte-fonts.css" rel="stylesheet" />
+<link href="libs/tufte-css/tufte-background.css" rel="stylesheet" />
+<link href="libs/tufte-css/tufte-italics.css" rel="stylesheet" />
+<link href="libs/tufte-css/tufte.css" rel="stylesheet" />
+
+
+
+
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li><a href="index.html#preface">Preface</a></li>
+<li><a href="what-is-probability.html#what-is-probability">What is Probability?</a></li>
+<li><a href="random-variables-and-event-probabilities.html#random-variables-and-event-probabilities"><span class="toc-section-number">1</span> Random Variables and Event Probabilities</a></li>
+<li><a href="multiple-random-variables-and-probability-functions.html#multiple-random-variables-and-probability-functions"><span class="toc-section-number">2</span> Multiple Random Variables and Probability Functions</a></li>
+<li><a href="expectations-and-variance.html#expectations-and-variance"><span class="toc-section-number">3</span> Expectations and Variance</a></li>
+<li><a href="joint-marginal-and-conditional-probabilities.html#joint-marginal-and-conditional-probabilities"><span class="toc-section-number">4</span> Joint, Marginal, and Conditional Probabilities</a></li>
+<li><a href="continuous-random-variables.html#continuous-random-variables"><span class="toc-section-number">5</span> Continuous Random Variables</a></li>
+<li><a href="continuous-distributions-and-densities.html#continuous-distributions-and-densities"><span class="toc-section-number">6</span> Continuous Distributions and Densities</a></li>
+<li><a href="statistical-inference-and-inverse-problems.html#statistical-inference-and-inverse-problems"><span class="toc-section-number">7</span> Statistical Inference and Inverse Problems</a></li>
+<li><a href="rejection-sampling.html#rejection-sampling"><span class="toc-section-number">8</span> Rejection Sampling</a></li>
+<li><a href="posterior-predictive-inference.html#posterior-predictive-inference"><span class="toc-section-number">9</span> Posterior Predictive Inference</a></li>
+<li><a href="pseudorandom-number-generators.html#pseudorandom-number-generators"><span class="toc-section-number">10</span> Pseudorandom Number Generators</a></li>
+<li><a href="floating-point-arithmetic.html#floating-point-arithmetic"><span class="toc-section-number">11</span> Floating Point Arithmetic</a></li>
+<li><a href="normal-distribution.html#normal-distribution"><span class="toc-section-number">12</span> Normal Distribution</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="floating-point-arithmetic" class="section level1">
+<h1><span class="header-section-number">11</span> Floating Point Arithmetic</h1>
+<p>Contemporary<label for="tufte-sn-170" class="margin-toggle sidenote-number">170</label><input type="checkbox" id="tufte-sn-170" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">170</span> Contemporary being 2019 as of this writing.</span> computers
+use floating-point representations of real numbers and thus perform
+arithmetic on floating-point representations.</p>
+<div id="what-is-a-floating-point-number" class="section level2">
+<h2><span class="header-section-number">11.1</span> What is a floating point number?</h2>
+<p>A <em>bit</em> is the smallest discrete representational unit in a
+computer—it takes on a value of 0 or 1.<label for="tufte-sn-171" class="margin-toggle sidenote-number">171</label><input type="checkbox" id="tufte-sn-171" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">171</span> A <em>byte</em> consists of a
+sequence of 8 bits. The natural computing unit is a <em>word</em>, the size
+of which is hardware dependent, but most computers nowadays (it’s
+still 2019) use 64-bit, or 8-byte words.</span> Floating point numbers are
+most commonly represented using 32 or 64 bits, which are known as
+<em>single precision</em> and <em>double precision</em> respectively.<label for="tufte-sn-172" class="margin-toggle sidenote-number">172</label><input type="checkbox" id="tufte-sn-172" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">172</span> Modern
+machine learning floating point representations go as low as 8 bits
+and high-precision applied mathematical calculations may use 1024 bits
+or more.</span></p>
+</div>
+<div id="finite-not-a-number-and-infinite-values" class="section level2">
+<h2><span class="header-section-number">11.2</span> Finite, not-a-number, and infinite values</h2>
+<p>A floating point number consists of a fixed number of bits for a
+<em>significand</em> <span class="math inline">\(a\)</span> and a fixed number of bits for the <em>exponent</em> <span class="math inline">\(b\)</span> to
+represent the the real number <span class="math inline">\(a \times 2^b\)</span>. The significand
+determines the precision of results and the exponent the range of
+possible results.<label for="tufte-sn-173" class="margin-toggle sidenote-number">173</label><input type="checkbox" id="tufte-sn-173" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">173</span> This exponent causes the decimal place to float,
+giving the representation its name.</span> The significand may be negative
+in order to represent negative values. The exponent may be negative
+in order to represent fractions. Both the significand and exponent
+are represented using a single bit for a sign and the remaining bits
+for the value in binary representation. Standard double-precision
+(i.e., 64 bit) representations allocate 53 bits for the significand
+and 11 bits for the exponent.<label for="tufte-sn-174" class="margin-toggle sidenote-number">174</label><input type="checkbox" id="tufte-sn-174" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">174</span> Zuras, D., Cowlishaw, M., Aiken, A.,
+Applegate, M., Bailey, D., Bass, S., Bhandarkar, D., Bhat, M., Bindel,
+D., Boldo, S. and Canon, S., 2008. *IEEE Standard 754-2008
+(floating-point arithmetic).</span></p>
+<p>The standard also sets aside three special values, <em>not a number</em> for
+ill-defined results, e.g., dividing zero by zero, <em>positive infinity</em>
+for infinite results, e.g., dividing one by zero, and <em>negative
+infinity</em> for negative infinity, e.g., dividing negative one by
+zero.<label for="tufte-sn-175" class="margin-toggle sidenote-number">175</label><input type="checkbox" id="tufte-sn-175" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">175</span> Technically, there are two forms of not-a-number and often two
+forms of zero, but these distinctions are irrelevant in statistical
+applications.</span> These are all specified to have the expected behavior
+with arithmetic and comparison operators and built-in
+functions.<label for="tufte-sn-176" class="margin-toggle sidenote-number">176</label><input type="checkbox" id="tufte-sn-176" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">176</span> Not-a-number typically propagates, but there are some
+subtle interactions of not-a-number and comparison operators because
+comparisons return integers in most languages.</span></p>
+</div>
+<div id="literals" class="section level2">
+<h2><span class="header-section-number">11.3</span> Literals</h2>
+<p>Floating point numbers are written in computer programs using
+<em>literals</em>, which can be integers such as <code>314</code>, floating point
+numbers such as <code>3.14</code>, and scientific notation such as <code>0.314e+1</code>.
+Scientific notation uses decimal notation, where <code>e+n</code> denotes
+multiplication by <span class="math inline">\(10^n\)</span> and <code>e-n</code> by <span class="math inline">\(10^{-n}\)</span>. Multiplication by
+<span class="math inline">\(10^n\)</span> shifts the decimal place <span class="math inline">\(n\)</span> places to the right;
+multiplication by <span class="math inline">\(10^{-n}\)</span> shifts left by <span class="math inline">\(n\)</span> places. For example,
+<code>0.00314e+3</code>, <code>314e+2</code>, and <code>3.14</code> are just different literals
+representing the same real number, <span class="math inline">\(3.14\)</span>.</p>
+</div>
+<div id="machine-precision-and-rounding" class="section level2">
+<h2><span class="header-section-number">11.4</span> Machine precision and rounding</h2>
+<p>If we add two positive numbers, we get a third number that’s larger
+than each of them. Not so in floating point. Evaluating</p>
+<p><code>1 == 1 + 10^-16</code></p>
+<p>produces the surprising result</p>
+<pre><code>   TRUE</code></pre>
+<p>When we add 1 and <span class="math inline">\(10^{-16}\)</span>, we get 1. This is not how arithmetic is
+supposed to work. We should get 1.0000000000000001.</p>
+<p>The problem turns out to be that there’s only so close to 1 we can get
+with a floating point number. Unlike with actual real numbers, where
+there is always another number between any two non-identical numbers,
+floating point numbers come with discrete granularity. The closest we
+can get to one is determined by the number of non-sign sigificand
+bits, or <span class="math inline">\(2^{-52} \approx 2.2 \times 10^{-16}\)</span>. This is known as the
+<em>machine precision</em> of the representation. Writing out in decimal
+rather than binary, the largest number smaller than one is</p>
+<p><span class="math display">\[
+1 - 2^{-52} = 0.\underbrace{999999999999999}_{\mbox{15 nines}}7,
+\]</span></p>
+<p>whereas the smallest number greater than one is</p>
+<p><span class="math display">\[
+1 + 2^{-52} \approx 1.\underbrace{000000000000000}_{\mbox{15 zeros}}2.
+\]</span></p>
+<p>This numerical granularity and subsequent rounding of expressions like
+<code>1 + 1e-20</code> to one is a serious problem that we have to fight in all
+of our simulation code.</p>
+</div>
+<div id="underflow-and-overflow" class="section level2">
+<h2><span class="header-section-number">11.5</span> Underflow and overflow</h2>
+<p>The most common problem we run into with statistical computing with
+floating point is underflow. If we try to represent something like a
+probability, we quickly run out of representational power. Simply
+consider evaluating <span class="math inline">\(N = 2\,000\)</span> Bernoulli draws with a 50% chance of
+success,</p>
+<pre><code>p = 1
+for (n in 1:N)
+  p *= bernoulli(y[n] | 0.5)
+print &#39;prob = &#39; p</code></pre>
+<p>The result should be <span class="math inline">\(0.5^{2000}\)</span>. What do we get?</p>
+<pre><code>   prob = 0</code></pre>
+<p>The result is exactly zero.<label for="tufte-sn-177" class="margin-toggle sidenote-number">177</label><input type="checkbox" id="tufte-sn-177" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">177</span> It’s not just rounding in the printing.</span>
+What’s going on?</p>
+<p>Just as there’s a smallest number greater than one, there’s a smallest
+number greater than zero. That’s the smallest positive floating point
+number. This number is defined by taking the largest magnitude negative
+number for the exponent and the smallest number available for the
+significand. For the double-precision floating point in common use,
+the number is about <span class="math inline">\(10^{-300}\)</span>.<label for="tufte-sn-178" class="margin-toggle sidenote-number">178</label><input type="checkbox" id="tufte-sn-178" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">178</span> <span class="math inline">\(10^{-322}\)</span> can be represented, but
+<span class="math inline">\(10^{-323}\)</span> underflows to zero.</span></p>
+</div>
+<div id="working-on-the-log-scale" class="section level2">
+<h2><span class="header-section-number">11.6</span> Working on the log scale</h2>
+<p>Becuase of the everpresent threat of underflow in statistical
+calculations, we almost always work on the log scale. Let’s try that
+calculation again, only now, rather than calculating</p>
+<p><span class="math display">\[
+\begin{array}{rcl}
+p(y \mid \theta = 0.5)
+&amp; = &amp; \prod_{n=1}^{2000} p(y_n \mid \theta = 0.5)
+\\[6pt]
+&amp; = &amp; \prod_{n=1}^{2000} \mbox{bernoulli}(y_n \mid 0.5)
+\\[6pt]
+&amp; = &amp; \prod_{n=1}^{2000} 0.5
+\\[6pt]
+&amp; = &amp; 0.5^{2000},
+\end{array}
+\]</span></p>
+<p>we’ll be calculating the much less troublesome</p>
+<p><span class="math display">\[
+\begin{array}{rcl}
+\log p(y \mid \theta = 0.5)
+&amp; = &amp; \log \prod_{n=1}^{2000} p(y_n \mid \theta = 0.5)
+\\[6pt]
+&amp; = &amp; \sum_{n=1}^{2000} \log p(y_n \mid 0.5)
+\\[6pt]
+&amp; = &amp; \sum_{n=1}^{2000} \log \mbox{bernoulli}(y_n \mid 0.5)
+\\[6pt]
+&amp; = &amp; \sum_{n=1}^{2000} \log 0.5
+\\[6pt]
+&amp; = &amp; 2000 \times \log 0.5.
+\end{array}
+\]</span></p>
+<p>We can verify that it works by coding it up.</p>
+<pre><code>log_p = 0
+for (n in 1:N)
+  log_p += bernoulli(y[n] | 0.5)
+print &#39;prob = &#39; p</code></pre>
+<p>We have replaced the variable <code>p</code> representing the probability with
+a variable <code>log_p</code> representing the log probability. Where <code>p</code> was
+initialized to <span class="math inline">\(1\)</span>, <code>log_p</code> is initialized to <span class="math inline">\(\log 1 = 0.\)</span>. Where
+the probability of each case was multiplied into the total, the log
+probability is added to the total. Let’s see what happens with <span class="math inline">\(N = 2000\)</span>.</p>
+<pre><code>   prob = -1386.3</code></pre>
+<p>The result is indeed <span class="math inline">\(2000 \times \log 0.5 \approx -1386.29\)</span>, as
+expected. Now we’re in no danger of overflow even with a very large
+<span class="math inline">\(N\)</span>.</p>
+</div>
+<div id="logarithms-of-sums-of-exponentiated-terms" class="section level2">
+<h2><span class="header-section-number">11.7</span> Logarithms of sums of exponentiated terms</h2>
+<p>When we take a logarithm, it is well known that it converts
+multiplication into addition, so that</p>
+<p><span class="math display">\[
+\log \left( u \times v \right)
+\ = \log u + \log v.
+\]</span></p>
+<p>But what if we have <span class="math inline">\(\log u\)</span> and <span class="math inline">\(\log v\)</span> and want to produce <span class="math inline">\(\log (u + v)\)</span>? It works out to</p>
+<p><span class="math display">\[
+\log \left( u + v  \right)
+\ = \
+\log \left( \exp(\log u) + \exp(\log v) \right).
+\]</span></p>
+<p>In words, it takes the logarithm of the sum of exponentiations. This
+may seem like a problematic amount of work, but there’s an opportunity
+here, as well. By rearranging terms, we have</p>
+<p><span class="math display">\[
+\log (\exp(a) + \exp(b))
+\ = \
+\max(a, b) + \log (\exp(a - \max(a, b))
+                   + \exp(b - \max(a, b))).
+\]</span></p>
+<p>This may seem like even more work, but when we write it out in code,
+it’s less daunting and serves the important purpose of preventing
+overflow or underflow.</p>
+<pre><code>log_sum_exp(u, v)
+  c = max(u, v)
+  return c + log(exp(u - c) + exp(v - c))</code></pre>
+<p>Because <span class="math inline">\(c\)</span> is computed as the maximum of <span class="math inline">\(u\)</span> and <span class="math inline">\(v\)</span>, we know that <span class="math inline">\(u - c \leq 0\)</span> and <span class="math inline">\(v - c \leq 0\)</span>. As a result, the exponentiations will
+not overflow. They might underflow to zero, but that doesn’t cause a
+problem, because the maximum is preserved by being brought out front,
+with all of its precision intact.</p>
+<p>If we have a vector, it works the same way, only the vectorized
+pseudocode is neater. If <code>u</code> is an input vector, then we can compute
+the log sum of exponentials as</p>
+<pre><code>log_sum_exp(u)
+  c = max(u)
+  return c + log(exp(u - c))</code></pre>
+<p>This is how we calculate the average of a sequence of values whose
+logarithms are known.</p>
+<pre><code>log_mean(log_u)
+  M = size(log_u)
+  c = max(log_u)
+  return -log(M) + c + log(exp(log_u - c))</code></pre>
+</div>
+<div id="failure-of-basic-arithmetic-laws-and-comparison" class="section level2">
+<h2><span class="header-section-number">11.8</span> Failure of basic arithmetic laws and comparison</h2>
+<p>Because of the need to round to a fixed precision result, floating
+point arithmetic does not satisfy basic transitivity or distributivity
+laws of arithmetic.<label for="tufte-sn-179" class="margin-toggle sidenote-number">179</label><input type="checkbox" id="tufte-sn-179" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">179</span> In general, we cannot rely on any of <span class="math display">\[u + (v +
+w) = (u + v) + w,\]</span> <span class="math display">\[u \times (v \times w) = (u \times v) \times w, \
+\mbox{or}\]</span>, <span class="math display">\[u \times (v + w) = u \times v = u \times w.\]</span></span></p>
+<p>One surprising artifact of this is rounding, where we can have <span class="math inline">\(u + v = u\)</span>, even for strictly positive values of <span class="math inline">\(u\)</span> and <span class="math inline">\(v\)</span>. For example,
+<span class="math inline">\(u = 1\)</span> and <span class="math inline">\(v = 10^{-20}\)</span> have this property, as do <span class="math inline">\(u = 0\)</span> and <span class="math inline">\(v = 10^{-350}.\)</span></p>
+<p>The upshot is that we have to be very careful when comparing two
+floating point numbers, because even though pure mathematics might
+guarantee the equality of two expressions, they may not evaluate to
+the same result in floating point arithmetic. Instead, we need to
+compare floating-point numbers within tolerances.</p>
+<p>With absolute tolerances, we replace exact comparisons with
+comparisons such as <code>abs(u - v) &lt; 1e-10</code>. This tests that <code>u</code> and <code>v</code>
+have values within <span class="math inline">\(10^{-10}\)</span> of each other. This isn’t much use if
+the numbers are themselves much larger or much smaller than <span class="math inline">\(10^{-10}\)</span>.</p>
+<p>There are many ways to code relative tolerances. One common approach
+is to use <code>2 * abs(u - v) / (abs(u) + abs(v)) &lt; 1e-10</code>. For example,
+the numers <span class="math inline">\(10^{-11}\)</span> and <span class="math inline">\(10^{-12}\)</span> are within an absolute tolerance
+of <span class="math inline">\(10^{-10}\)</span> of each other,</p>
+<p><span class="math display">\[
+\begin{array}{rcl}
+\left| 10^{-11} - 10^{-12} \right|
+&amp; = &amp; 9 \times 10^{-12} 
+\\[2pt]
+&amp; &lt; &amp; 10^{-10}
+\end{array}
+\]</span></p>
+<p>but they are not within a relative tolerance of <span class="math inline">\(10^{-10}\)</span>,</p>
+<p><span class="math display">\[
+\begin{array}{rcl}
+\frac{\displaystyle 2 \times \left| 10^{-11} - 10^{-12} \right|}
+     {\displaystyle \left| 10^{-11} \right| + \left| 10^{-12} \right|}
+&amp; \approx &amp; 1.63
+\\[6pt]
+&amp; &gt; &amp; 10^{-10}.
+\end{array}
+\]</span></p>
+</div>
+<div id="loss-of-precision" class="section level2">
+<h2><span class="header-section-number">11.9</span> Loss of precision</h2>
+<p>Once we have precision, we have to work very hard not to lose it.
+Even simple operations like subtraction are frought with peril. When
+taking differences of two very close numbers, there can be an
+arbitrary amount of loss of precision.<label for="tufte-sn-180" class="margin-toggle sidenote-number">180</label><input type="checkbox" id="tufte-sn-180" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">180</span> When the loss of precision is
+great relative to the total precision, this is called <em>catastrophic
+cancellation</em>.</span> As a simple example, consider</p>
+<p><span class="math display">\[
+\begin{array}{rr}
+  &amp; 0.7595127881504595
+\\
+- &amp; 0.7595127881504413
+\\ \hline
+&amp; 0.0000000000000182
+\end{array}
+\]</span></p>
+<p>We started with two numbers with 15 digits of precision and are
+somehow left with only 3 digits of precision. In statistical
+computing, this problem arises in calculating variances, which involve
+differences of variates from the mean—when variance is low relative
+to the mean, catastrophic cancellation may arise.</p>
+
+</div>
+</div>
+<p style="text-align: center;">
+<a href="pseudorandom-number-generators.html"><button class="btn btn-default">Previous</button></a>
+<a href="normal-distribution.html"><button class="btn btn-default">Next</button></a>
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>

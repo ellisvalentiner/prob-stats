@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="10 Pseudorandom Number Generators | Probability and Statistics" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+<meta name="author" content="Bob Carpenter" />
+
+<meta name="date" content="2018-01-01" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS_CHTML-full" type="text/javascript"></script>
+
+<meta name="description" content="10 Pseudorandom Number Generators | Probability and Statistics">
+
+<title>10 Pseudorandom Number Generators | Probability and Statistics</title>
+
+<link href="libs/tufte-css/tufte-fonts.css" rel="stylesheet" />
+<link href="libs/tufte-css/tufte-background.css" rel="stylesheet" />
+<link href="libs/tufte-css/tufte-italics.css" rel="stylesheet" />
+<link href="libs/tufte-css/tufte.css" rel="stylesheet" />
+
+
+
+
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li><a href="index.html#preface">Preface</a></li>
+<li><a href="what-is-probability.html#what-is-probability">What is Probability?</a></li>
+<li><a href="random-variables-and-event-probabilities.html#random-variables-and-event-probabilities"><span class="toc-section-number">1</span> Random Variables and Event Probabilities</a></li>
+<li><a href="multiple-random-variables-and-probability-functions.html#multiple-random-variables-and-probability-functions"><span class="toc-section-number">2</span> Multiple Random Variables and Probability Functions</a></li>
+<li><a href="expectations-and-variance.html#expectations-and-variance"><span class="toc-section-number">3</span> Expectations and Variance</a></li>
+<li><a href="joint-marginal-and-conditional-probabilities.html#joint-marginal-and-conditional-probabilities"><span class="toc-section-number">4</span> Joint, Marginal, and Conditional Probabilities</a></li>
+<li><a href="continuous-random-variables.html#continuous-random-variables"><span class="toc-section-number">5</span> Continuous Random Variables</a></li>
+<li><a href="continuous-distributions-and-densities.html#continuous-distributions-and-densities"><span class="toc-section-number">6</span> Continuous Distributions and Densities</a></li>
+<li><a href="statistical-inference-and-inverse-problems.html#statistical-inference-and-inverse-problems"><span class="toc-section-number">7</span> Statistical Inference and Inverse Problems</a></li>
+<li><a href="rejection-sampling.html#rejection-sampling"><span class="toc-section-number">8</span> Rejection Sampling</a></li>
+<li><a href="posterior-predictive-inference.html#posterior-predictive-inference"><span class="toc-section-number">9</span> Posterior Predictive Inference</a></li>
+<li><a href="pseudorandom-number-generators.html#pseudorandom-number-generators"><span class="toc-section-number">10</span> Pseudorandom Number Generators</a></li>
+<li><a href="floating-point-arithmetic.html#floating-point-arithmetic"><span class="toc-section-number">11</span> Floating Point Arithmetic</a></li>
+<li><a href="normal-distribution.html#normal-distribution"><span class="toc-section-number">12</span> Normal Distribution</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="pseudorandom-number-generators" class="section level1">
+<h1><span class="header-section-number">10</span> Pseudorandom Number Generators</h1>
+<p>We have been assuming so far that we have pseudorandom number
+generators that work in some sense to simulate true randomness. This
+chapter clarifies what that means and shows how we gain confidence in
+our random number generator’s randomness through testing various
+hypotheses that it’s random against the actual results produced.</p>
+<div id="linear-congruential-generator" class="section level2">
+<h2><span class="header-section-number">10.1</span> Linear congruential generator</h2>
+<p>To provide a feel for what a (weak) pseudorandom number generator
+looks like, we’ll start with a very simple one. Starting from an
+initial random number <em>seed</em> <span class="math inline">\(s\)</span>, the <em>linear congruential</em>
+pseudorandom number generator does a linear transform and then reduces
+the number modulo <span class="math inline">\(M\)</span> to generate an integer in the range <span class="math inline">\(0, 1, \ldots, M - 1\)</span>.<label for="tufte-sn-155" class="margin-toggle sidenote-number">155</label><input type="checkbox" id="tufte-sn-155" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">155</span> The <em>modulus operator</em> is defined so that <span class="math inline">\(m \bmod n\)</span>
+is the remainder after dividing <span class="math inline">\(m\)</span> by <span class="math inline">\(n\)</span>. For example, <span class="math inline">\(5 \bmod 2 = 1\)</span> and <span class="math inline">\(6 \bmod 3 = 0\)</span>.</span> The sequence of random numbers generated,
+<span class="math inline">\(y_0, y_2, \ldots\)</span>, is defined inductively based on an integer seed
+<span class="math inline">\(m\)</span>, integer multiplier <span class="math inline">\(\alpha\)</span>, and integer increment <span class="math inline">\(\beta\)</span>, by the base case</p>
+<p><span class="math display">\[
+y_0 = s \bmod M
+\]</span></p>
+<p>and inductive case</p>
+<p><span class="math display">\[
+y_{n + 1} = \left( \alpha \times y_n + \beta \right) \bmod M.
+\]</span></p>
+<p>The pseudocode for generating the next random number given the
+previous random number is a one-liner.<label for="tufte-sn-156" class="margin-toggle sidenote-number">156</label><input type="checkbox" id="tufte-sn-156" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">156</span> Such a function is typically
+set up as an iterator with either object-encapsulated or static storge
+of its arguments.</span></p>
+<pre><code>next_prng(seed, M, alpha, beta)
+  return (alpha * last_y + beta) mod M</code></pre>
+<p>We will conveniently choose <span class="math inline">\(M = 2^16\)</span> to provide 16-bit integer
+results.<label for="tufte-sn-157" class="margin-toggle sidenote-number">157</label><input type="checkbox" id="tufte-sn-157" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">157</span> We are implementing these algorithms in R, which has the
+serious limitation of restricting user integer values to short, 32-bit
+values.</span></p>
+<p>To make sure this works to rotate through all <span class="math inline">\(M\)</span> possible values, we
+need <span class="math inline">\(\beta\)</span> to be relatively prime to <span class="math inline">\(M\)</span>. So we’ll just set <span class="math inline">\(a = 123\)</span> and and <span class="math inline">\(b = 127\)</span> and start with a seed of <span class="math inline">\(s = 1234\)</span>.</p>
+<pre><code>        20827      5934      9103      5674     42659      4294
+         3991     32258     35691     64734     32543      5210
+        51123     62326     64039     12594     41851     35982
+        34991     44170     59075     57382     45751     56930</code></pre>
+<p>Let’s go ahead and generate <span class="math inline">\(10\,000\)</span> draws and plot a histogram.<label for="tufte-sn-158" class="margin-toggle sidenote-number">158</label><input type="checkbox" id="tufte-sn-158" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">158</span> For
+this to look roughly uniform, as here, it’s important to set the
+boundary of the first bin at 0, set the limit to be exactly <span class="math inline">\(0\)</span>
+to <span class="math inline">\(2^{16} - 1\)</span>, and to make all the bins the same width. We achieve
+the latter by choosing the number of bins to be 16, a multiple of the
+total number of possible outcomes, <span class="math inline">\(2^{16} - 1\)</span>.</span></p>
+<p><img src="_main_files/figure-html/unnamed-chunk-93-1.png" width="70%"  style="display: block; margin: auto;" /></p>
+<p>That looks good, but as we suggested when we first introduced
+pseudorandom number generators, we’ll be able to do better than a
+simple <span class="math inline">\(\chi\)</span>-by-eye test.</p>
+</div>
+<div id="converting-to-a-mboxuniform0-1-sampler" class="section level2">
+<h2><span class="header-section-number">10.2</span> Converting to a <span class="math inline">\(\mbox{uniform}(0, 1)\)</span> sampler</h2>
+<p>We can now take our sampler for an integer range and divide by the
+range to produce a continuous sampler. To generate a continuous
+sample from <span class="math inline">\(\mathrm{uniform}(0, 1)\)</span>, we just generate a discrete
+uniform draw from <span class="math inline">\(0\)</span> to <span class="math inline">\(M\)</span> and divide by <span class="math inline">\(M\)</span>.<label for="tufte-sn-159" class="margin-toggle sidenote-number">159</label><input type="checkbox" id="tufte-sn-159" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">159</span> Our pseudocode is
+assuming we can store the seed value internally to the function and
+that <code>M</code>, <code>alpha</code>, and <code>beta</code> are all fixed from the outside.</span></p>
+<pre><code>uniform01_prng()
+  seed = next_prng(seed, M, alpha, beta)
+  return seed / M</code></pre>
+<p>Sometimes, the boundary values of zero and one are avoided by
+returning <code>(seed + 1) / (M + 1)</code>.</p>
+</div>
+<div id="mean-and-variance-tests" class="section level2">
+<h2><span class="header-section-number">10.3</span> Mean and variance tests</h2>
+<p>One simple test for a pseudorandom number generator is whether it
+produces the right means and variances. We know that for a uniform
+distribution between 0 and 1 that the mean is <span class="math inline">\(\frac{1}{2}\)</span> and its
+variance is <span class="math inline">\(\frac{1}{12}\)</span>.<label for="tufte-sn-160" class="margin-toggle sidenote-number">160</label><input type="checkbox" id="tufte-sn-160" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">160</span> The mean follows by symmetry and the
+variance is derived by solving <span class="math display">\[\displaystyle \int_0^1 \left( y - \frac{1}{2} \right)^2 \,
+\mathrm{d}y = \frac{1}{12}.\]</span></span></p>
+<p>Lets see what our mean and variances are from <span class="math inline">\(10\,000\)</span> draws from
+our new function <code>uniform01_prng()</code>.</p>
+<pre><code>       sample mean = 0.504
+   sample variance = 0.084</code></pre>
+<p>Because <span class="math inline">\(\frac{1}{12} \approx 0.083\)</span>, it looks like we’re in the right
+ballpark. How do we turn these into proper tests, though? We can’t
+just eybeall the results every time.</p>
+<p>The central limit theorem gives us the ability to characterize the
+behavior of sample averages, which is what both mean and variance
+estimates are.<label for="tufte-sn-161" class="margin-toggle sidenote-number">161</label><input type="checkbox" id="tufte-sn-161" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">161</span> Depending on the normality of the variables being
+averaged, the approximation is often reasonable starting from as few
+as ten draws and is usually very good with one hundred draws.</span> For
+example, in the simple case of the mean, we know that the variance of
+a single draw is <span class="math inline">\(\frac{1}{12}\)</span>, so the variance of the average of <span class="math inline">\(N\)</span>
+draws will be <span class="math inline">\(\frac{1}{N \times 12}\)</span>, and the standard deviation is
+<span class="math inline">\((N \times 12)^{-\frac{1}{2}} = \sqrt{\frac{1}{N \times 12}}\)</span>.</p>
+<p>We can use the variance of the mean estimate to formulate a
+probabilistic test that the mean is truly distributed as
+<span class="math inline">\(\mbox{normal}\left( 0.5, (N \times 12)^{-\frac{1}{2}} \right)\)</span>. Thus we would
+expect 99.9% of the draws to be within three standad deviations, or
+<span class="math inline">\(\pm 3 \times (N \times 12)^{-\frac{1}{2}}\)</span>. With the <span class="math inline">\(10\,000\)</span> draws
+we took, this is approximately 0.0029$, so it looks like the first run
+of the mean test passed to within a single standard deviation.</p>
+</div>
+<div id="probabilistic-tests-and-false-positives" class="section level2">
+<h2><span class="header-section-number">10.4</span> Probabilistic tests and false positives</h2>
+<p>We are unfortunately left with a test where we expect a false positive
+failure one in a thousand runs. That may be fine if we’re only
+running the test once or twice. But if we’re distributing this
+software to thousands of people or regularly running our tests during
+development, this is going to cause headaches. The simple recourse we
+have is to sharpen the test. We expect the 99.997% of the draws to
+fall within four standard deviations of the mean. We might be able to
+live with the resulting one in thirty thousand failure rate. But we
+may need to sharpen the test even further given our test conditions.
+The problem with sharpening the test too far is that we can miss bugs
+in less significant digits.</p>
+<p>Another thing we can do for more power is run the test 100 times and
+look at the distribution of means. That distribution should itself be
+normal and can be tested. This is possible, and can lead to better
+tests, but starts to get computationally prohibitive for large number
+of draws per test.</p>
+<p>The problem of requiring probabilistic tests for pobabilistic programs
+pervades all of statistical software engineering. There’s no easy
+solution.</p>
+</div>
+<div id="binomial-interval-tests" class="section level2">
+<h2><span class="header-section-number">10.5</span> Binomial interval tests</h2>
+<p>If we are simulating a random variable <span class="math inline">\(Y\)</span>, we know the probability that
+it lies between <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> is given by<label for="tufte-sn-162" class="margin-toggle sidenote-number">162</label><input type="checkbox" id="tufte-sn-162" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">162</span> Recall that we don’t need to
+worry about the points on either end, so can use less-than and
+less-than-or-equal interchangeably in these formulas.</span></p>
+<p><span class="math display">\[
+\begin{array}{rcl}
+\mbox{Pr}[a &lt; Y &lt; b]
+&amp; = &amp;
+\displaystyle \int_a^b p_Y(y) \, \mathrm{d}y
+\\[6pt]
+&amp; = &amp;
+F_Y(b) - F_Y(a).
+\end{array}
+\]</span></p>
+<p>We can use this as the basis for a statistical test because it lets us
+know the proportion of draws that are expected to fall in any given
+interval.</p>
+<p>Suppose we take <span class="math inline">\(M\)</span> draws <span class="math inline">\(y^{(1)}, \ldots, y^{(M)}\)</span> from our
+pseudorandom number generator. Our test statistic is the number of
+draws <span class="math inline">\(Z_{(a, b)}\)</span> that fall in the interval <span class="math inline">\((a, b)\)</span>, i.e.,</p>
+<p><span class="math display">\[
+z_{(a, b)} = \sum_{m = 1}^M \mbox{I}[a &lt; y^{(m)} &lt; b].
+\]</span></p>
+<p>If the pseudorandom number generator is producing draws with the
+proper distribution, then the test statistic is distributed as</p>
+<p><span class="math display">\[
+z_{(a, b)} \sim \mbox{binomial}(M, \mbox{Pr}[a &lt; Y &lt; b]).
+\]</span></p>
+<p>We’ll perform a central test, rejecting the null hypothesis with
+<span class="math inline">\(p\)</span>-value <span class="math inline">\(\alpha\)</span> if the test statistic falls outside the central <span class="math inline">\(1 - \alpha\)</span> interval, i.e., if either</p>
+<p><span class="math display">\[
+F_{Z_{(a,b)}}(z_{(a,b)}) &lt; \frac{\alpha}{2}
+\]</span></p>
+<p>or<label for="tufte-sn-163" class="margin-toggle sidenote-number">163</label><input type="checkbox" id="tufte-sn-163" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">163</span> The second condition is rendered
+parallel to the first with the complementary cumulative distribution
+function, as <span class="math display">\[F^{\complement}_{Z_{(a,b)}}(z_{(a,b)}) &lt;
+\frac{\alpha}{2}.\]</span></span></p>
+<p><span class="math display">\[
+F_{Z_{(a,b)}}(z_{(a,b)}) &gt; 1 - \frac{\alpha}{2}.
+\]</span></p>
+<p>To illustrate how this works, let’s take our uniform pseudorandom
+number generator and test it on the interval <span class="math inline">\((0, 0.5)\)</span>.<label for="tufte-sn-164" class="margin-toggle sidenote-number">164</label><input type="checkbox" id="tufte-sn-164" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">164</span> 50%
+intervals are convenient for testing—more extreme probabilities lead
+to smaller expected counts either inside or outside the interval.</span></p>
+<p>Suppose we are given the putatively uniformly distributed values
+<span class="math inline">\(y^{(1)}, \ldots, y^{(M)}\)</span> for testing. We can write a simple program
+to generate a p-value for the central hypothesis test as follows.<label for="tufte-sn-165" class="margin-toggle sidenote-number">165</label><input type="checkbox" id="tufte-sn-165" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">165</span> In
+general, the ternary <em>conditional operator</em> is defined so that <code>cond ? a : b</code> evaluates to <code>a</code> if <code>cond</code> evaluates to true, and to <code>b</code>
+otherwise.</span></p>
+<pre><code>m = sum(y &lt; 0.5)
+a = binomial_cdf(m | M, 0.5)
+print &#39;m = &#39; m &#39; out of M = &#39; M
+print &#39;reject uniformity with p-value &#39;
+      (a &lt; 0.5) ? a : (1 - a)</code></pre>
+<p>The first line counts the number of draws <span class="math inline">\(y^{(m)}\)</span> for which <span class="math inline">\(y^{(m)} &lt; 0.5\)</span>. The second line computes the cumulative distribution function
+value. The third line manages the tail issues—if the value is less
+than one half it’s in the lower tail and we return it as is; otherwise
+it is in the upper tail and we return the distance from one.</p>
+<p>Let’s see what happens when we run it.</p>
+<pre><code>   m = 4938 out of M = 10000
+   reject unformity with p-value 0.11</code></pre>
+<p>So our smapler passes this simple test. Ideally we’d want to test it
+with a range of seeds to make sure passing isn’t seed dependent as it
+may be in these simple pseudorandom number generators.</p>
+</div>
+<div id="chi-squared-interval-tests" class="section level2">
+<h2><span class="header-section-number">10.6</span> Chi-squared interval tests</h2>
+<p>A more fine-grained interval test that can handle multiple intervals
+simultaneously relies on a normal approximation to the binomial. We
+know that as <span class="math inline">\(N\)</span> grows, <span class="math inline">\(\mbox{binomial}(N, \theta)\)</span> approaches a
+normal distribution.<label for="tufte-sn-166" class="margin-toggle sidenote-number">166</label><input type="checkbox" id="tufte-sn-166" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">166</span> The normal distribution it approaches has the
+same mean and standard deviation, i.e., <span class="math inline">\(\mbox{binomial}(N, \theta)\)</span>
+is well approximated by <span class="math inline">\(\mbox{normal}(N \times \theta, \sqrt{N \times \theta \times (1 - \theta)})\)</span> as <span class="math inline">\(N\)</span> grows.</span></p>
+<p>The chi-squared test is going to require the domain of the variable
+being tested to be divided into <span class="math inline">\(K\)</span> exclusive and exhausive regions.
+We’ll assume that’s done by dividing the domain into intervals with
+dividing points points <span class="math inline">\(a_1, \ldots, a_{K-1}\)</span>, producing the
+folllowing intervals.<label for="tufte-sn-167" class="margin-toggle sidenote-number">167</label><input type="checkbox" id="tufte-sn-167" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">167</span> As before, we needn’t worry about points on the
+boundaries as they have probability zero.</span></p>
+<p><span class="math display">\[
+\begin{array}{rcc}
+A_1 &amp; = &amp; (-\infty, a_1)
+\\
+A_2 &amp; = &amp; (a_1, a_2)
+\\
+\vdots &amp; \vdots &amp; \vdots
+\\
+A_K &amp; = &amp; (a_{K-1}, \infty)
+\end{array}
+\]</span></p>
+<p>Now we let <span class="math inline">\(z_k\)</span> be the count of the number of draws falling in the
+interval <span class="math inline">\(A_k\)</span>. The expected number of draws falling into interval
+<span class="math inline">\(A_k\)</span> will be defined as</p>
+<p><span class="math display">\[
+E_k = M \times \mbox{Pr}[Y \in A_k].
+\]</span></p>
+<p>We are going to base the test on the following test statistic.<label for="tufte-sn-168" class="margin-toggle sidenote-number">168</label><input type="checkbox" id="tufte-sn-168" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">168</span> This
+was first introduced by Karl Pearson in Pearson, K., 1900. X. On the
+criterion that a given system of deviations from the probable in the
+case of a correlated system of variables is such that it can be
+reasonably supposed to have arisen from random sampling. <em>The London,
+Edinburgh, and Dublin Philosophical Magazine and Journal of Science</em>,
+50(302):157–175.</span></p>
+<p><span class="math display">\[
+X^2
+\ = \
+\sum_{k=1}^K
+\frac{\left( z_k - E_k \right)^2}
+     {E_k}.
+\]</span></p>
+<p>Because the <span class="math inline">\(E_k\)</span> is a constant and <span class="math inline">\(z_k\)</span> is approximately normal,
+<span class="math inline">\(z_k - E_k\)</span> will also be approximately normal, and thus <span class="math inline">\(\left( z_k - E_k \right)^2\)</span> will be roughly a squared normal, so that the sum of
+<span class="math inline">\(K\)</span> such terms will be roughy a chi-squared distribution with <span class="math inline">\(K - 1\)</span>
+degrees of freedom.<label for="tufte-sn-169" class="margin-toggle sidenote-number">169</label><input type="checkbox" id="tufte-sn-169" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">169</span> This follows from the definition of the
+chi-squared distribution. Specifically, if <span class="math display">\[Y_1, \ldots, Y_N \sim
+\mbox{normal}(0, 1),\]</span> then <span class="math display">\[(Y_1^2 + \cdots + Y_K^2) \sim
+\mbox{chi_squared}(K - 1)\]</span> has a <em>chi-squared distribution</em> with <span class="math inline">\(K - 1\)</span> degrees of freedom. The subtraction of <span class="math inline">\(E_k\)</span> and division by
+<span class="math inline">\(\sqrt{E_k}\)</span> normalizes the distribution so that approximately
+<span class="math display">\[\frac{z_k - E_k}{\sqrt{E_k}} \sim \mbox{normal}(0, 1),\]</span> with the
+approximation being optimal when the probabilty of success on which
+the draws are based is 0.5.</span> That means that if the null hypothesis of
+the distribution of pseudorandom numbers being uniform is correct,
+then we can set up the same kind of central hypothesis test as for the
+ibnomial test. Specifically, we’ll reject the null hypothesis that
+the pseudorandom number generator is behaving properly at significance
+level <span class="math inline">\(\alpha\)</span> if</p>
+<p><span class="math display">\[
+\mbox{chi_squared_cdf}(X_2, K - 1) &lt; \frac{\alpha}{2}
+\]</span></p>
+<p>or if</p>
+<p><span class="math display">\[
+\mbox{chi_squared_cdf}(X_2, K - 1) &gt; 1 - \frac{\alpha}{2}.
+\]</span></p>
+<p>That is, we reject the null hypothesis at signifiance level <span class="math inline">\(\alpha\)</span>
+if the test statistic <span class="math inline">\(X^2\)</span> is outside of the central <span class="math inline">\(1 - \alpha\)</span>
+interval of the chi-squared distribution.</p>
+<p>There are lots of choices when using the chi-squared test, like how
+many bins to use and how to space them. Generally, we want the
+expected number of elements in each bin to be good enough that the
+normal approximation is approximation, the traditionally suggested
+minimum for which is five or so. If we’re testing a pseudorandom
+number generator, the only bound is compute time, so we’ll usually
+have many more expected elements per bin than five. It’s common to
+see equal probability bins used, generating them with an inverse
+cumulative distribution function where available.</p>
+
+</div>
+</div>
+<p style="text-align: center;">
+<a href="posterior-predictive-inference.html"><button class="btn btn-default">Previous</button></a>
+<a href="floating-point-arithmetic.html"><button class="btn btn-default">Next</button></a>
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>

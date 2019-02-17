@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="5 Continuous Random Variables | Probability and Statistics" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+<meta name="author" content="Bob Carpenter" />
+
+<meta name="date" content="2018-01-01" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS_CHTML-full" type="text/javascript"></script>
+
+<meta name="description" content="5 Continuous Random Variables | Probability and Statistics">
+
+<title>5 Continuous Random Variables | Probability and Statistics</title>
+
+<link href="libs/tufte-css/tufte-fonts.css" rel="stylesheet" />
+<link href="libs/tufte-css/tufte-background.css" rel="stylesheet" />
+<link href="libs/tufte-css/tufte-italics.css" rel="stylesheet" />
+<link href="libs/tufte-css/tufte.css" rel="stylesheet" />
+
+
+
+
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li><a href="index.html#preface">Preface</a></li>
+<li><a href="what-is-probability.html#what-is-probability">What is Probability?</a></li>
+<li><a href="random-variables-and-event-probabilities.html#random-variables-and-event-probabilities"><span class="toc-section-number">1</span> Random Variables and Event Probabilities</a></li>
+<li><a href="multiple-random-variables-and-probability-functions.html#multiple-random-variables-and-probability-functions"><span class="toc-section-number">2</span> Multiple Random Variables and Probability Functions</a></li>
+<li><a href="expectations-and-variance.html#expectations-and-variance"><span class="toc-section-number">3</span> Expectations and Variance</a></li>
+<li><a href="joint-marginal-and-conditional-probabilities.html#joint-marginal-and-conditional-probabilities"><span class="toc-section-number">4</span> Joint, Marginal, and Conditional Probabilities</a></li>
+<li><a href="continuous-random-variables.html#continuous-random-variables"><span class="toc-section-number">5</span> Continuous Random Variables</a></li>
+<li><a href="continuous-distributions-and-densities.html#continuous-distributions-and-densities"><span class="toc-section-number">6</span> Continuous Distributions and Densities</a></li>
+<li><a href="statistical-inference-and-inverse-problems.html#statistical-inference-and-inverse-problems"><span class="toc-section-number">7</span> Statistical Inference and Inverse Problems</a></li>
+<li><a href="rejection-sampling.html#rejection-sampling"><span class="toc-section-number">8</span> Rejection Sampling</a></li>
+<li><a href="posterior-predictive-inference.html#posterior-predictive-inference"><span class="toc-section-number">9</span> Posterior Predictive Inference</a></li>
+<li><a href="pseudorandom-number-generators.html#pseudorandom-number-generators"><span class="toc-section-number">10</span> Pseudorandom Number Generators</a></li>
+<li><a href="floating-point-arithmetic.html#floating-point-arithmetic"><span class="toc-section-number">11</span> Floating Point Arithmetic</a></li>
+<li><a href="normal-distribution.html#normal-distribution"><span class="toc-section-number">12</span> Normal Distribution</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="continuous-random-variables" class="section level1">
+<h1><span class="header-section-number">5</span> Continuous Random Variables</h1>
+<p>So far, we have only considered discrete random variables, i.e.,
+variables taking only integer values. But what if we want to use
+random variables to represent lengths or volumes or distances or
+masses or concentrations or any of the other continuous properties in
+the physical world? We will need to generalize our approach so far.</p>
+<p>Continuous random variables take on real values. The set of real
+numbers is <em>uncountable</em> in the sense of being strictly larger than
+the set of integers.<label for="tufte-sn-86" class="margin-toggle sidenote-number">86</label><input type="checkbox" id="tufte-sn-86" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">86</span> Georg Cantor developed the technique of
+diagonalization to show it was impossible to have a one-to-one map
+from the reals to the integers, thus proving the set of reals is
+uncountable.</span></p>
+<p>The mathematics of probability is the same for real values. Even more
+importantly from a practical standpoint, the way we calculate event
+probabilities and estimates remains the same with continuous
+quantities. The notion of a probability mass function, on the other
+hand, must be replaced by its continuous equivalent, the probability
+density function.</p>
+<div id="spinners-and-uniform-continuous-variables" class="section level2">
+<h2><span class="header-section-number">5.1</span> Spinners and uniform continuous variables</h2>
+<p>Suppose <span class="math inline">\(\Theta\)</span> is a random variable representing the angle at which
+a fair spin of a spinner lands. We will use degrees and thus suppose
+the value of <span class="math inline">\(\Theta\)</span> is between 0 and 360<label for="tufte-sn-87" class="margin-toggle sidenote-number">87</label><input type="checkbox" id="tufte-sn-87" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">87</span> The end points are the
+same, representing a complete rotation of 360 degrees; they are
+labeled as such in the plot.</span></p>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-49"></span>
+<p class="caption marginnote shownote">
+Figure 5.1: A spinner resting at 36 degrees, or 10% of the way around the circle. A fair spin might land anywhere between 0 and 360 degrees.
+</p>
+<img src="_main_files/figure-html/unnamed-chunk-49-1.png" alt="A spinner resting at 36 degrees, or 10% of the way around the circle.  A fair spin might land anywhere between 0 and 360 degrees." width="70%"  />
+</div>
+<p>What does fair mean for continuous probabilities? At the least, we
+should be able to say that the probality of landing in any
+band is the same no matter where the band lies on the circle. That
+is, landing between 0 and 36 degrees should be the same as landing
+between 200 and 236 degrees. Also, because 36 degrees is one tenth of
+the way around the circle, the chance of landing in any 36 degree band
+has to be 10%.<label for="tufte-sn-88" class="margin-toggle sidenote-number">88</label><input type="checkbox" id="tufte-sn-88" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">88</span> This is because the circle can be divided into ten
+bands to create exhaustive and exclusive intervals, the event
+probabilities of landing in which must be the same by fairness and
+must total one because they exhaust all possible outcomes.</span> We can
+express that in probability notation as</p>
+<p><span class="math display">\[
+\mbox{Pr}[0 \leq \Theta \leq 36]
+\ = \
+\frac{1}{10}
+\]</span></p>
+<p>and</p>
+<p><span class="math display">\[
+\mbox{Pr}[200 \leq \Theta \leq 236]
+\ = \
+\frac{1}{10}.
+\]</span></p>
+<p>We are not talking about the probability of <span class="math inline">\(\Theta\)</span> taking on a
+particular value, but rather of it falling in a particular interval.<label for="tufte-sn-89" class="margin-toggle sidenote-number">89</label><input type="checkbox" id="tufte-sn-89" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">89</span> 
+In general, the probability of a fair spinner <span class="math inline">\(\Theta\)</span> falling in
+interval is the fraction of the circle represented by the interval, i.e.,
+<span class="math display">\[
+\mbox{Pr}[\theta_1 \leq \Theta \leq \theta_2]
+= \frac{\theta_2 - \theta_1}{360}.
+\]</span>
+for <span class="math inline">\(0 \leq \theta_1 \leq \theta_2 \leq 360.\)</span></span>
+For continuous random variables, outcomes do not have probability
+mass. Instead, probability mass is assigned continuously based on the
+probability of a variable falling in a region.</p>
+</div>
+<div id="the-paradox-of-vanishing-point-probabilities" class="section level2">
+<h2><span class="header-section-number">5.2</span> The paradox of vanishing point probabilities</h2>
+<p>In our first example, we took a fair spinner to land at exactly 36
+degrees; it could’ve been 36.0376531 degrees or even an irrational
+number such as <span class="math inline">\(0.3333\cdots.\)</span><label for="tufte-sn-90" class="margin-toggle sidenote-number">90</label><input type="checkbox" id="tufte-sn-90" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">90</span> When I learned decimal
+representations, we wrote <span class="math inline">\(0.\bar{3}\)</span> for the decimal
+representation of <span class="math inline">\(\frac{1}{3}.\)</span></span> What’s the probability the spinner
+landed on exactly 36 degrees? Paradoxically, the answer is zero.</p>
+<p><span class="math display">\[
+\mbox{Pr}[\Theta = 36] = 0.
+\]</span></p>
+<p>Why must this be? If the probability of any specific outcome was
+greater than zero, every other possible value would have to have the
+same probability to satisfy fairness. But then if we summed them all
+up, the total would be greater than one, which is not possible.
+Something has to give, and that something is the idea of particular
+point outcomes having probability mass in a continuous distribution.
+The paradox arises because some number must come up, but every number
+has zero probability.</p>
+</div>
+<div id="simulating-uniform-values" class="section level2">
+<h2><span class="header-section-number">5.3</span> Simulating uniform values</h2>
+<p>We will assume that our programming language comes equipped with a
+function <code>uniform_rng(L, H)</code> that generates numbers uniformly in the
+interval <span class="math inline">\([L, H]\)</span>.</p>
+<p>For instance, the following program simulates from the uniform
+interval.</p>
+<pre><code>for (m in 1:M)
+  y[m] = uniform_rng(0, 1)
+print &#39;y = &#39; y</code></pre>
+<p>Let’s simulate <span class="math inline">\(M = 10\)</span> draws and look at the result,</p>
+<pre><code>   0.1137 0.6223 0.6093 0.6234 0.8609 0.6403 0.0095 0.2326 0.6661 0.5143</code></pre>
+<p>These are only printed to a few decimal places. As usual, it’s hard
+to get a sense for the sequence of values as raw numbers. The most
+popular way to summarize one-dimensional data is with a <em>histogram</em>,
+as shown in the following plot.</p>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-51"></span>
+<p class="caption marginnote shownote">
+Figure 5.2: Histogram of 10 draws from a <span class="math inline">\(\mbox{uniform}(0, 1)\)</span> distribution.
+</p>
+<img src="_main_files/figure-html/unnamed-chunk-51-1.png" alt="Histogram of 10 draws from a $\mbox{uniform}(0, 1)$ distribution." width="70%"  />
+</div>
+<p>The range of values from 0 to 1 is broken up into ten equally spaced
+bins, 0 to 0.1, 0.1 to 0.2, up to 0.9 to 1.0. Each bin is then drawn
+as a rectangle with a height proportional to the number of values that
+fell into the bin.</p>
+<p>Even though the distribution draws uniformly in the interval, with
+only ten draws, the probability of having one draw in each bin is
+small,<label for="tufte-sn-91" class="margin-toggle sidenote-number">91</label><input type="checkbox" id="tufte-sn-91" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">91</span> The first draw can be in any bin, the second in any of 9 bins,
+the third in any of 8 bins, and so on, yielding a probability for each
+bin containing a single draw of <span class="math display">\[\prod_{n=1}^{10} \frac{n}{10}
+\approx 0.00036.\]</span></span> whereas the probability of having many values in a
+single bin is relatively high.<label for="tufte-sn-92" class="margin-toggle sidenote-number">92</label><input type="checkbox" id="tufte-sn-92" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">92</span> For example, the probability of having
+a bin with exactly five draws involves a choice of the distinguished
+bin, a choice of which of the five draws go in the distinguished
+bin, then the probabilities of the distinguished bins and other bins,
+<span class="math display">\[{10 \choose 1} \times {10 \choose 5} \times \left(\frac{1}{10}\right)^5 \times
+\left(\frac{9}{10}\right)^5 \approx 0.015.\]</span></span> As usual, we turn to
+repetition and sizing to see what’s going on.</p>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-53"></span>
+<p class="caption marginnote shownote">
+Figure 5.3: Histograms for uniform(0, 1) samples of increasing sizes. The proportion of draws falling into each bin becomes more uniform as the sample size increases. With each sample plotted to the same height, the vertical count axis varies in scale among the plots.
+</p>
+<img src="_main_files/figure-html/unnamed-chunk-53-1.png" alt="Histograms for uniform(0, 1) samples of increasing sizes.  The proportion of draws falling into each bin becomes more uniform as the sample size increases.  With each sample plotted to the same height, the vertical count axis varies in scale among the plots." width="70%"  />
+</div>
+</div>
+<div id="calculating-pi-via-simulation" class="section level2">
+<h2><span class="header-section-number">5.4</span> Calculating <span class="math inline">\(\pi\)</span> via simulation</h2>
+<p>Now that we have a continuous random number generator, there are all
+kinds of values we can compute. Here, we show how to calculuate the
+first few digits of <span class="math inline">\(\pi\)</span>. We’ll carry this out by formulating an
+event probability over some continuous random variables whose
+probability is a fraction of <span class="math inline">\(\pi\)</span>.</p>
+<p>We start with the basic fact of algebra that that <span class="math inline">\(\pi\)</span> is the area of
+a unit radius circle.<label for="tufte-sn-93" class="margin-toggle sidenote-number">93</label><input type="checkbox" id="tufte-sn-93" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">93</span> The area of a circle of radius <span class="math inline">\(r\)</span> is <span class="math inline">\(\pi \times r^2\)</span>, so when <span class="math inline">\(r = 1\)</span>, the area is <span class="math inline">\(\pi\)</span>.</span> We then assume there
+are two independent, uniform random variables <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>,</p>
+<p><span class="math display">\[
+X, Y \sim \mbox{uniform}(-1, 1).
+\]</span></p>
+<p>Simulations <span class="math inline">\(x^{(m)}, y^{(m)}\)</span> of these variables pick out a point on
+the plane within a square bounded by -1 and 1 in both dimensions. Here
+is a plot of the square in which the draws will fall. Also shown is a
+circle of unit radius inscribed within that square. Draws may or may
+not fall within the circle.[Technically, the
+bearer of area is a disc and the line around its border a circle.
+Mathematicians are picky because, topologically speaking, a disc has
+two dimensions whereas a circle has but one.]</p>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-54"></span>
+<p class="caption marginnote shownote">
+Figure 5.4: A unit circle (dotted line) centered at the origin is inscribed in a square (dashed lines) with axes running from -1 to 1.
+</p>
+<img src="_main_files/figure-html/unnamed-chunk-54-1.png" alt="A unit circle (dotted line) centered at the origin is inscribed in a square (dashed lines) with axes running from -1 to 1." width="70%"  />
+</div>
+<p>A point <span class="math inline">\((x, y)\)</span> will fall within the unit circle if<label for="tufte-sn-94" class="margin-toggle sidenote-number">94</label><input type="checkbox" id="tufte-sn-94" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">94</span> A point falls on
+a circle of radius <span class="math inline">\(r\)</span> if <span class="math inline">\(x^2 + y^2 = r^2\)</span>.</span></p>
+<p><span class="math display">\[
+x^2 + y^2 \leq 1.
+\]</span></p>
+<p>Let’s see what this looks like with <span class="math inline">\(M = 250\)</span> draws. The resulting
+plot is known as a <em>scatterplot</em>—it places values at their <span class="math inline">\((x, y)\)</span>
+coordinates, resulting in them being “scattered.”</p>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-55"></span>
+<p class="caption marginnote shownote">
+Figure 5.5: <span class="math inline">\(M = 250\)</span> simulated draws of <span class="math inline">\((x^{(m)}, y^{(m)})\)</span> from a <span class="math inline">\(\mbox{uniform}(-1, 1)\)</span> distribution. Points within the circle are plotted using <span class="math inline">\(+\)</span> and those outside it with <span class="math inline">\(\circ\)</span>.
+</p>
+<img src="_main_files/figure-html/unnamed-chunk-55-1.png" alt="$M = 250$ simulated draws of $(x^{(m)}, y^{(m)})$ from a $\mbox{uniform}(-1, 1)$ distribution.  Points within the circle are plotted using $+$ and those outside it with $\circ$." width="80%"  />
+</div>
+<p>For random variables <span class="math inline">\(X, Y \sim \mbox{uniform}(-1, 1)\)</span>, the event of
+their falling within the unit circle is <span class="math inline">\(X^2 + Y^2 \leq 1\)</span>. Because
+<span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> are drawn uniformly from within the square, the
+probability of their being within the circle is proportional to the
+circle’s area. The circle’s area is <span class="math inline">\(\pi\)</span>, whereas the overall area of
+the square is 4. So the probability of a random draw within the square
+being within the circle is</p>
+<p><span class="math display">\[
+\mbox{Pr}[X^2 + Y^2 \leq 1] = \frac{\pi}{4}.
+\]</span></p>
+<p>We know how to estimate event probabilities using simulation. The
+code here is straightforward.</p>
+<pre><code>for (m in 1:M)
+  x[m] = uniform_rng(-1, 1)
+  y[m] = uniform_rng(-1, 1)
+  inside[m] = (x[m]^2 + y[m]^2 &lt;= 1)
+print &#39;Pr[in circle] = &#39; sum(inside) / M
+print &#39;esimtated pi = &#39; 4 * sum(inside) / M</code></pre>
+<p>We recover the simulation-based estimate of <span class="math inline">\(\pi\)</span> by multiplying the
+event probability of <span class="math inline">\(X^2 + Y^2 \leq 1\)</span> by four.</p>
+<p>Let’s run this with <span class="math inline">\(M = 1\,000\,000\)</span> and see what we get,</p>
+<pre><code>   Pr[in circle] = 0.784
+   estimated pi = 3.138</code></pre>
+<p>We actually knew the answer ahead of time here, <span class="math inline">\(\pi \approx 3.14159\)</span>.
+The simulation-based estimate is on the right track.<label for="tufte-sn-95" class="margin-toggle sidenote-number">95</label><input type="checkbox" id="tufte-sn-95" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">95</span> But not going to
+win any <span class="math inline">\(\pi\)</span> digit-generating contests, either. Remember, we need one
+hundred <em>times</em> as many draws for each subsequent digit of precision
+using i.i.d. simulation.</span> At least the first couple of digits are
+correct.</p>
+<p>If you want to do this all the old-fashioned way with calculus, note
+that the top half of the circle is given by the function <span class="math inline">\(y = \sqrt{1 - x^2}\)</span>. Integrating this from <span class="math inline">\(-1\)</span> to <span class="math inline">\(1\)</span> and doubling it thus
+produces the required value,</p>
+<p><span class="math display">\[
+\pi = 2 \times \int_{-1}^1 \sqrt{1 - x^2} \, \mathrm{d}x.
+\]</span></p>
+<p>Simulation-based methods are largely used in practice to solve nasty
+integrals without analytic solutions.</p>
+</div>
+<div id="the-curse-of-dimensionality" class="section level2">
+<h2><span class="header-section-number">5.5</span> The curse of dimensionality</h2>
+<p>In most introductory examples, including the ones in this book,
+intuitions are developed based on one or two dimensions—essentially,
+we use what can be visualized. It turns out that intuitions based on a
+few dimensions are not only useless, but harmful, when extended to
+higher dimensions. This section attempts to explain why, and along
+the way, introduce the key notion for sampling of the typical set.</p>
+<p>Working by example, let’s start with the base case of a single random
+variable <span class="math inline">\(X_1\)</span> with a uniform distribution over the line in the
+interval <span class="math inline">\((0, 1)\)</span>,</p>
+<p><span class="math display">\[
+X_1 \sim \mbox{uniform}(0, 1).
+\]</span></p>
+<p>The length of our unit line is one (hence the name), so the
+probability of falling in an interval is proportional to the
+interval’s length.<label for="tufte-sn-96" class="margin-toggle sidenote-number">96</label><input type="checkbox" id="tufte-sn-96" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">96</span> This also explains why a point has probability
+zero—it has length zero.</span></p>
+<p>Now extend this to two dimensions, letting the pair of random
+variables <span class="math inline">\((X_1, X_2)\)</span> be uniformly distributed in the unit
+square, <span class="math inline">\((0, 1) \times (0, 1)\)</span>,</p>
+<p><span class="math display">\[
+X_1, X_2 \sim \mbox{uniform}(0, 1).
+\]</span></p>
+<p>The area of a <span class="math inline">\(1 x 1\)</span> square is one, so that the probability of
+falling in a region within that square is proportional to the area of
+the region.<label for="tufte-sn-97" class="margin-toggle sidenote-number">97</label><input type="checkbox" id="tufte-sn-97" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">97</span> Thus a point or a line has zero probability in a square.</span></p>
+<p>Going one dimension further, let <span class="math inline">\((X_1, X_2, X_3)\)</span> be random variables
+uniformly distributed in a unit cube, <span class="math inline">\((0, 1)^3 = (0, 1) \times (0, 1) \times (0, 1)\)</span>,</p>
+<p><span class="math display">\[
+X_1, X_2, X_3 \sim \mbox{uniform}(0, 1).
+\]</span></p>
+<p>The unit cube has unit volume, <span class="math inline">\(1 \times 1 \times 1 = 1\)</span>. Thus
+the probability of falling in a region within that cube is
+proportional to the volume of the region.<label for="tufte-sn-98" class="margin-toggle sidenote-number">98</label><input type="checkbox" id="tufte-sn-98" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">98</span> Thus a plane has zero
+probability in a cube. This generalizes in the obvious way, so this
+will be the last note.</span></p>
+<p>Now we can just go all the way, and let <span class="math inline">\(X = (X_1, \ldots, X_N)\)</span> be an
+<span class="math inline">\(N\)</span>-dimensional random variable generated uniformly in an
+<span class="math inline">\(N\)</span>-dimensional unit hypercube, <span class="math inline">\((0, 1)^N\)</span>,</p>
+<p><span class="math display">\[
+X_n \sim \mbox{uniform}(0, 1) \ \ \mbox{for} \ \ n \in 1:N.
+\]</span></p>
+<p>As before, the hypervolume is <span class="math inline">\(1 \times 1 \times \cdots \times 1 = 1\)</span>,
+so the probability of lying in a region of the hypercube is
+proportional to the hypervolume of the region.<label for="tufte-sn-99" class="margin-toggle sidenote-number">99</label><input type="checkbox" id="tufte-sn-99" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">99</span> The fact that we go
+from line to square to cube and then run out of words should be a
+tipoff that we’re barely acquainted with high dimensions. To be fair,
+we have “tesseract” for a four-dimensional hypercube, but that’s a
+technical term that might have lain buried in introductions to
+geometry if not for the Marvel Universe, and even there, it was known
+colloquially as “the cube.”</span></p>
+<p>We saw that in two dimensions, the probability of a random draw from a
+unit square lying in the inscribed circle was approximately 0.74. As
+dimensionality increases, this number goes to zero quickly. In other
+words, most of the probability mass (as measured by hypervolume) in
+high dimensions lies in the corners. Let’s see just how much by
+simulation.</p>
+<pre><code>euclidean_length = x.sqrt(sum(x^2))
+
+for (log2_N in 1:max_log2_N)
+  N &lt;- 2^log2_N
+  for (m in 1:M)
+    for (n in 1:N)
+      x(m)[n] = uniform_rng(-0.5, 0.5)
+    d(m) = euclidean_length(x(m))
+  mean_d[log2N] = mean(d)
+  min_d[log2N] = min(d)
+  max_d[log2N] = max(d)</code></pre>
+<p>We take <code>x^2</code> to operate elementwise on the members of <code>x</code>, e.g.,
+<span class="math inline">\((1, 2, 3)^2 = (1, 4, 9)\)</span>. The square root, sum, and other operaitons
+should be self explanatory. The Euclidean length function is being
+defined with <em>lambda abstraction</em>, where the <code>x.</code> indicates that the
+argument to the function is <code>x</code> and the result is the result of
+plugging the value for <code>x</code> into the body, <code>sqrt(sum(x^2))</code>.</p>
+<p>Let’s plot what we get out to <span class="math inline">\(1\,000\)</span> dimensions or so.</p>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-57"></span>
+<p class="caption marginnote shownote">
+Figure 5.6: Plot of the average distance (solid line) of a uniform draw from a hypercube to the center of the hypercube as a function of the number of dimensions. The minimum and maximum distance (dotted lines) are shown based on <span class="math inline">\(M = 10\,000\)</span> simulations.
+</p>
+<img src="_main_files/figure-html/unnamed-chunk-57-1.png" alt="Plot of the average distance (solid line) of a uniform draw from a hypercube to the center of the hypercube as a function of the number of dimensions.  The minimum and maximum distance (dotted lines) are shown based on $M = 10\,000$ simulations." width="70%"  />
+</div>
+<p>While it may seem intuitively from thinking in two dimensions that
+draws should be uniformly dispersed and thus appear near the origin,
+they in fact do two things that are quite surprising based on our
+low-dimensional intuitions,</p>
+<ul>
+<li>draws get further and further away from the origin, on average, as
+dimension increases, and</li>
+<li>draws accumulate in a thin shell of distance from the origin, with
+no draws being anywhere near the origin in high dimensions.</li>
+</ul>
+<p>The first fact is obvious when you consider the definition of distance
+is the square root of the squared dimension values, which we will
+write as</p>
+<p><span class="math display">\[
+||x|| = \sqrt{x_1^2 + x_2^2 + \cdots + x_N^2}.
+\]</span></p>
+<p>In this form, it is clear that as <span class="math inline">\(N\)</span> increases, so does <span class="math inline">\(||x||\)</span> as we
+simply keep adding squared terms <span class="math inline">\(x_n^2\)</span> with each additional
+dimension.</p>
+<p>Although the draws accumulate in a thin shell of distance from the
+origin, it would be wrong to conclude that they are anywhere near each
+other. They are further from each other, on average, than they are
+from the origin. For example, let’s simulate just for 100 dimensions,</p>
+<pre><code>for (m in 1:M)
+  for (n in 1:N)
+    x[n] = uniform_rng(-0.5, 0.5)
+    y[n] = uniform_rng(-0.5, 0.5)
+  d(m) = euclidean_length(x - y)
+print &#39;min = &#39; min(d) &#39;;  mean = &#39; mean(d) &#39;; max = &#39; max(d)</code></pre>
+<p>Let’s run that for <span class="math inline">\(M = 10\,000\)</span> and <span class="math inline">\(N = 100\)</span> and see what we get.</p>
+<pre><code>   min = 3.0;  mean = 4.1;  max = 5.0</code></pre>
+<p>We see that the average distances between randomly generated points is
+even greater than the average distance to the origin.</p>
+
+</div>
+</div>
+<p style="text-align: center;">
+<a href="joint-marginal-and-conditional-probabilities.html"><button class="btn btn-default">Previous</button></a>
+<a href="continuous-distributions-and-densities.html"><button class="btn btn-default">Next</button></a>
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>

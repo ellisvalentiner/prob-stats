@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="6 Continuous Distributions and Densities | Probability and Statistics" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+<meta name="author" content="Bob Carpenter" />
+
+<meta name="date" content="2018-01-01" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS_CHTML-full" type="text/javascript"></script>
+
+<meta name="description" content="6 Continuous Distributions and Densities | Probability and Statistics">
+
+<title>6 Continuous Distributions and Densities | Probability and Statistics</title>
+
+<link href="libs/tufte-css/tufte-fonts.css" rel="stylesheet" />
+<link href="libs/tufte-css/tufte-background.css" rel="stylesheet" />
+<link href="libs/tufte-css/tufte-italics.css" rel="stylesheet" />
+<link href="libs/tufte-css/tufte.css" rel="stylesheet" />
+
+
+
+
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li><a href="index.html#preface">Preface</a></li>
+<li><a href="what-is-probability.html#what-is-probability">What is Probability?</a></li>
+<li><a href="random-variables-and-event-probabilities.html#random-variables-and-event-probabilities"><span class="toc-section-number">1</span> Random Variables and Event Probabilities</a></li>
+<li><a href="multiple-random-variables-and-probability-functions.html#multiple-random-variables-and-probability-functions"><span class="toc-section-number">2</span> Multiple Random Variables and Probability Functions</a></li>
+<li><a href="expectations-and-variance.html#expectations-and-variance"><span class="toc-section-number">3</span> Expectations and Variance</a></li>
+<li><a href="joint-marginal-and-conditional-probabilities.html#joint-marginal-and-conditional-probabilities"><span class="toc-section-number">4</span> Joint, Marginal, and Conditional Probabilities</a></li>
+<li><a href="continuous-random-variables.html#continuous-random-variables"><span class="toc-section-number">5</span> Continuous Random Variables</a></li>
+<li><a href="continuous-distributions-and-densities.html#continuous-distributions-and-densities"><span class="toc-section-number">6</span> Continuous Distributions and Densities</a></li>
+<li><a href="statistical-inference-and-inverse-problems.html#statistical-inference-and-inverse-problems"><span class="toc-section-number">7</span> Statistical Inference and Inverse Problems</a></li>
+<li><a href="rejection-sampling.html#rejection-sampling"><span class="toc-section-number">8</span> Rejection Sampling</a></li>
+<li><a href="posterior-predictive-inference.html#posterior-predictive-inference"><span class="toc-section-number">9</span> Posterior Predictive Inference</a></li>
+<li><a href="pseudorandom-number-generators.html#pseudorandom-number-generators"><span class="toc-section-number">10</span> Pseudorandom Number Generators</a></li>
+<li><a href="floating-point-arithmetic.html#floating-point-arithmetic"><span class="toc-section-number">11</span> Floating Point Arithmetic</a></li>
+<li><a href="normal-distribution.html#normal-distribution"><span class="toc-section-number">12</span> Normal Distribution</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="continuous-distributions-and-densities" class="section level1">
+<h1><span class="header-section-number">6</span> Continuous Distributions and Densities</h1>
+<div id="continuous-cumulative-distribution-functions" class="section level2">
+<h2><span class="header-section-number">6.1</span> Continuous cumulative distribution functions</h2>
+<p>Suppose <span class="math inline">\(\Theta \sim \mbox{uniform}(0, 360)\)</span> is the result of spinning
+a fair spinner. The cumulative distribtution function is defined
+exactly as for discrete random variables,<label for="tufte-sn-100" class="margin-toggle sidenote-number">100</label><input type="checkbox" id="tufte-sn-100" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">100</span> Note that we have moved
+from Roman to Greek letters, but have kept to our capitalization
+convention for random variables—<span class="math inline">\(\Theta\)</span> is the capitalized form of
+<span class="math inline">\(\theta\)</span>.</span></p>
+<p><span class="math display">\[
+F_{\Theta}(\theta) = \mbox{Pr}[\Theta \leq \theta].
+\]</span></p>
+<p>That is, it’s the probability the random variable is less than or
+equal to <span class="math inline">\(\theta\)</span>. In this case, because the spinner is assumed to be
+fair, the cumulative distribution function is</p>
+<p><span class="math display">\[
+F_{\Theta}(\theta) = \frac{\theta}{360}.
+\]</span></p>
+<p>This is a linear function of <span class="math inline">\(\theta\)</span>, i.e., <span class="math inline">\(\frac{1}{360} \times \theta\)</span>, as is reflected in the following plot.</p>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-60"></span>
+<p class="caption marginnote shownote">
+Figure 6.1: Cumulative distribution function for the angle <span class="math inline">\(\theta\)</span> (in degrees) resulting from a fair spin of a spinner. The dotted line shows the value at 180 degrees, which is a probability of one half and the dashed line at 270 degrees, which is a probability of three quartersxs.
+</p>
+<img src="_main_files/figure-html/unnamed-chunk-60-1.png" alt="Cumulative distribution function for the angle $\theta$ (in degrees) resulting from a fair spin of a spinner.  The dotted line shows the value at 180 degrees, which is a probability of one half and the dashed line at 270 degrees, which is a probability of three quartersxs." width="70%"  />
+</div>
+<p>We can verify this result using simulation. To estimate cumulative
+distribution functions, we take <span class="math inline">\(M\)</span> simulated values <span class="math inline">\(\theta^{(m)}\)</span> and
+then sort them in ascending order.</p>
+<pre><code>for (m in 1:M)
+  theta[m] &lt;- uniform_rng(0, 360)
+theta_ascending &lt;- sort(theta)
+prob &lt;- (1:M) / M</code></pre>
+<p>The expression <code>(1:M)</code> denotes the sequence <span class="math inline">\(1, 2, \ldots, M\)</span>, so that
+<code>(1:M) / M</code> denotes <span class="math inline">\(\frac{1}{M}, \frac{2}{M}, \ldots, \frac{M}{M}\)</span>.
+The trick is to put the sorted random variable the <span class="math inline">\(x\)</span>-axis and the
+probability values on the <span class="math inline">\(y\)</span> axis. Here’s a run with <span class="math inline">\(M = 1\,000\)</span>
+simulated values.</p>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-61"></span>
+<p class="caption marginnote shownote">
+Figure 6.2: Plot of the cumulative distribution function of a random variable <span class="math inline">\(\Theta\)</span> representing the result of a fair spin of a spinner from 0 to 360 degrees. As expected, it is a simple linear function because the underlying variable <span class="math inline">\(\Theta\)</span> has a uniform distribution.
+</p>
+<img src="_main_files/figure-html/unnamed-chunk-61-1.png" alt="Plot of the cumulative distribution function of a random variable $\Theta$ representing the result of a fair spin of a spinner from 0 to 360 degrees.  As expected, it is a simple linear function because the underlying variable $\Theta$ has a uniform distribution." width="70%"  />
+</div>
+<p>Even with <span class="math inline">\(M = 1\,000\)</span>, this is pretty much indistinguishable from the
+one plotted analytically.</p>
+<p>As with discrete parameters, the cumulative distribution function may
+be used to calculate interval probabilities, e.g.,<label for="tufte-sn-101" class="margin-toggle sidenote-number">101</label><input type="checkbox" id="tufte-sn-101" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">101</span> With continuous
+variables, the interval probabilities are open below (<span class="math inline">\(180 \lt \Theta\)</span>) and closed above (<span class="math inline">\(\Theta \leq 270\)</span>), due to the definition
+of the cumulative distribution function as a closed upper bound
+(<span class="math inline">\(F_{\Theta}(\theta) = \mbox{Pr}[\Theta \leq \theta]\)</span>).</span></p>
+<p><span class="math display">\[
+\begin{array}{rcl}
+\mbox{Pr}[180 &lt; \Theta \leq 270]
+&amp; = &amp; \mbox{Pr}[\Theta \leq 270] \ - \ \mbox{Pr}[\Theta \leq 180]
+\\[2pt]
+&amp; = &amp; F_{\Theta}(270) - F_{\Theta}(180)
+\\[2pt]
+&amp; = &amp; \frac{3}{4} - \frac{1}{2}
+\\[2pt]
+&amp; = &amp; \frac{1}{4}.
+\end{array}
+\]</span></p>
+</div>
+<div id="the-log-odds-transform" class="section level2">
+<h2><span class="header-section-number">6.2</span> The log odds transform</h2>
+<p>Now that we have seen how to generate uniform random numbers from 0 to
+360, it is time to consider generating standard uniform variates from
+0 to 1. Suppose <span class="math inline">\(\Theta\)</span> is a random variable with a standard uniform
+distribution, i.e., <span class="math inline">\(\Theta \sim \mbox{uniform}(0, 1)\)</span>. Because
+probabilities are scaled from zero to one, we can think of <span class="math inline">\(\Theta\)</span> as
+denoting a random probability.</p>
+<p>Given a probability value <span class="math inline">\(\theta \in (0, 1)\)</span>, we can define its <em>log odds</em> by</p>
+<p><span class="math display">\[
+\mbox{logit}(\theta) = \log \frac{\theta}{1 - \theta}.
+\]</span></p>
+<p>This is just the natural logarithm of the odds, <span class="math inline">\(\frac{\theta}{1 - \theta}\)</span>. Now let</p>
+<p><span class="math display">\[
+\Phi = \mbox{logit}(\Theta)
+\]</span></p>
+<p>be the random variable representing the log odds. We say that <span class="math inline">\(\Phi\)</span>
+is a transform of <span class="math inline">\(\Theta\)</span>, because its value is determined by the
+value of <span class="math inline">\(\Theta\)</span>.</p>
+<p>Simulating transformed variables is straightforward.</p>
+<pre><code>for (m in 1:M)
+  theta[m] = uniform_rng(0, 1)
+  alpha[m] = logit(theta[m])
+print &#39;alpha = &#39; alpha[1:10] &#39; ... &#39;</code></pre>
+<p>We can run this and see the first ten values,</p>
+<pre><code>   -2.05 0.50 0.44 0.50 1.82 0.58 -4.65 -1.19 0.69 0.06
+    ...</code></pre>
+<p>To understand the distribution of values of <span class="math inline">\(\Phi\)</span>, let’s look at histograms. First, we have the uniform draws of <span class="math inline">\(\Theta\)</span>,</p>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-63"></span>
+<p class="caption marginnote shownote">
+Figure 6.3: Histogram of <span class="math inline">\(10\,000\)</span> simulated draws of <span class="math inline">\(\Theta \sim \mbox{uniform}(0, 1)\)</span>.
+</p>
+<img src="_main_files/figure-html/unnamed-chunk-63-1.png" alt="Histogram of $10\,000$ simulated draws of $\Theta \sim \mbox{uniform}(0, 1)$. " width="70%"  />
+</div>
+<p>and then the transform to log odds <span class="math inline">\(\Phi = \mathrm{logit}(\Theta)\)</span>,</p>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-64"></span>
+<p class="caption marginnote shownote">
+Figure 6.4: Histogram of <span class="math inline">\(10\,000\)</span> simulated draws of <span class="math inline">\(\Theta \sim \mbox{uniform}(0, 1)\)</span> transformed to the log odds scale by <span class="math inline">\(\Phi = \mbox{logit}(\Theta).\)</span>
+</p>
+<img src="_main_files/figure-html/unnamed-chunk-64-1.png" alt="Histogram of $10\,000$ simulated draws of $\Theta \sim \mbox{uniform}(0, 1)$ transformed to the log odds scale by $\Phi = \mbox{logit}(\Theta).$" width="70%"  />
+</div>
+<p>Even though the probability variable <span class="math inline">\(\Theta \sim \mbox{uniform}(0, 1)\)</span> is uniform by construction, the log odds variable <span class="math inline">\(\Phi = \mbox{logit}(\Theta)\)</span> is not distributed uniformly.</p>
+<p>A further feature of the log odds plot is that the distribution of
+values is symmetric around zero. Zero on the log odds scale
+corresponds to 0.5 on the probability scale,<label for="tufte-sn-102" class="margin-toggle sidenote-number">102</label><input type="checkbox" id="tufte-sn-102" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">102</span> Recall that the inverse
+log odds function is defined by <span class="math display">\[\mbox{logit}^{-1}(u) = \frac{1}{1 +
+\exp(-u)}.\]</span> This function is called the <em>logistic sigmoid</em> in
+engineering circles. Inverses satisfy for <span class="math inline">\(u \in \mathbb{R}\)</span>,
+<span class="math display">\[\mbox{logit}(\mbox{logit}^{-1}(u)) = u\]</span> and <span class="math inline">\(v \in (0, 1)\)</span>,
+<span class="math display">\[\mbox{logit}^{-1}(\mbox{logit}(v)) = v.\]</span></span> i.e.,</p>
+<p><span class="math display">\[
+0 = \mbox{logit}(0.5),
+\]</span></p>
+<p>or equivalently,</p>
+<p><span class="math display">\[
+\mbox{logit}^{-1}(0) = 0.5.
+\]</span></p>
+<p>Unboundedness and symmetry around zero make log odds quite convenient
+statistically and will resurface in categorical regressions.</p>
+<p>The third relevant feature of the log odds plot is that almost all of
+the values are within <span class="math inline">\(\pm 6\)</span> of the origin. This is not surprising
+given that we took <span class="math inline">\(10\,000\)</span> draws and</p>
+<p><span class="math display">\[
+\mbox{logit}^{-1}(-6) = 0.0025
+\]</span></p>
+<p>and</p>
+<p><span class="math display">\[
+\mbox{logit}^{-1}(6) = 0.9975
+\]</span></p>
+<p>on the probability scale.</p>
+<p>We can also do what we did for uniform distributions and plot the
+cumulative distribution based on simulation; we need merely insert the
+log-odds transform.</p>
+<pre><code>for (m in 1:M)
+  theta[m] &lt;- logit(uniform_rng(0, 360))
+theta_ascending &lt;- sort(theta)
+prob &lt;- (1:M) / M</code></pre>
+<p>We again plot with <span class="math inline">\(M = 1\,000\)</span> simulated values.</p>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-65"></span>
+<p class="caption marginnote shownote">
+Figure 6.5: Plot of the cumulative distribution function of a random variable <span class="math inline">\(\Phi = \mbox{logit}(\Theta)\)</span> representing the the log odds transform of a uniformly distributed random variable <span class="math inline">\(\Theta \sim \mbox{uniform}(0, 1)\)</span>. The curve it picks out is S-shaped. The asymptotes at 0 and 1 are indicated with dashed lines; the symmetries around 0 on the <span class="math inline">\(x\)</span>-axis and 0.5 on the <span class="math inline">\(y\)</span>-axis are picked out with dotted lines.
+</p>
+<img src="_main_files/figure-html/unnamed-chunk-65-1.png" alt="Plot of the cumulative distribution function of a random variable $\Phi = \mbox{logit}(\Theta)$ representing the the log odds transform of a uniformly distributed random variable $\Theta \sim \mbox{uniform}(0, 1)$.  The curve it picks out is S-shaped.  The asymptotes at 0 and 1 are indicated with dashed lines; the symmetries around 0 on the $x$-axis and 0.5 on the $y$-axis are picked out with dotted lines." width="70%"  />
+</div>
+<p>The result is an S-shaped function whose values lie between 0 and 1,
+with asymptotes at one as <span class="math inline">\(\theta\)</span> approaches <span class="math inline">\(\infty\)</span> and at zero as
+<span class="math inline">\(\theta\)</span> approaches <span class="math inline">\(-\infty\)</span>. The argument of 0 has a value of 0.5.</p>
+<p>The cumulative distribution function of this distribution is well
+known and has a closed analytic form based on the inverse of the log
+odds transform,</p>
+<p><span class="math display">\[
+F_{\Theta}(\theta)
+\ = \
+\mathrm{logit}^{-1}(\theta)
+\ = \
+\frac{1}{1 + \exp(-\theta)}.
+\]</span></p>
+<p>The inverse log odds function is itself known as the
+<em>logistic sigmoid</em> function.<label for="tufte-sn-103" class="margin-toggle sidenote-number">103</label><input type="checkbox" id="tufte-sn-103" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">103</span> A name presumably derived from its shape
+and the propensity of mathematicians, like doctors, to prefer Greek
+terminology—the Greek letter “<span class="math inline">\(\sigma\)</span>” (sigma) corresponds to the
+Roman letter “S”.</span></p>
+</div>
+<div id="expectation-and-variance-of-continuous-random-variables" class="section level2">
+<h2><span class="header-section-number">6.3</span> Expectation and variance of continuous random variables</h2>
+<p>Just as with discrete random variables, the expectation of a
+continuous random variable <span class="math inline">\(Y\)</span> is defined as a weighted average of its
+values. Only this time, the weights are defined by the probability
+density function rather than by the probability mass function.
+Because <span class="math inline">\(Y\)</span> takes on continuous values, we’ll need calculus to compute
+the weighted average.</p>
+<p><span class="math display">\[
+\mathbb{E}[Y] = \int_{-\infty}^{\infty} y \times p_Y(y) \, \mathrm{d}y.
+\]</span></p>
+<p>Integrals of this general form should be read as a weighted average.
+It averages the value of <span class="math inline">\(y\)</span> with weights equal to the density
+<span class="math inline">\(p_Y(y)\)</span> of <span class="math inline">\(y\)</span>.<label for="tufte-sn-104" class="margin-toggle sidenote-number">104</label><input type="checkbox" id="tufte-sn-104" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">104</span> Sometimes physicists will rearrange integral
+notation to reflect this and write <span class="math display">\[\mathbb{E}[f(y)] = \int
+\mathrm{d}y \ p_Y(y) \times f(y)\]</span> or even <span class="math display">\[\mathbb{E}[f(y)] = \int
+p_Y(\mathrm{d}y) \times f(y).\]</span></span></p>
+<p>Variances are calculated just as they were for discrete variables, as</p>
+<p><span class="math display">\[
+\mbox{var}[Y]
+\ = \
+\mathbb{E}\left[
+\left(Y - \mathbb{E}[Y]\right)
+\right].
+\]</span></p>
+<p>Let’s check this with some simulation by estimating the mean and
+variance of our running example. Suppose we have a a random variable
+<span class="math inline">\(\Phi = \mbox{logit}(\Theta)\)</span>, where <span class="math inline">\(\Theta \sim \mbox{uniform}(0, 1)\)</span>. We can estimate the expectation and variance of <span class="math inline">\(\Phi\)</span> by
+simulating and calculating means and variances of the simulated values,</p>
+<pre><code>set.seed(1234)
+phi &lt;- rep(NA, M)
+for (m in 1:M)
+  phi[m] = logit(uniform_rng(0, 1))
+E_Phi = sum(phi) / M
+var_Phi = sum((phi - E_Phi)^2) / M
+print &#39;Estimated E[Phi] = &#39; E_Phi
+      &#39;; var[Phi] = &#39; var_Phi
+      &#39;; sd[Phi] = &#39; sqrt(var_Phi)</code></pre>
+<p>Let’s run that for <span class="math inline">\(M = 1\,000\,000\)</span> and see what we get.</p>
+<pre><code>   Estimated  E[Phi] = -0.00;  var[Phi] = 3.30;  sd[Phi] = 1.82</code></pre>
+<p>The true value of the expectation <span class="math inline">\(\mathbb{E}[Y]\)</span> is zero, and the
+true value of the variance is <span class="math inline">\(\frac{\pi^2}{3} \approx 3.29\)</span>.<label for="tufte-sn-105" class="margin-toggle sidenote-number">105</label><input type="checkbox" id="tufte-sn-105" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">105</span> The
+true mean and variance for the logistic distribution can be calculated
+analytically. See the final section on this chapter for the analytic
+derivativation of the probability density function. The density must
+be integrated to analytically calcuate the mean and variance, though
+the result for the mean also arises from symmetry.</span></p>
+</div>
+<div id="from-histograms-to-densities" class="section level2">
+<h2><span class="header-section-number">6.4</span> From histograms to densities</h2>
+<p>There is no equivalent of a probability mass function for continuous
+random variables. Instead, there is a probability density function,
+which in simulation terms may usefully be thought of as a limit of a
+histogram as the number of draws increases and the width of bins
+shrinks. Letting the number of simulations grow from <span class="math inline">\(10\)</span> to
+<span class="math inline">\(1\,000\,000\)</span>, we see the limiting behavior of the histograms.</p>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-67"></span>
+<p class="caption marginnote shownote">
+Figure 6.6: Histograms of <span class="math inline">\(M\)</span> simulated draws of <span class="math inline">\(\Theta \sim \mbox{uniform}(0, 1)\)</span> transformed to the log odds scale by <span class="math inline">\(\Phi = \mbox{logit}(\Theta).\)</span> The limiting behavior is shown in the bell-shaped curve in the lower right based on <span class="math inline">\(1\,000\,000\)</span> draws.
+</p>
+<img src="_main_files/figure-html/unnamed-chunk-67-1.png" alt="Histograms of $M$ simulated draws of $\Theta \sim \mbox{uniform}(0, 1)$ transformed to the log odds scale by $\Phi = \mbox{logit}(\Theta).$ The limiting behavior is shown in the bell-shaped curve in the lower right based on $1\,000\,000$ draws." width="100%"  />
+</div>
+<p>In a histogram, a bin’s height is proportional to the number of
+simulations that landed in that bin. Because each bin is the same
+width, a bin’s area (given by its width time its height) must also
+be proportional to the number of simulations that landed in that bin.</p>
+<p>With simulation, the estimate of a probability landing in a bin is
+just the proportion of simulate values that land in the bin. Thus we
+can think of the area of a histogram’s bar as an estimate of the
+probability a value will fall in that bin.</p>
+<p>Because the bins are exclusive (a number can’t fall in two bins), the
+probability of landing in either of two bins is proportional to the
+sum of their areas. This notion extends to intervals, where the
+estimated probability of the random variable falling between -2 and 2
+is just the proportion of area between those two values in the
+histogram of simulations. Similarly, we can take a simulation-based
+estimate of <span class="math inline">\(\mbox{Pr}[\Theta \leq \theta]\)</span> for any <span class="math inline">\(\theta\)</span> as the
+proportion of simulated values that are less than or equal to
+<span class="math inline">\(\theta\)</span>. This is just the area to the left of the <span class="math inline">\(\theta\)</span>.</p>
+<p>As the number of draws <span class="math inline">\(M\)</span> increases, the estimated bin probabilities
+become closer and closer to the true values. Now we are going to look
+at the limiting continuous behavior. Put a point in the middle of the
+top of each histogram bar and connect them with lines. With a finite
+number of bins, that makes a jagged pointwise linear function. As the
+number of bins increases and the number of draws per bin increases,
+the function gets smoother and smoother. In the limit as <span class="math inline">\(M \rightarrow \infty\)</span>, it approaches a smooth function. That smooth
+function is called the <em>probability density function</em> of the random
+variable. Let’s see what that limiting function looks like with <span class="math inline">\(M = 1\,000\,000\)</span> draws.</p>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-68"></span>
+<p class="caption marginnote shownote">
+Figure 6.7: Histogram of <span class="math inline">\(M = 1\,000\,000\)</span> simulations of <span class="math inline">\(\Theta \sim \mbox{uniform}(0,1)\)</span> transformed to <span class="math inline">\(\Phi = \mbox{logit}(\Theta)\)</span>. The black line connects the tops of the histogram bins. In the limit, as the number of draws and bins approach infinity, the connecting line approaches the probability density function for the variable being simulated.
+</p>
+<img src="_main_files/figure-html/unnamed-chunk-68-1.png" alt="Histogram of $M = 1\,000\,000$ simulations of $\Theta \sim \mbox{uniform}(0,1)$ transformed to $\Phi = \mbox{logit}(\Theta)$. The black line connects the tops of the histogram bins.  In the limit, as the number of draws and bins approach infinity, the connecting line approaches the probability density function for the variable being simulated." width="100%"  />
+</div>
+</div>
+<div id="a-detour-through-calculus" class="section level2">
+<h2><span class="header-section-number">6.5</span> A detour through calculus</h2>
+<p>We have seen that the probability of a variable falling in an interval
+is estimated by proportion of the overall histogram area falls in the
+interval—that is, the sum of the histogram areas in the interval.
+What we want to do is let the number of bins and number of draws
+continue to increase to get ever better approximations. When we let
+the number of bins increase toward infinity, we have a familiar limit
+from integral calculus.</p>
+<p>If <span class="math inline">\(p_Y(y)\)</span> is the continuous density function we get as the limit of
+the histogram, then the probability that <span class="math inline">\(Y\)</span> falls between <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span>
+is given by the proportion of area between <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> in the function
+<span class="math inline">\(p_Y(y)\)</span>. This is the key insight for understanding density functions
+and continuous random variables. For bounded intervals, we have</p>
+<p><span class="math display">\[
+\mbox{Pr}[a \leq Y \leq b]
+\ \propto \
+\int^b_a \ p_Y(y) \, \mathrm{d}y.
+\]</span></p>
+<p>To make our lives easier and avoid writing the proportional-to symbol
+(<span class="math inline">\(\propto\)</span>) everywhere, we will make the conventional assumption that
+our density functions like <span class="math inline">\(p_Y\)</span> are <em>normalized</em>. This means that
+the total area under their curve is one,</p>
+<p><span class="math display">\[
+\int_{-\infty}^{\infty} p_Y(y) \, \mathrm{d}y \ = \ 1.
+\]</span></p>
+<p>Because they are based on the limits of histograms, which are counts,
+we will also meet the standard requirement placed on density functions
+that they be positive, so that for all <span class="math inline">\(y \in \mathbb{R}\)</span>,</p>
+<p><span class="math display">\[
+p_Y(y) \geq 0.
+\]</span></p>
+<p>With these assumptions in place, we now define interval probabilities
+using definite integration over density functions,</p>
+<p><span class="math display">\[
+\mbox{Pr}[a \leq Y \leq b]
+\ = \
+\int^b_a \ p_Y(y) \, \mathrm{d}y.
+\]</span></p>
+<p>For simple upper bounds, we just integrate from negative infinity,</p>
+<p><span class="math display">\[
+\mbox{Pr}[Y \leq b]
+\ = \
+\int_{-\infty}^b \ p_Y(y) \, \mathrm{d}y.
+\]</span></p>
+<p>This reveals the relation between the cumulative distribution function
+<span class="math inline">\(F_Y) = \mbox{Pr}[Y \leq b]\)</span> and the probability density function <span class="math inline">\(p_Y\)</span></p>
+<p><span class="math display">\[
+F_Y(b) \ = \ \int_{-\infty}^b \ p_Y(y) \, \mathrm{d}y.
+\]</span></p>
+<p>Working the other way around, it reveals that the probability density
+function is just the derivative of the cumulative distribution
+function,</p>
+<p><span class="math display">\[
+p_Y(b) = \frac{\mathrm{d}}{\mathrm{d}y} F_Y(y) \Bigg|_{y = b}.
+\]</span></p>
+<p>Thus the units of a probability density function are change in
+cumulative probability, not probability. Density functions must be
+integrated to get back to units of probability.</p>
+</div>
+<div id="the-uniform-density-function" class="section level2">
+<h2><span class="header-section-number">6.6</span> The uniform density function</h2>
+<p>We’ve already seen the histograms for variables <span class="math inline">\(\Theta \sim \mbox{uniform}(0, 1)\)</span> distributed uniformly from zero to one. With an
+increasing numbers of draws, the histograms flatten out. With more
+draws the histograms will level out even more until the density
+becomes a straight line. This means that the probability density
+function of a uniformly distributed random variable is
+constant.<label for="tufte-sn-106" class="margin-toggle sidenote-number">106</label><input type="checkbox" id="tufte-sn-106" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">106</span> Another way to reach the same conclusion is by calculus. We
+worked out from first principles that the cumulative distribution
+function is linear if uniformity means equal probability of landing in
+any interval of the same size. The derivative of a linear function is
+constant, so the density for a uniform distribution must be constant.</span>
+That is, if <span class="math inline">\(\Theta \sim \mbox{uniform}(a, b)\)</span>, then
+<span class="math inline">\(p_{\Theta}(\theta) = c\)</span> for some constant <span class="math inline">\(c\)</span>. Let’s see what that
+looks like so the solution for <span class="math inline">\(c\)</span> becomes evident.</p>
+<p><img src="_main_files/figure-html/unnamed-chunk-69-1.png" width="70%"  style="display: block; margin: auto;" /></p>
+<p>The plot shows the area from <span class="math inline">\(a\)</span> to <span class="math inline">\(b\)</span> under <span class="math inline">\(c\)</span> to be <span class="math inline">\((b - a) \times c\)</span>. Given that we require the area to be one, that is, <span class="math inline">\((b - a) \times c = 1\)</span>, we can work out <span class="math inline">\(c\)</span> by dividing both sides by <span class="math inline">\(b - a\)</span>,</p>
+<p><span class="math display">\[
+c  = \frac{\displaystyle{1}}{\displaystyle b - a}.
+\]</span></p>
+<p>Putting this into density notation, if <span class="math inline">\(\Theta \sim \mbox{uniform}(a, b)\)</span>, then</p>
+<p><span class="math display">\[
+p_{\Theta}(\theta) = \mbox{uniform}(\theta \mid a, b),
+\]</span></p>
+<p>where we have now worked out that</p>
+<p><span class="math display">\[
+\mbox{uniform}(\theta \mid a, b) = \frac{1}{b - a}.
+\]</span></p>
+<p>That is, the density does not depend on <span class="math inline">\(y\)</span>—it is constant and the
+same for every possible value of <span class="math inline">\(\theta\)</span>.<label for="tufte-sn-107" class="margin-toggle sidenote-number">107</label><input type="checkbox" id="tufte-sn-107" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">107</span> For convenience, we can
+assume the impossible values of <span class="math inline">\(\theta\)</span> have density zero.</span></p>
+</div>
+<div id="back-to-simulation" class="section level2">
+<h2><span class="header-section-number">6.7</span> Back to simulation</h2>
+<p>The traditional bottleneck to performing statistics beyond the data
+collection was wrangling integral calculus to provide analytic results
+or approximations for a given applied problem. Today, very general
+numerical solvers absolve us of the heavy lifting of calculus and
+replace it with wrangling computer code for simulations. This lets us
+solve much harder problems directly.</p>
+<p>Let’s actually solve the integral we mentioned in the last section,
+namely the probabilty that a log odds variable will land between -2
+and 2.</p>
+<pre><code>success = 0
+for (m in 1:M)
+  Phi[m] = logit(uniform_rng(0, 1))
+  if (-2 &lt; Phi[m] &amp; Phi[m] &lt; 2)
+    success += 1
+print &#39;Pr[-2 &lt; Phi &lt; 2] = &#39; success / M</code></pre>
+<p>Let’s run that for <span class="math inline">\(M = 100\,000\)</span> simulation draws and see what we get,</p>
+<pre><code>   Pr[-2 &lt; Phi &lt; 2] = 0.76</code></pre>
+<p>What is perhaps more remarkable than not requiring calculus is that we
+don’t even require the formula for the density functin <span class="math inline">\(p_{\Phi}\)</span>—we
+only need to be able to simulate random instantiations of the random
+variable in question.</p>
+</div>
+<div id="laws-of-probability-for-densities" class="section level2">
+<h2><span class="header-section-number">6.8</span> Laws of probability for densities</h2>
+<p>Whether a random variable <span class="math inline">\(Y\)</span> is continuous or discrete, its
+cumulative distribution function <span class="math inline">\(F_Y\)</span> is defined by</p>
+<p><span class="math display">\[
+F_Y(y) = \mbox{Pr}[Y \leq y].
+\]</span></p>
+<p>Using simulation, if <span class="math inline">\(Y\)</span> is a continuous random variable, its
+probability density function <span class="math inline">\(p_Y\)</span> is the limit of the histogram of
+simulation draws. Using calculus, the density <span class="math inline">\(p_Y\)</span> of a continuous
+random variable <span class="math inline">\(Y\)</span> is defined as the derivative of the cumulative
+distribution function <span class="math inline">\(F_Y\)</span>,<label for="tufte-sn-108" class="margin-toggle sidenote-number">108</label><input type="checkbox" id="tufte-sn-108" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">108</span> Differential notation avoids the fiddly
+notation arising from bound vaiables, e.g., <span class="math display">\[p_Y(y) \ = \
+\frac{\mathrm{d}}{\mathrm{d}y} F_Y(y).\]</span> With multivariate functions,
+the derivative operator is replaced with the gradient operator <span class="math inline">\(\nabla.\)</span></span></p>
+<p><span class="math display">\[
+p_Y = \mathrm{d} F_Y.
+\]</span></p>
+<p>Joint cumulative distibution functions for a pair of continuous random
+variables <span class="math inline">\(X, Y\)</span> are defined as expected,</p>
+<p><span class="math display">\[
+F_{X, Y}(x, y) = \mbox{Pr}[X \leq x \ \mbox{and} \ Y \leq y],
+\]</span></p>
+<p>and may be easily extended to more variables. With simulation,
+cumulative distribution functions may be recreated by sorting the
+simulated values and normalizing.</p>
+<p>Joint densities for a pair <span class="math inline">\(X, Y\)</span> of continuous random variables are
+defined by differentiating the joint cumulative distribution
+twice,<label for="tufte-sn-109" class="margin-toggle sidenote-number">109</label><input type="checkbox" id="tufte-sn-109" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">109</span> With bound variables, <span class="math display">\[p_{X, Y}(x, y) =
+\frac{\partial^2}{\partial x \partial y} F_{X, Y}(x, y).\]</span></span></p>
+<p><span class="math display">\[
+p_{X, Y} = \mathrm{\partial^2} F_{X, Y}.
+\]</span></p>
+<p>Marginal densities <span class="math inline">\(p_X\)</span> may now be defined in terms of the joint
+density <span class="math inline">\(p_{X, Y}\)</span> by integration,<label for="tufte-sn-110" class="margin-toggle sidenote-number">110</label><input type="checkbox" id="tufte-sn-110" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">110</span> If we had a convenient integral
+operator, we could avoid the bound variable fiddling. As written, in
+the traditional style, it is muddied that the integral just averages
+over <span class="math inline">\(y\)</span> treating <span class="math inline">\(x\)</span> as a variable bound by the function definition
+notation.</span></p>
+<p><span class="math display">\[
+p_X(x) = \int_{-\infty}^{\infty} p_{X, Y}(x, y) \, \mathrm{d}y.
+\]</span></p>
+<p>With simulation, if we can simulate <span class="math inline">\(x^{(m)}, y^{(m)}\)</span> jointly, then
+we can simulate <span class="math inline">\(x^{(m)}\)</span> by simply dropping <span class="math inline">\(y^{(m)}\)</span>.</p>
+<p>If we can simulate from <span class="math inline">\(Y\)</span>, we can compute <span class="math inline">\(p_X(x)\)</span> for a given value
+of <span class="math inline">\(x\)</span> by averaging,</p>
+<p><span class="math display">\[
+p_X(x)
+\ \approx \
+\frac{1}{M} \sum_{m \in 1:M} p_{X,Y}(x, y^{(m)}).
+\]</span></p>
+<p>Conditional densities <span class="math inline">\(p_{X \mid Y}\)</span> are defined by dividing the joint
+density <span class="math inline">\(p_{X, Y}\)</span> by the marginal density <span class="math inline">\(p_{X}\)</span>,</p>
+<p><span class="math display">\[
+p_{X \mid Y}(x \mid y)
+\ = \
+\frac{\displaystyle p_{X, Y}(x, y)}
+     {p_Y(y)}.
+\]</span></p>
+<p>Conditional densities <span class="math inline">\(p_{X \mid Y}(x \mid y)\)</span> may be handled by
+simulation for specific values of <span class="math inline">\(y\)</span>.</p>
+<p>Equivalently, we can see this as a definition of the joint density in
+terms of the conditional and marginal,</p>
+<p><span class="math display">\[
+p_{X, Y}(x, y)
+\ = \
+p_{X \mid Y}(x \mid y) \times p_Y(y).
+\]</span></p>
+<p>With simulation, this is often the strategy to generate simulations
+from the joint distribution—first simulate from <span class="math inline">\(Y\)</span>, then simulate
+<span class="math inline">\(X\)</span> given <span class="math inline">\(Y\)</span>.</p>
+<p>A convenient form of marginalization uses this definition,</p>
+<p><span class="math display">\[
+p_X(x)
+= \int_{-\infty}^{\infty}
+p_{X \mid Y}(x, y) \times p_Y(y)
+\, \mathrm{d} y.
+\]</span></p>
+<p>Continuous random variables <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> are independent if their
+densities factor, so that for all <span class="math inline">\(x, y\)</span>,</p>
+<p><span class="math display">\[
+p_{X, Y}(x, y)
+\ = \
+p_X(x) \times p_Y(y),
+\]</span></p>
+<p>or equivalently,</p>
+<p><span class="math display">\[
+p_{X \mid Y}(x \mid y)
+\ = \
+p_X(x).
+\]</span></p>
+<p>Expectations for continuous random variables are defined using
+integration to calculate the average of <span class="math inline">\(y\)</span> weighted by the density
+<span class="math inline">\(p_Y(y)\)</span>,</p>
+<p><span class="math display">\[
+\mathbb{E}[Y]
+\ = \
+\int_{-\infty}^{\infty} y \times p_Y(y) \, \mathrm{d}y.
+\]</span></p>
+<p>In moving from discrete to continuous variables, we have merely
+switched the definition from summation to integration. Luckily,
+calculation by simulation need not change—we will still be
+calculating expectations by averaging over simulated values. If we
+can simulate <span class="math inline">\(y^{(m)}\)</span> according to <span class="math inline">\(p_Y(y)\)</span> for <span class="math inline">\(m \in 1:M\)</span>, our
+simulation-based estimate is</p>
+<p><span class="math display">\[
+\mathbb{E}[f(y)]
+\ \approx \
+\frac{1}{M} \sum_{m = 1}^M
+f \! \left( y^{(m)} \right).
+\]</span></p>
+<p>This estimate becomes exact as <span class="math inline">\(M \rightarrow \infty\)</span>.</p>
+<p>Variances are defined in terms of expectation, just as before,</p>
+<p><span class="math display">\[
+\mbox{var}[Y]
+\ = \
+\mathbb{E}\left[
+\left(
+Y - \mathbb{E}[Y]
+\right)^2
+\right]
+\ = \
+\mathbb{E}[Y^2]
+- \left( \mathbb{E}[Y] \right)^2.
+\]</span></p>
+<p>Variances can be estimated through simulation like any other
+expectation.<label for="tufte-sn-111" class="margin-toggle sidenote-number">111</label><input type="checkbox" id="tufte-sn-111" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">111</span> The sample variance computed by standard software
+divides by <span class="math inline">\(M - 1\)</span> to correct for the bias introduced by using the
+sample mean to estimate variance. The maximum likelihood estimate
+resulting from dividing by <span class="math inline">\(M\)</span> is biased to underestimate variance
+with finite samples; asymptotically, it provides the correct
+result, because the <span class="math inline">\(\frac{M}{M-1}\)</span> correction factor approaches one
+as as <span class="math inline">\(M\)</span> increases.</span></p>
+</div>
+<div id="jacobians-and-changes-of-variables" class="section level2">
+<h2><span class="header-section-number">6.9</span> Jacobians and changes of variables</h2>
+<p>When we moved from a random variable <span class="math inline">\(\Theta \sim \mbox{uniform}(0, 1)\)</span> to a variable <span class="math inline">\(\Phi = \mbox{logit}(\Theta)\)</span>, we made a
+class <em>change of variables</em>. That means we can use calculus to compute
+the probability density function. But let’s do it in full generality.</p>
+<p>We’ll start by assuming we have a random variable <span class="math inline">\(X\)</span> with a known
+density function <span class="math inline">\(p_X(x)\)</span>. Assume further we have a smooth and
+invertible function <span class="math inline">\(f\)</span> and define a new random variable <span class="math inline">\(Y = f(X)\)</span>.
+The density of <span class="math inline">\(Y\)</span> is then given by the rather daunting formula</p>
+<p><span class="math display">\[
+p_Y(y)
+\ = \
+p_X(f^{-1}(y))
+\, \times \,
+\left|
+\,
+\frac{\mathrm{d}}
+     {\mathrm{d}u}
+f^{-1}(u) \Big|_{u = y}
+\,
+\right|.
+\]</span></p>
+<p>We’re going to work through this in pieces using our running example.
+To keep the puzzle pieces straight, let <span class="math inline">\(X = \Theta \sim \mbox{uniform}(0, 1)\)</span> be our uniform probability variable and <span class="math inline">\(Y = \Phi = \mbox{logit}(\Theta)\)</span> be the transformed variable on the log
+odds scale. Our goal is to calculate the density of <span class="math inline">\(\Phi\)</span> given that
+we know the density of <span class="math inline">\(\Theta\)</span> and the transform from
+<span class="math inline">\(\Theta\)</span> to <span class="math inline">\(\Phi\)</span>. We begin by noting that</p>
+<p><span class="math display">\[
+\mbox{logit}^{-1}(y) = \frac{1}{1 + \exp(-y)}.
+\]</span></p>
+<p>So to evaluate <span class="math inline">\(p_{\Phi}(\phi)\)</span>, we first need to evaluate
+<span class="math inline">\(p_{\Theta}(\mbox{logit}^{-1}(\phi))\)</span>. We know this term will evaluate
+to 1, because <span class="math inline">\(p_{\Theta}(\theta) = 1\)</span> for every <span class="math inline">\(\theta\)</span>. So clearly
+just inverting and plugging in isn’t enough.</p>
+<p>We also need to account for the change in variables from <span class="math inline">\(\Theta\)</span> to
+<span class="math inline">\(\Phi\)</span>. This is where the Jacobian term comes into the
+equation—that’s everything past the <span class="math inline">\(\times\)</span> sign. The Jacobian is
+the absolute value of the derivative of the inverse transform
+evaluated at the value in question. For our running example, we can
+work out through the chain rule that</p>
+<p><span class="math display">\[
+\frac{\mathrm{d}}{\mathrm{d} u}
+\mbox{logit}^{-1}(u)
+\ = \
+\mbox{logit}^{-1}(u)
+\times \left(1 - \mbox{logit}^{-1}(u)\right).
+\]</span></p>
+<p>So if we plug in <span class="math inline">\(u = \phi\)</span> here, and put all the pieces back
+together, we get</p>
+<p><span class="math display">\[
+p_{\Phi}(\phi)
+\ = \
+\mbox{logit}^{-1}(\phi)
+\times
+\left( 1 - \mbox{logit}^{-1}(\phi) \right).
+\]</span></p>
+<p>This distribution is known as the standard logistic distribution,</p>
+<p><span class="math display">\[
+\mbox{logistic}(\phi \mid 0, 1)
+\ = \
+\mbox{logit}^{-1}(\phi)
+\times
+\left( 1 - \mbox{logit}^{-1}(\phi) \right).
+\]</span></p>
+<p>Thus after all the dust has settled, we know that if <span class="math inline">\(\Theta \sim \mbox{uniform}(0, 1)\)</span> and <span class="math inline">\(\Phi = \mbox{logit}(\Theta)\)</span>, then <span class="math inline">\(\Phi \sim \mbox{logistic}(0, 1)\)</span>.<label for="tufte-sn-112" class="margin-toggle sidenote-number">112</label><input type="checkbox" id="tufte-sn-112" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">112</span> The meaning of the parameters 0 and
+1 will be explained in the next section.</span></p>
+
+</div>
+</div>
+<p style="text-align: center;">
+<a href="continuous-random-variables.html"><button class="btn btn-default">Previous</button></a>
+<a href="statistical-inference-and-inverse-problems.html"><button class="btn btn-default">Next</button></a>
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>
